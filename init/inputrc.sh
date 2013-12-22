@@ -21,13 +21,15 @@ function bindToChars() {
    done
 }
 
-function grep-history() {
-   history | grep --color=always "$1" | tail -n50
-}
+function grep-history() { history | grep --color=always "$1" | tail -n50; }
 
-function quick-find() {
-   find . -regex ".*$1.*" 2> /dev/null
-}
+function quick-find() { find . -regex ".*$1.*" 2> /dev/null; }
+
+complete -d chdir
+complete -d pushdir
+function chdir() { cd $1 && \ls --color; }
+function pushdir() { pushd $1 && \ls --color; }
+function popdir() { popd $1 && \ls --color; }
 
 function env_bind() {
    : ${ENV:=cd}
@@ -154,12 +156,12 @@ function env_bind() {
    local makeVar=${BkwWord}'${'${FwdWord}'\t'
    local initVar='}'${Left}':='
    local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'
-   local goToHome=${ClrLn}'cd ~\n'
-   local goToPrev=${ClrLn}'cd -\n'
-   local goDownDir=${ClrLn}'cd \t'
-   local goUpDir=${ClrLn}'cd ..\n'
-   local pushd=${ClrLn}'pushd \t'
-   local popd=${ClrLn}'popd\n'
+   local goToHome=${ClrLn}' chdir ~\n'
+   local goToPrev=${ClrLn}' chdir -\n'
+   local goDownDir=${ClrLn}' chdir \t'
+   local goUpDir=${ClrLn}' chdir ..\n'
+   local pushd=${ClrLn}' pushdir \t'
+   local popd=${ClrLn}' popdir\n'
    local editFile=${ClrLn}${EDITOR}' \t'
    local mkdir=${ClrLn}'mkdir -p '
    local rm=${ClrLn}'rm -rf \t'
