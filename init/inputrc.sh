@@ -25,11 +25,11 @@ function grep-history() { history | grep --color=always "$1" | tail -n50; }
 
 function quick-find() { find . -regex ".*$1.*" 2> /dev/null; }
 
-complete -d chdir
-complete -d pushdir
-function chdir() { cd $1 && \ls --color; }
-function pushdir() { pushd $1 && \ls --color; }
-function popdir() { popd $1 && \ls --color; }
+#complete -d chdir
+#complete -d pushdir
+#function chdir() { cd $1 && \ls --color; }
+#function pushdir() { pushd $1 && \ls --color; }
+#function popdir() { popd $1 && \ls --color; }
 
 function env_bind() {
    : ${ENV:=cd}
@@ -143,8 +143,8 @@ function env_bind() {
    local nextWord=${FwdWord}${FwdWord}${BkwWord}
    local help=${End}' --help\n'
    local man=${Home}'man '${FwdWord}${ClrLnRight}'\n'
-   local lsAndPwd=${ClrLn}'\\ls --color -al\npwd\n'
-   local lsLtr=${ClrLn}'\\ls --color -altr\n'
+   local lsAndPwd=${ClrLn}'\\ls --color -l\npwd\n'
+   local lsLtr=${ClrLn}'\\ls --color -ltr\n'
    local pipeToGrep=${End}' | grep \"\"'${Left}
    local pipeToSed=${End}' | sed -e \"\"'${Left}
    local echoize=${Home}'echo \"'${End}'\"'${Left}
@@ -156,12 +156,12 @@ function env_bind() {
    local makeVar=${BkwWord}'${'${FwdWord}'\t'
    local initVar='}'${Left}':='
    local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'
-   local goToHome=${ClrLn}' chdir ~\n'
-   local goToPrev=${ClrLn}' chdir -\n'
-   local goDownDir=${ClrLn}' chdir \t'
-   local goUpDir=${ClrLn}' chdir ..\n'
-   local pushd=${ClrLn}' pushdir \t'
-   local popd=${ClrLn}' popdir\n'
+   local goToHome=${ClrLn}' cd ~\n'
+   local goToPrev=${ClrLn}' cd -\n'
+   local goDownDir=${ClrLn}' cd \t'
+   local goUpDir=${ClrLn}' cd ..\n'
+   local pushd=${ClrLn}' pushd \t'
+   local popd=${ClrLn}' popd\n'
    local editFile=${ClrLn}${EDITOR}' \t'
    local mkdir=${ClrLn}'mkdir -p '
    local rm=${ClrLn}'rm -rf \t'
@@ -169,10 +169,11 @@ function env_bind() {
    local useLastCommentedLine=${ClrLn}'#'${AltUp}${Bsp}${End}
    local envCommand=${ClrLn}${ENV}' \t'
    local macro=${End}'; }'${Home}'() { '${Home}'function '
-   local echoLastResultCode=${End}'; echo $?\n'
+   local echoLastResultCode=${End}'echo $?\n'
    local doubleQuote='q\"'${BkwWord}'\"'${FwdWord}${Bsp}
    local parentheses='q)'${BkwWord}'('${FwdWord}${Bsp}
    local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
+   local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
 
    # custom char sequences bindings
 
@@ -180,8 +181,8 @@ function env_bind() {
    bindToChars "${nextWord}" "${CtrlRight}"
    bindToChars "${help}" "${F1}"
 #   bindToChars "${man}" "${F3}"
-   bindToChars "${lsAndPwd}" "${F5}"
-   bindToChars "${lsLtr}" "${AltF5}"
+   bindToChars "${lsAndPwd}" "${F2}"
+   bindToChars "${lsLtr}" "${AltF2}"
    bindToChars "${pipeToGrep}" "${Alt}g"
    bindToChars "${pipeToSed}" "${Alt}s"
    bindToChars "${echoize}" "${Alt}e"
@@ -210,6 +211,7 @@ function env_bind() {
    bindToChars "${doubleQuote}" "${Alt}\'"
    bindToChars "${parentheses}" "${Alt}("
    bindToChars "${braces}" "${Alt}{"
+   bindToChars "${rerunLast2Commands}" "${Alt}%"
 
    # history setup
 
