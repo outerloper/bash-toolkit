@@ -3,17 +3,21 @@
 ### TODOS ###
 
 # DONE B 1 util function - print out all set parameters - for user's testing/debugging
-# TODO A 2 empty completion for main parameter prints instant help
-# TODO B 2 option names taken from IDs by default
+# DONE B 3 enhanced support for autocompletion (complete command features and custom functions)
+# DONE B 2 option names taken from IDs by default
+# TODO B 2 empty completion for main parameter prints instant help
 # TODO B 2 options_help - as param to functions - more straightforward
 # TODO B 3 multiple-word prefixes
-# TODO B 3 enhanced support for autocompletion (complete command features and custom functions)
+# TODO B 4 Change arity=1/N/n to type=bool|string?+*
+# TODO C 1 Global option for on/off inline help
 # TODO C 2 '--' special argument as escape sequence for values beginning with '--'
 # TODO C 2 arrays as default parameter values
 # TODO C 2 information about default value in help
 # TODO C 3 display instant help when no suggestions available
 # TODO C 3 configuration validation
-# TODO C 3 function calls validation
+# TODO C 3 public function calls validation
+# TODO C 4 Generalize main special parameter to positional parameters (eval set -- $items)
+# TODO C 4 Short options support: -a -ab -a val
 
 ### UTILS ###
 
@@ -46,13 +50,24 @@ function resultCode() {
 }
 
 function _prepareProcessingArgs() {
-   for option in ${optionList[@]}
+   local currentOptionRef
+   local currentOptionSwitch
+   for currentOption in ${optionList[@]}
    do
-      optionRef="${optionListRef}_${option}"
-      optionSwitch="--${!optionRef}"
-      optionSwitches[$optionSwitch]="${option}"
-      unusedOptions[$option]="$optionSwitch"
+      currentOptionRef="${optionListRef}_${currentOption}"
+      _setCurrentOptionSwitch
+      optionSwitches[$currentOptionSwitch]="${currentOption}"
+      unusedOptions[$currentOption]="${currentOptionSwitch}"
    done
+}
+
+function _setCurrentOptionSwitch() {
+   if is "${!currentOptionRef}"
+   then
+      currentOptionSwitch="--${!currentOptionRef}"
+   else
+      currentOptionSwitch="--${currentOption}"
+   fi
 }
 
 ### AUTOCOMPLETION ###
@@ -108,7 +123,7 @@ function _processArgsForCompletion() {
          break
       fi
       (( counter++ ))
-      if [[ "${arg}" =~ ^--.+ ]]
+      if [[ "${arg}" =~ ^-- ]]
       then
          currentOption="${optionSwitches[${arg}]}"
          is "${currentOption}" && unset "unusedOptions[${currentOption}]"
@@ -120,23 +135,38 @@ function _processArgsForCompletion() {
 }
 
 function _generateCompletions() {
-   local completion=""
    local currentOptionArityRef="${optionListRef}_${currentOption}_arity"
    local currentOptionArity="${!currentOptionArityRef}"
    local currentOptionCompletionRef
+   local currentOptionCompletion
    if no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
    then
-      completion+=" ${unusedOptions[@]}"
+      echo "${unusedOptions[@]}"
    fi
-   if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount == 0 )) || [[ "${currentOptionArity}" =~ n|N ]]
+   if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount == 0 )) || [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
    then
       currentOptionCompletionRef="${optionListRef}_${currentOption}_completion"
-      completion+=" ${!currentOptionCompletionRef}"
+      currentOptionCompletion="${!currentOptionCompletionRef}"
+      _evaluateCompletion
    fi
-   echo "${completion}"
    if no $(tr -d ' ' <<<"${currentOptionCompletionRef}")
    then
       displayInstantHelp=''
+   fi
+}
+
+function _evaluateCompletion() {
+   if no "${currentOptionCompletion}"
+   then
+      :
+   elif [[ "${currentOptionCompletion}" =~ ^[a-Z_-][0-Z_-]*\(\)$ ]]
+   then
+      compgen -F "${currentOptionCompletion//()}" 2>/dev/null # 2>/dev/null because stderr prints warning
+   elif [[ "${currentOptionCompletion}" =~ ^(-f|-d)$ ]]
+   then
+      compgen "${currentOptionCompletion}"
+   else
+      compgen -W "${currentOptionCompletion}"
    fi
 }
 
@@ -180,7 +210,7 @@ function getArgs() {
    _initOption main
    for arg in ${args[@]}
    do
-      if [[ "${arg}" =~ ^--.+ ]]
+      if [[ "${arg}" =~ ^-- ]]
       then
          _handleOptionSwitch
       else
@@ -359,7 +389,7 @@ function _printCommandHelp() {
       if [[ "${mainOptionArity}" == "1" ]]
       then
          mainOptionUsageText="<${mainOptionName}>"
-      elif [[ "${mainOptionArity}" =~ n|N ]]
+      elif [[ "${mainOptionArity}" =~ ^(n|N)$ ]]
       then
          mainOptionUsageText="<${mainOptionName}> [...]"
       fi
@@ -389,7 +419,7 @@ function _printOptionHelp() {
    elif [[ "${currentOptionArity}" == "1" ]]
    then
       optionUsageText="${currentOptionSwitch} <value>"
-   elif [[ "${currentOptionArity}" =~ n|N ]]
+   elif [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
    then
       optionUsageText="${currentOptionSwitch} <value> [...]"
    fi
