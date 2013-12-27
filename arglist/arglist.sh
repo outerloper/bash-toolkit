@@ -5,7 +5,7 @@
 # DONE B 1 util function - print out all set parameters - for user's testing/debugging
 # DONE B 3 enhanced support for autocompletion (complete command features and custom functions)
 # DONE B 2 option names taken from IDs by default
-# TODO B 2 empty completion for main parameter prints instant help
+# DONE B 2->3 empty completion for main parameter prints instant help
 # TODO B 2 options_help - as param to functions - more straightforward
 # TODO B 3 multiple-word prefixes
 # TODO B 4 Change arity=1/N/n to type=bool|string?+*
@@ -89,10 +89,10 @@ function _argsAutocompletion() {
    local from=${2:-1}
    local completedArgsCount
    (( completedArgsCount = COMP_CWORD - from ))
-   COMPREPLY=( $(compgen -W "$(getCompletions $1 $completedArgsCount ${COMP_WORDS[@]:$from})" -- ${COMP_WORDS[COMP_CWORD]}) )
+   COMPREPLY=( $(compgen -W "$(getCompletion $1 $completedArgsCount ${COMP_WORDS[@]:$from})" -- ${COMP_WORDS[COMP_CWORD]}) )
 }
 
-function getCompletions() {
+function getCompletion() {
    local optionListRef=$1
    local optionList=${!optionListRef}
    local completedArgsCount=$2
@@ -149,7 +149,7 @@ function _generateCompletions() {
       currentOptionCompletion="${!currentOptionCompletionRef}"
       _evaluateCompletion
    fi
-   if no $(tr -d ' ' <<<"${currentOptionCompletionRef}")
+   if no $(tr -d ' ' <<<"${!currentOptionCompletionRef}")
    then
       displayInstantHelp=''
    fi
@@ -174,13 +174,14 @@ function _displayInstantHelp() {
    local currentOptionDescRef="${optionListRef}_${currentOption}_description"
    if is "${displayInstantHelp}" && is "${!currentOptionDescRef}"
    then
-      argNameRef="${optionListRef}_${currentOption}"
       local descPrefix
       if [[ "${currentOption}" == main ]]
       then
+         argNameRef="${optionListRef}_${currentOption}"
          descPrefix="${!argNameRef:-main parameter}: "
       else
-         descPrefix="--${!argNameRef}: "
+         _setCurrentOptionSwitch
+         descPrefix="${currentOptionSwitch}: "
       fi
       echo -en "\n\e[1;30m${descPrefix}${!currentOptionDescRef}\e[0m" >&2
    fi
