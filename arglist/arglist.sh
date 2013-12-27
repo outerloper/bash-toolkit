@@ -1,23 +1,25 @@
 #!/bin/bash
 
-### TODOS ###
-
-# DONE B 1 util function - print out all set parameters - for user's testing/debugging
+### scriptNameForHelp B 1 util function - print out all set parameters - for user's testing/debugging
 # DONE B 3 enhanced support for autocompletion (complete command features and custom functions)
 # DONE B 2 option names taken from IDs by default
 # DONE B 2->3 empty completion for main parameter prints instant help
+# NONE C 3->discarded display instant help when no suggestions available
+# DONE B 1 Global option for on/off instant help
 # TODO B 2 options_help - as param to functions - more straightforward
 # TODO B 3 multiple-word prefixes
 # TODO B 4 Change arity=1/N/n to type=bool|string?+*
-# TODO C 1 Global option for on/off inline help
 # TODO C 2 '--' special argument as escape sequence for values beginning with '--'
 # TODO C 2 arrays as default parameter values
 # TODO C 2 information about default value in help
-# TODO C 3 display instant help when no suggestions available
 # TODO C 3 configuration validation
 # TODO C 3 public function calls validation
 # TODO C 4 Generalize main special parameter to positional parameters (eval set -- $items)
 # TODO C 4 Short options support: -a -ab -a val
+
+### SETTINGS ###
+
+DISPLAY_INSTANT_HELP=yes
 
 ### UTILS ###
 
@@ -104,6 +106,10 @@ function getCompletion() {
    _prepareProcessingArgs
 
    local displayInstantHelp=1
+   if ! isTrue "${DISPLAY_INSTANT_HELP}"
+   then
+      displayInstantHelp=''
+   fi
    local currentOption=main
    local currentOptionArgsCount=0
    _processArgsForCompletion
@@ -177,7 +183,7 @@ function _displayInstantHelp() {
       local descPrefix
       if [[ "${currentOption}" == main ]]
       then
-         argNameRef="${optionListRef}_${currentOption}"
+         argNameRef="${optionListRef}_main"
          descPrefix="${!argNameRef:-main parameter}: "
       else
          _setCurrentOptionSwitch
@@ -411,7 +417,8 @@ function _printOptionHelp() {
    local currentOptionRef="${optionListRef}_${currentOption}"
    local currentOptionArityRef="${currentOptionRef}_arity"
    local currentOptionArity="${!currentOptionArityRef}"
-   local currentOptionSwitch="--${!currentOptionRef}"
+   local currentOptionSwitch
+   _setCurrentOptionSwitch
    local currentOptionRequiredRef="${optionListRef}_${currentOption}_required"
    local currentOptionRequired="${!currentOptionRequiredRef}"
    if no "${currentOptionArity}"
