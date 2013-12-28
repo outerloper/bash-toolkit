@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. arglist.sh
+. ../src/arglist.sh
 
 options="user password operations"
 options_help='connect-db'

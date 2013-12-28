@@ -64,7 +64,7 @@ function testNoFunction() {
    assertLastResultEquals 0
 }
 
-. ../arglist/arglist.sh
+. ../src/arglist.sh
 
-. test-utils.sh
-. lib/shunit/src/shunit2
+. ../../common/src/test-utils.sh
+. ../../common/lib/shunit/src/shunit2

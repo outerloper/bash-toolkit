@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. arglist.sh
+. ../src/arglist.sh
 
 dbConnect="host"
 dbConnect_help='db-connect'

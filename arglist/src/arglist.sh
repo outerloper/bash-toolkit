@@ -12,10 +12,13 @@
 # TODO C 2 '--' special argument as escape sequence for values beginning with '--'
 # TODO C 2 arrays as default parameter values
 # TODO C 2 information about default value in help
+# TODO C 2 Type: string/int
 # TODO C 3 configuration validation
 # TODO C 3 public function calls validation
 # TODO C 4 Generalize main special parameter to positional parameters (eval set -- $items)
 # TODO C 4 Short options support: -a -ab -a val
+# IDEA Instant validation
+# IDEA Mandatory options first
 
 ### SETTINGS ###
 
