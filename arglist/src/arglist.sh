@@ -80,6 +80,10 @@ function _setCurrentOptionSwitch() {
    fi
 }
 
+function _extractArgs() {
+    args=( "$@" )
+}
+
 ### AUTOCOMPLETION ###
 
 function enableAutocompletion() { # TODO command with more than 1 prefix element
@@ -96,19 +100,20 @@ function enableAutocompletion() { # TODO command with more than 1 prefix element
 }
 
 function _argsAutocompletion() {
+   local optionListRef=$1
+   local optionList=${!optionListRef}
    local from=${2:-1}
    local completedArgsCount
    (( completedArgsCount = COMP_CWORD - from ))
-   COMPREPLY=( $(compgen -W "$(getCompletion $1 ${completedArgsCount} ${COMP_WORDS[@]:${from}})" -- ${COMP_WORDS[COMP_CWORD]}) )
+   local currentWord="${COMP_WORDS[COMP_CWORD]}"
+   local compReply=()
+   local args=()
+   _extractArgs "${COMP_WORDS[@]:${from}:${completedArgsCount}}"
+   getCompletion
+   COMPREPLY=( $(compgen -W "${compReply[*]}" -- ${currentWord}) )
 }
 
 function getCompletion() {
-   local optionListRef=$1
-   local optionList=${!optionListRef}
-   local completedArgsCount=$2
-   shift 2
-   local args=( $@ )
-
    declare -A unusedOptions
    declare -A optionSwitches
    _prepareProcessingArgs
@@ -128,15 +133,8 @@ function getCompletion() {
 }
 
 function _processArgsForCompletion() {
-   local counter=0
    for arg in ${args[@]}
    do
-      if (( counter == completedArgsCount ))
-      then
-         displayInstantHelp=''
-         break
-      fi
-      (( counter++ ))
       if [[ "${arg}" =~ ^--.+ ]]
       then
          currentOption="${optionSwitches[${arg}]}"
@@ -157,13 +155,13 @@ function _generateCompletions() {
    local currentOptionCompletion
    if [[ "${currentOption}" == main ]] && ! isTrue "${currentOptionRequired}" || no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
    then
-      echo "${unusedOptions[@]}"
+      compReply=( "${compReply[@]}" ${unusedOptions[@]} )
    fi
    if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount == 0 )) || [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
    then
       currentOptionCompletionRef="${optionListRef}_${currentOption}_completion"
       currentOptionCompletion="${!currentOptionCompletionRef}"
-      _evaluateCompletion
+      compReply=( "${compReply[@]}" "$(_evaluateCompletion)" )
    fi
    if no $(tr -d ' ' <<<"${!currentOptionCompletionRef}")
    then
@@ -188,7 +186,7 @@ function _evaluateCompletion() {
 
 function _displayInstantHelp() {
    local currentOptionDescRef="${optionListRef}_${currentOption}_description"
-   if is "${displayInstantHelp}" && is "${!currentOptionDescRef}"
+   if is "${displayInstantHelp}" && is "${!currentOptionDescRef}" && is "${currentWord}"
    then
       local descPrefix
       if [[ "${currentOption}" == main ]]
@@ -209,7 +207,7 @@ function getArgs() {
    local optionListRef=$1
    local optionList=${!optionListRef}
    shift
-   local args=( $@ )
+   local args=( "$@" )
    _isHelpRequest && return 127
 
    declare -A unusedOptions
@@ -225,7 +223,7 @@ function getArgs() {
    local resultCode=0
    declare -A usedOptions
    _initOption main
-   for arg in ${args[@]}
+   for arg in "${args[@]}"
    do
       if [[ "${arg}" =~ ^--.+ ]]
       then
@@ -458,10 +456,10 @@ function printArgs() {
    local value
    for currentOption in ${optionList[@]}
    do
-      eval 'value=( ${'"${currentOption}"'[*]} )'
+      eval 'value=( "${'"${currentOption}"'[*]}" )'
       if is "${value[@]}"
       then
-         printf "%16s: %s\n" "${currentOption}" "${value[@]}"
+         printf "%16s: %s\n" "${currentOption}" "'${value[@]}'"
       fi
    done
 }

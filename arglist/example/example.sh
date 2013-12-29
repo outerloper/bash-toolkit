@@ -26,7 +26,7 @@ options_operations_default='retrieve'
 enableAutocompletion options
 
 function connect-db() {
-   getArgs options $@ || return $?
+   getArgs options "$@" || return $?
    printArgs options
 }
 

@@ -18,5 +18,5 @@ function f() {
 }
 
 function db-connect() {
-   getArgs dbConnect $@ && printArgs dbConnect
+   getArgs dbConnect "$@" && printArgs dbConnect
 }

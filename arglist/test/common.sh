@@ -15,7 +15,6 @@ options_times=times
 options_times_arity=1
 options_times_required=yes
 options_times_description='How many times to greet'
-options_times_completion='root guest'
 options_loud=loud
 options_loud_description='Whether to gred loudly.'
 options_greetees=greetees
@@ -26,5 +25,5 @@ options_greetees_completion='john bob alice world'
 enableAutocompletion options
 
 function greet() {
-   getArgs options $@ && printArgs options
+   getArgs options "$@" && printArgs options
 }
