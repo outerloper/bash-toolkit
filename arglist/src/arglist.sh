@@ -6,9 +6,10 @@
 # DONE B 2->3 empty completion for main parameter prints instant help
 # NONE C 3->discarded display instant help when no suggestions available
 # DONE B 1 Global option for on/off instant help
-# TODO B 2 autocompletion bug: quoted arguments not working
+# DONE B 3 multiple-word prefixes 12/30/13 12:01 AM
+# DONE B 2 autocompletion bug: quoted arguments not working 12/30/13 12:01 AM
+# DONE A 2 instant help working wrong 12/30/13 12:24 AM
 # TODO B 2 options_help - as param to functions - more straightforward
-# TODO B 3 multiple-word prefixes
 # TODO B 3 use assoc tables instead of multiple vars for setup
 # TODO B 3 autocompletion enhancement: always display some suggestion ('foo', 'foo ' ?)
 # TODO B 4 API for defining parameters
@@ -108,28 +109,24 @@ function _argsAutocompletion() {
    local currentWord="${COMP_WORDS[COMP_CWORD]}"
    local compReply=()
    local args=()
+   local currentOption=main
+   local currentOptionArgsCount=0
    _extractArgs "${COMP_WORDS[@]:${from}:${completedArgsCount}}"
-   getCompletion
+   _getCompletion
    COMPREPLY=( $(compgen -W "${compReply[*]}" -- ${currentWord}) )
+   isTrue "${DISPLAY_INSTANT_HELP}" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp
 }
 
-function getCompletion() {
+function _getCompletion() {
    declare -A unusedOptions
    declare -A optionSwitches
    _prepareProcessingArgs
 
-   local displayInstantHelp=1
-   if ! isTrue "${DISPLAY_INSTANT_HELP}"
-   then
-      displayInstantHelp=''
-   fi
-   local currentOption=main
-   local currentOptionArgsCount=0
+   currentOption=main
+   currentOptionArgsCount=0
    _processArgsForCompletion
 
    _generateCompletions
-
-   _displayInstantHelp
 }
 
 function _processArgsForCompletion() {
@@ -163,10 +160,6 @@ function _generateCompletions() {
       currentOptionCompletion="${!currentOptionCompletionRef}"
       compReply=( "${compReply[@]}" "$(_evaluateCompletion)" )
    fi
-   if no $(tr -d ' ' <<<"${!currentOptionCompletionRef}")
-   then
-      displayInstantHelp=''
-   fi
 }
 
 function _evaluateCompletion() {
@@ -186,7 +179,7 @@ function _evaluateCompletion() {
 
 function _displayInstantHelp() {
    local currentOptionDescRef="${optionListRef}_${currentOption}_description"
-   if is "${displayInstantHelp}" && is "${!currentOptionDescRef}" && is "${currentWord}"
+   if is "${!currentOptionDescRef}"
    then
       local descPrefix
       if [[ "${currentOption}" == main ]]
