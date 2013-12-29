@@ -29,3 +29,14 @@ function connect-db() {
    getArgs options $@ || return $?
    printArgs options
 }
+
+if false
+then
+
+arglist connect-db 'This is arglist.sh demo.'
+param main 'Name of a database' --completion 'foo bar baz qux quxx'
+option u,user:user 'User name' --completion 'root guest'
+option p,password 'Whether to provide a password'
+option o,operation:value+=retrieve 'Operations allowed' --completion 'create retrieve update delete'
+
+fi

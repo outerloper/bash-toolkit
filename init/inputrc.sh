@@ -76,6 +76,7 @@ function env_bind() {
    local CtrlBsp='\e'
    local AltBsp=${Alt}${Bsp}
    local ShiftTab='\e[Z'
+   local BackTick='\`'
 
    local F1='\e[11~'
    local F2='\e[12~'
@@ -156,12 +157,12 @@ function env_bind() {
    local makeVar=${BkwWord}'${'${FwdWord}'\t'
    local initVar='}'${Left}':='
    local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'
-   local goToHome=${ClrLn}' cd ~\n'
-   local goToPrev=${ClrLn}' cd -\n'
-   local goDownDir=${ClrLn}' cd \t'
-   local goUpDir=${ClrLn}' cd ..\n'
-   local pushd=${ClrLn}' pushd \t'
-   local popd=${ClrLn}' popd\n'
+   local goToHome=${ClrLn}'cd ~\n'
+   local goToPrev=${ClrLn}'cd -\n'
+   local goDownDir=${ClrLn}'cd \t'
+   local goUpDir=${ClrLn}'cd ..\n'
+   local pushd=${ClrLn}'pushd \t'
+   local popd=${ClrLn}'popd\n'
    local editFile=${ClrLn}${EDITOR}' \t'
    local mkdir=${ClrLn}'mkdir -p '
    local rm=${ClrLn}'rm -rf \t'
@@ -177,10 +178,12 @@ function env_bind() {
 
    # custom char sequences bindings
 
+   # Ctrl+Num not working
+
    bindToChars "${ClrLn}" "${AltCtrlDown}"
    bindToChars "${nextWord}" "${CtrlRight}"
    bindToChars "${help}" "${F1}"
-#   bindToChars "${man}" "${F3}"
+#   bindToChars "${man}" "${AltF1}"
    bindToChars "${lsAndPwd}" "${F2}"
    bindToChars "${lsLtr}" "${AltF2}"
    bindToChars "${pipeToGrep}" "${Alt}g"
@@ -205,13 +208,22 @@ function env_bind() {
    bindToChars "${rm}" "${AltDel}"
    bindToChars "${currAbsPath}" "${ShiftTab}"
    bindToChars "${useLastCommentedLine}" "${Alt}!"
-   bindToChars "${envCommand}" "${F4}"
+   bindToChars "${envCommand}" "${F3}"
    bindToChars "${macro}" "${Alt}m"
    bindToChars "${echoLastResultCode}" "${Alt}?"
    bindToChars "${doubleQuote}" "${Alt}\'"
    bindToChars "${parentheses}" "${Alt}("
    bindToChars "${braces}" "${Alt}{"
    bindToChars "${rerunLast2Commands}" "${Alt}%"
+
+   bindToChars "${Up}${Home}remembered-1() { ${End}; }\n" "${Alt}r1"
+   bindToChars "${Up}${Home}remembered-2() { ${End}; }\n" "${Alt}r2"
+   bindToChars "${Up}${Home}remembered-3() { ${End}; }\n" "${Alt}r3"
+   bindToChars "${Up}${Home}remembered-4() { ${End}; }\n" "${Alt}r4"
+   bindToChars "${ClrLn} remembered-1\n" "${BackTick}1"
+   bindToChars "${ClrLn} remembered-2\n" "${BackTick}2"
+   bindToChars "${ClrLn} remembered-3\n" "${BackTick}3"
+   bindToChars "${ClrLn} remembered-4\n" "${BackTick}4"
 
    # history setup
 

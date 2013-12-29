@@ -6,13 +6,18 @@
 # DONE B 2->3 empty completion for main parameter prints instant help
 # NONE C 3->discarded display instant help when no suggestions available
 # DONE B 1 Global option for on/off instant help
+# TODO B 2 autocompletion bug: quoted arguments not working
 # TODO B 2 options_help - as param to functions - more straightforward
 # TODO B 3 multiple-word prefixes
+# TODO B 3 use assoc tables instead of multiple vars for setup
+# TODO B 3 autocompletion enhancement: always display some suggestion ('foo', 'foo ' ?)
+# TODO B 4 API for defining parameters
 # TODO B 4 Change arity=1/N/n to type=bool|string?+*
 # TODO C 2 '--' special argument as escape sequence for values beginning with '--'
 # TODO C 2 arrays as default parameter values
 # TODO C 2 information about default value in help
 # TODO C 2 Type: string/int
+# TODO C 3 instant warnings display
 # TODO C 3 configuration validation
 # TODO C 3 public function calls validation
 # TODO C 4 Generalize main special parameter to positional parameters (eval set -- $items)
@@ -94,7 +99,7 @@ function _argsAutocompletion() {
    local from=${2:-1}
    local completedArgsCount
    (( completedArgsCount = COMP_CWORD - from ))
-   COMPREPLY=( $(compgen -W "$(getCompletion $1 $completedArgsCount ${COMP_WORDS[@]:$from})" -- ${COMP_WORDS[COMP_CWORD]}) )
+   COMPREPLY=( $(compgen -W "$(getCompletion $1 ${completedArgsCount} ${COMP_WORDS[@]:${from}})" -- ${COMP_WORDS[COMP_CWORD]}) )
 }
 
 function getCompletion() {
@@ -132,7 +137,7 @@ function _processArgsForCompletion() {
          break
       fi
       (( counter++ ))
-      if [[ "${arg}" =~ ^-- ]]
+      if [[ "${arg}" =~ ^--.+ ]]
       then
          currentOption="${optionSwitches[${arg}]}"
          is "${currentOption}" && unset "unusedOptions[${currentOption}]"
@@ -146,9 +151,11 @@ function _processArgsForCompletion() {
 function _generateCompletions() {
    local currentOptionArityRef="${optionListRef}_${currentOption}_arity"
    local currentOptionArity="${!currentOptionArityRef}"
+   local currentOptionRequiredRef="${optionListRef}_${currentOption}_required"
+   local currentOptionRequired="${!currentOptionRequiredRef}"
    local currentOptionCompletionRef
    local currentOptionCompletion
-   if no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
+   if [[ "${currentOption}" == main ]] && ! isTrue "${currentOptionRequired}" || no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
    then
       echo "${unusedOptions[@]}"
    fi
@@ -220,7 +227,7 @@ function getArgs() {
    _initOption main
    for arg in ${args[@]}
    do
-      if [[ "${arg}" =~ ^-- ]]
+      if [[ "${arg}" =~ ^--.+ ]]
       then
          _handleOptionSwitch
       else
