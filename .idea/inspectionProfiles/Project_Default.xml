@@ -2,6 +2,7 @@
   <profile version="1.0" is_locked="false">
     <option name="myName" value="Project Default" />
     <option name="myLocal" value="false" />
+    <inspection_tool class="Simple use of array variable" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="Unregister global variable" enabled="false" level="ERROR" enabled_by_default="false" />
   </profile>
 </component>
