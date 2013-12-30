@@ -12,6 +12,7 @@
 # DONE B 3->4 use assoc tables instead of multiple vars for setup 2013-12-30 17:17
 # NONE B 3 autocompletion enhancement: always display some suggestion ('foo', 'foo ' ?)  2013-12-30 17:18
 # Bugfixes, moving demo to main file 2013-12-30 18:35
+# TODO B 2 help display: divide args for parameters and options depending if are required
 # TODO B 2 options_help - as param to functions - more straightforward
 # TODO B 4 API for defining parameters
 # TODO B 4 Change arity=1/N/n to type=bool|string?+*
@@ -429,19 +430,19 @@ function _printCommandHelp() {
    printf "  ${scriptNameForHelp}"
    if is "${currentOptionArity}"
    then
-      local mainOptionUsageText=""
+      local optionUsageText=""
       if [[ "${currentOptionArity}" == "1" ]]
       then
-         mainOptionUsageText="<${currentOptionName}>"
-      elif [[ "${mainOptionArity}" =~ ^(n|N)$ ]]
+         optionUsageText="<${currentOptionName}>"
+      elif [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
       then
-         mainOptionUsageText="<${currentOptionName}> [...]"
+         optionUsageText="<${currentOptionName}> [...]"
       fi
-      if ! isTrue "${mainOptionRequired}"
+      if ! isTrue "${currentOptionRequired}"
       then
-         mainOptionUsageText="[${mainOptionUsageText}]"
+         optionUsageText="[${optionUsageText}]"
       fi
-      printf " ${mainOptionUsageText}"
+      printf " ${optionUsageText}"
    fi
    if is "${optionList}"
    then
@@ -510,8 +511,8 @@ then
       ["help"]='greet'
       ["help.desc"]='This is arglist.sh demo.'
       ["main"]='phrase'
-      ["main.required"]=no
-      ["main.arity"]=1
+      ["main.required"]=yes
+      ["main.arity"]=n
       ["main.comp"]='hello salut privet ciao serwus ahoj'
       ["main.desc"]='Greeting phrase.'
       ["main.default"]='Hello'
@@ -521,21 +522,21 @@ then
       ["times.desc"]='How many times to greet.'
       ["loud"]=loud
       ["loud.desc"]='Whether to greet loudly.'
-      ["greetees"]=greetees
-      ["greetees.arity"]=n
-      ["greetees.required"]=yes
-      ["greetees.desc"]='Persons to greet.'
-      ["greetees.comp"]='john bob alice world'
+      ["persons.arity"]=n
+      ["persons.required"]=yes
+      ["persons.desc"]='Persons to greet.'
+      ["persons.comp"]='john bob alice world'
    )
    enableAutocompletion options
 
    function greet() {
+      local main persons loud times
       if getArgs options $@
       then
          printArgs options
 
          for (( i = 0; i < times; i++)) {
-            echo "${main} ${greetees[@]}${loud:+!!}"
+            echo "${main} ${persons[@]}${loud:+!!}"
          }
       fi
    }
