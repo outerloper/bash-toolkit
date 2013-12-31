@@ -12,6 +12,7 @@
 # DONE B 3->4 use assoc tables instead of multiple vars for setup 2013-12-30 17:17
 # NONE B 3 autocompletion enhancement: always display some suggestion ('foo', 'foo ' ?)  2013-12-30 17:18
 # Bugfixes, moving demo to main file 2013-12-30 18:35
+# Unit tests 2013-12-31 01:04
 # TODO B 2 help display: divide args for parameters and options depending if are required
 # TODO B 2 options_help - as param to functions - more straightforward
 # TODO B 4 API for defining parameters

@@ -2,7 +2,7 @@
 
 . ../src/arglist.sh
 
-declare -A options=( # note associative array should be visible inside executable it supports
+declare -A options=(
    ["help"]='greet'
    ["help.desc"]='This is arglist.sh demo.'
    ["main"]='phrase'
@@ -25,16 +25,16 @@ declare -A options=( # note associative array should be visible inside executabl
 enableAutocompletion options
 
 function greet() {
-   local main persons loud times # declare used variables for clarity, IDE support, clearing values between invocations
-   if getArgs options "$@" # remember to quote $@, otherwise quoted arguments with spaces inside will not work properly
+   local main persons loud times
+   if getArgs options "$@"
    then
-      printArgs options # for development purpose or verbose mode
+      printArgs options
 
       for (( i = 0; i < times; i++)) {
          echo "${main} ${persons[@]}${loud:+!!}"
       }
    else
-      return 1 # parameters misusage should return with error code
+      return 1
    fi
 }
 
