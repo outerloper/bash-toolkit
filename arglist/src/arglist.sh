@@ -132,9 +132,6 @@ function _argsAutocompletion() {
    local from=${2:-1}
    local completedArgsCount
    (( completedArgsCount = COMP_CWORD - from ))
-   echo
-   echo 'COMP_WORDS: '"${COMP_WORDS[@]}" 1>&2 # DEBUG
-   echo 'COMP_CWORD: '"${COMP_CWORD}" 1>&2 # DEBUG
    local currentWord="${COMP_WORDS[COMP_CWORD]}"
    local compReply=()
    local currentOption=main
@@ -142,8 +139,6 @@ function _argsAutocompletion() {
    local args=()
    _extractArgs "${COMP_WORDS[@]:${from}:${completedArgsCount}}"
    _getCompletion
-   echo 'args: '"${args[@]}" 1>&2 # DEBUG
-   echo 'compReply: '"${compReply[@]}" 1>&2 # DEBUG
    COMPREPLY=( $(compgen -W "${compReply[*]}" -- ${currentWord}) )
    isTrue "${DISPLAY_INSTANT_HELP}" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp
 }
@@ -348,9 +343,9 @@ function _handleMissingMainParameter() {
    local currentOptionRequired="${optionSpec["${currentOption}.required"]}"
    if isTrue "${currentOptionRequired}"
    then
-      local currentOptionName="${optionSpec["${currentOption}.main"]}"
+      local currentOptionName="${optionSpec["${currentOption}"]}"
       local currentOptionName="${currentOptionName:-main parameter}"
-      error "Missing ${mainOptionName}."
+      error "Missing ${currentOptionName}."
       resultCode=1
    else
       local currentOptionDefault="${optionSpec["${currentOption}.default"]}"
@@ -370,7 +365,7 @@ function _handleUnusedOptions() {
          error "Missing mandatory option: ${unusedOptions[${currentOption}]}."
          resultCode=1
       else
-         unset ${currentOption}
+         printf -v ${currentOption} -- ''
          currentOptionDefault="${optionSpec["${currentOption}.default"]}"
          if is "${currentOptionDefault}"
          then
@@ -507,12 +502,12 @@ function printArgs() {
 
 if is "${ARGLIST_DEMO}"
 then
-   declare -A options=(
+   declare -A options=( # note associative array should be visible inside executable it supports
       ["help"]='greet'
       ["help.desc"]='This is arglist.sh demo.'
       ["main"]='phrase'
-      ["main.required"]=yes
-      ["main.arity"]=n
+      ["main.required"]=no
+      ["main.arity"]=1
       ["main.comp"]='hello salut privet ciao serwus ahoj'
       ["main.desc"]='Greeting phrase.'
       ["main.default"]='Hello'
@@ -530,14 +525,16 @@ then
    enableAutocompletion options
 
    function greet() {
-      local main persons loud times
-      if getArgs options $@
+      local main persons loud times # declare used variables for clarity or IDE support
+      if getArgs options "$@" # remember to quote $@, otherwise quoted arguments with spaces inside will not work properly
       then
-         printArgs options
+         printArgs options # for development purpose or verbose mode
 
          for (( i = 0; i < times; i++)) {
             echo "${main} ${persons[@]}${loud:+!!}"
          }
+      else
+         return 1 # parameters misusage should return with error code
       fi
    }
 fi
