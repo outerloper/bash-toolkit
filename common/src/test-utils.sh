@@ -13,6 +13,26 @@ function assertResult() {
    fi
 }
 
+function assertOk() {
+   local result=$?
+   if (( $# > 0 ))
+   then
+      assertResult "$1" 0 ${result}
+   else
+      assertResult 0 ${result}
+   fi
+}
+
+function assertNotOk() {
+   local result=$?
+   if (( $# > 0 ))
+   then
+      assertNotEquals "$1" 0 ${result}
+   else
+      assertNotEquals 0 ${result}
+   fi
+}
+
 function assertStdOut() {
    if (( $# > 1 ))
    then

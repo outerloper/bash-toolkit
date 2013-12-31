@@ -87,8 +87,13 @@ declare -A listDirOptions=(
    ["help"]='list-dir'
    ["help.desc"]='This is arglist.sh demo.'
    ["hidden"]='include-hidden'
+   ["dir.comp"]='compDirs()'
+   ["dir.arity"]='1'
 )
 enableAutocompletion listDirOptions
+function compDirs() {
+   echo 'dir1 dir2 dir3'
+}
 
 function list-dir() {
    local hidden

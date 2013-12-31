@@ -120,7 +120,7 @@ function enableAutocompletion() { # TODO command with more than 1 prefix element
    local scriptNameForHelp=${optionSpec["help"]}
    if is "${scriptNameForHelp}"
    then
-      local fn="argComp__${scriptNameForHelp}"
+      local fn="__argComp_${scriptNameForHelp}"
       complete -F "${fn}" "${scriptNameForHelp}"
       eval ${fn}'() { _argsAutocompletion '$1' 1; }'
    fi

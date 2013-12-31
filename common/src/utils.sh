@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function isNum() {
+   [ -z ${1//[0-9]*} ]
+}
+
 function readNotEmptyVar() {
    local var=${1:?'Missed variable name.'}
    local value
