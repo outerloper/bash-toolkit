@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BashSupportProjectSettings">
+    <option name="globalVariables">
+      <set>
+        <option value="currentOption" />
+        <option value="currentOptionArity" />
+        <option value="currentOptionCompletion" />
+        <option value="currentOptionName" />
+        <option value="currentOptionRequired" />
+        <option value="first" />
+        <option value="optionSpec" />
+        <option value="optionSpecDecl" />
+        <option value="scriptNameForHelp" />
+      </set>
+    </option>
+  </component>
+</project>
+
