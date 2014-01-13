@@ -1,20 +1,23 @@
 bash-utils
 ==========
 
-How to install
---------------
+Usage
+-----
 
-1. Clone the repository into your home directory as `.bash-toolkit`
+To get it, clone the repository into your home directory as `.bash-toolkit`:
 
     git clone https://github.com/outerloper/bash-toolkit .bash-toolkit
 
-2. Include: `source "${HOME}/.bash-toolkit/profile.sh"` line in your `.bash_profile`
+To have it active any time you log in, include: `source "${HOME}/.bash-toolkit/profile.sh"` line into your `.bash_profile`:
 
     echo -e '\nsource "${HOME}/.bash-toolkit/init/profile.sh"' >> ~/.bash_profile
 
-
-How to update
--------------
+To pull the latest version from GitHub, execute this:
 
     cd ~/.bash-toolkit
     git pull origin
+
+To run all unit tests, execute this:
+
+    cd ~/.bash-toolkit/test
+    ./suite.sh

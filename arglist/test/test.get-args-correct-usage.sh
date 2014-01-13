@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. ../../common/src/test-utils.sh
-. common.sh
+source ../../common/src/test-utils.sh
+source common.sh
 
 function testWithoutMainParam() {
    greet --persons bob --times 2 >${STDOUT} 2>${STDERR}
@@ -80,4 +80,4 @@ file1 file2 .file3" ''
 
 }
 
-. ../../common/lib/shunit/src/shunit2
+source ../../common/lib/shunit/src/shunit2

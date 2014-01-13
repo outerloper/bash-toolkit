@@ -134,7 +134,6 @@ function env_bind() {
    bindToMacro paste-from-clipboard "${Alt}v"
 
    bindToMacro end-of-history "${EndOfHist}"
-   bindToMacro reverse-search-history "${Ctrl}r" "${CtrlUp}"
    bindToMacro forward-search-history "${Ctrl}t" "${CtrlDown}"
    bindToMacro history-search-backward "${AltUp}"
    bindToMacro history-search-forward "${AltDown}"
@@ -151,7 +150,8 @@ function env_bind() {
    local echoize=${Home}'echo \"'${End}'\"'${Left}
    local find=${ClrLn}'quick-find \"\"'${Left}
    local grepHistory=${Home}' grep-history \"'${End}'\"\n'
-   local grepPs=${ClrLn}'ps aux | grep \"\"'${Left}
+   local grepPs=${ClrLn}'ps ux | grep \"\"'${Left}
+   local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
    local executize=${Home}'./'${FwdWord}''${End}'\t'
    local makeVar=${BkwWord}'${'${FwdWord}'\t'
@@ -183,15 +183,16 @@ function env_bind() {
    bindToChars "${ClrLn}" "${AltCtrlDown}"
    bindToChars "${nextWord}" "${CtrlRight}"
    bindToChars "${help}" "${F1}"
-#   bindToChars "${man}" "${AltF1}"
+#   bindToChars "${man}" "${AltF1}" # ISSUE collides with Alt+Del
    bindToChars "${lsAndPwd}" "${F2}"
    bindToChars "${lsLtr}" "${AltF2}"
    bindToChars "${pipeToGrep}" "${Alt}g"
    bindToChars "${pipeToSed}" "${Alt}s"
    bindToChars "${echoize}" "${Alt}e"
    bindToChars "${find}" "${Alt}f"
-   bindToChars "${grepHistory}" "${AltCtrlUp}"
+   bindToChars "${grepHistory}" "${CtrlUp}"
    bindToChars "${grepPs}" "${Alt}p"
+   bindToChars "${kill}" "${Alt}k"
    bindToChars "${jps}" "${Alt}j"
    bindToChars "${executize}" "${Alt}."
    bindToChars "${makeVar}" "${Alt}$" "${Ctrl}"

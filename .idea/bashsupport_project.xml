@@ -3,6 +3,7 @@
   <component name="BashSupportProjectSettings">
     <option name="globalVariables">
       <set>
+        <option value="SOURCES" />
         <option value="currentOption" />
         <option value="currentOptionArity" />
         <option value="currentOptionCompletion" />

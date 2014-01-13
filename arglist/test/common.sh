@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../src/arglist.sh
+source ../src/arglist.sh
 
 declare -A options=(
    ["help"]='greet'

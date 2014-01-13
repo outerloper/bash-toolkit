@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. ../src/arglist.sh
-. ../../common/src/test-utils.sh
+source ../src/arglist.sh
+source ../../common/src/test-utils.sh
 
 function testIsTrueFunctionReturnsTrue() {
    isTrue yes
@@ -67,4 +67,4 @@ function testNoFunction() {
    assertResult 0
 }
 
-. ../../common/lib/shunit/src/shunit2
+source ../../common/lib/shunit/src/shunit2

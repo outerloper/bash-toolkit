@@ -14,9 +14,6 @@ alias hg="history | grep" # History Grep
 alias pg="ps aux | grep" # Processes Grep
 alias jpg="jps -l -m" # Java Processes
 
-# simple Find files in current directory
-f() { find . -regex ".*$1.*" 2>/dev/null; }
-
 # ReMove CR from file - convert Windows line endings to POSIX
 rmcr() {
    for file in $@ ; do
@@ -32,7 +29,8 @@ rmcr() {
 # TRanslate Path from Windows to POSIX
 trp() { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
 
+
 PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
 
-
+source "${HOME}/.bash-toolkit/common/utils.sh"
 source "${HOME}/.bash-toolkit/init/inputrc.sh"

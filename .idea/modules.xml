@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/arglist/arglist.iml" filepath="$PROJECT_DIR$/arglist/arglist.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/init/init.iml" filepath="$PROJECT_DIR$/init/init.iml" />
+      <module fileurl="file://$PROJECT_DIR$//main.iml" filepath="$PROJECT_DIR$//main.iml" />
       <module fileurl="file://$PROJECT_DIR$/myenv/myenv.iml" filepath="$PROJECT_DIR$/myenv/myenv.iml" />
       <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
     </modules>

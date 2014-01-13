@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. ../../common/src/test-utils.sh
-. common.sh
+source ../../common/src/test-utils.sh
+source common.sh
 
 function testNoParams() {
    greet >${STDOUT} 2>${STDERR}
@@ -74,5 +74,5 @@ function testMissingNAryMainParameter() {
    assertOutput '' 'Missing operation-and-first-arg.'
 }
 
-. ../../common/lib/shunit/src/shunit2
+source ../../common/lib/shunit/src/shunit2
 

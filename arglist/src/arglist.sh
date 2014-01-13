@@ -1,33 +1,12 @@
 #!/bin/bash
 
+source "$(dirname ${BASH_SOURCE})/../../common/src/utils.sh"
+
 ### SETTINGS ###
 
 DISPLAY_INSTANT_HELP=yes
 
 ### UTILS ###
-
-function error() {
-   echo "$1" 1>&2
-}
-
-function isTrue() {
-   case "$1" in
-   1|[tT][rR][uU][eE]|[yY]|[yY][eE][sS]) return 0 ;;
-   0|[fF][aA][lL][sS][eE]|[nN]|[nN][oO]|"") return 1 ;;
-   esac
-   error "Warning: Invalid boolean value. False assumed."
-   return 1
-}
-
-function is() {
-   [[ -n "$1" ]]
-   return $?
-}
-
-function no() {
-   [[ -z "$1" ]]
-   return $?
-}
 
 function _setOptionList() {
    local optionSpecDecl=$(declare -p $1)
@@ -236,7 +215,7 @@ function _handleOptionSwitch() {
    is ${currentOption} && unset "unusedOptions[${currentOption}]"
    if is "${usedOptions[$optionSwitch]}"
    then
-      error "Duplicate usage of option ${optionSwitch}."
+      alert "Duplicate usage of option ${optionSwitch}."
       discardOption=1
       resultCode=1
    fi
@@ -250,12 +229,12 @@ function _handleOptionParam() {
    fi
    if no "${currentOptionArity}"
    then
-      error "Unexpected value: ${arg}."
+      alert "Unexpected value: ${arg}."
       resultCode=1
    else
       if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount > 0 ))
       then
-         error "Unexpected value: ${arg}."
+         alert "Unexpected value: ${arg}."
          resultCode=1
       else
          printf -v "${currentOption}[${currentOptionArgsCount}]" -- "${arg}"
@@ -274,7 +253,7 @@ function _initOption() {
       eval ${currentOption}'=()'
       discardOption=''
    else
-      error "Unknown option: ${optionSwitch}."
+      alert "Unknown option: ${optionSwitch}."
       discardOption=1
       resultCode=1
    fi
@@ -283,13 +262,13 @@ function _initOption() {
 function _handleOptionWithoutParams() {
    if (( currentOptionArgsCount == 0 ))
    then
-      if is "${currentOptionArity}" # if not flag, error
+      if is "${currentOptionArity}" # if not flag, alert
       then
          if is ${first}
          then
             _handleMissingMainParameter
          else
-            no ${discardOption} && error "Missing required parameter for ${optionSwitch}."
+            no ${discardOption} && alert "Missing required parameter for ${optionSwitch}."
             resultCode=1
          fi
       elif [[ "${currentOption}" != main ]] # if flag, assign 1 to value
@@ -307,7 +286,7 @@ function _handleMissingMainParameter() {
    then
       local currentOptionName="${optionSpec["${currentOption}"]}"
       local currentOptionName="${currentOptionName:-main parameter}"
-      error "Missing ${currentOptionName}."
+      alert "Missing ${currentOptionName}."
       resultCode=1
    else
       local currentOptionDefault="${optionSpec["${currentOption}.default"]}"
@@ -324,7 +303,7 @@ function _handleUnusedOptions() {
       optionRequired="${optionSpec["${currentOption}.required"]}"
       if isTrue "${optionRequired}"
       then
-         error "Missing mandatory option: ${unusedOptions[${currentOption}]}."
+         alert "Missing mandatory option: ${unusedOptions[${currentOption}]}."
          resultCode=1
       else
          printf -v ${currentOption} -- ''
@@ -501,7 +480,7 @@ then
             echo "${main} ${persons[@]}${loud:+!!}"
          }
       else
-         return 1 # parameters misusage should return with error code
+         return 1 # parameters misusage should return with alert code
       fi
    }
 fi
