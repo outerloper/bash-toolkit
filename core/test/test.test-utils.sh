@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ../src/utils.sh
-source ../../common/src/test-utils.sh
+source ../../core/src/test-utils.sh
 
 function ret() {
    return $1
@@ -37,4 +37,4 @@ function testAssertOutput() {
    assertOutput "ooo" "eee"
 }
 
-source ../../common/lib/shunit/src/shunit2
+source ../../core/lib/shunit/src/shunit2

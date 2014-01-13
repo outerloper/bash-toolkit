@@ -1,34 +1,7 @@
 #!/bin/bash
 
 source ../src/utils.sh
-source ../../common/src/test-utils.sh
-
-function testSourceOnce() {
-   rm -f /tmp/script1.sh
-   rm -f /tmp/script2.sh
-   rm -f /tmp/script3.sh
-
-   echo "echo 1" >/tmp/script1.sh
-   echo "echo 2" >/tmp/script2.sh
-   ln -s /tmp/script2.sh /tmp/script3.sh
-
-   SOURCES=''
-   source-once /tmp/script1.sh >"${STDOUT}"
-   assertStdOut '1'
-   source-once /tmp/script1.sh >"${STDOUT}"
-   assertStdOut ''
-   source-once /tmp/script1.sh >"${STDOUT}"
-   assertStdOut ''
-   source-once /tmp/script2.sh >"${STDOUT}"
-   assertStdOut '2'
-   source-once /tmp/script3.sh >"${STDOUT}"
-   assertStdOut ''
-   cd /tmp
-   source-once script2.sh >"${STDOUT}"
-   assertStdOut ''
-   source-once ../tmp/script2.sh >"${STDOUT}"
-   assertStdOut ''
-}
+source ../../core/src/test-utils.sh
 
 function testIsNumReturnsTrueForNaturalNumbers() {
    isNum 0
@@ -111,4 +84,4 @@ function testRealpath() {
    assertStdOut /tmp
 }
 
-source ../../common/lib/shunit/src/shunit2
+source ../../core/lib/shunit/src/shunit2

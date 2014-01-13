@@ -4,17 +4,6 @@ function realpath() {
    readlink -f "${1:-.}"
 }
 
-function source-once() {
-   SOURCE=$(realpath "$1")
-   if ! [[ "${SOURCES}" =~ ":${SOURCE}:" ]]
-   then
-      [[ -z "${SOURCES}" ]] && SOURCES=":"
-      SOURCES="${SOURCES}${SOURCE}:"
-      source "${SOURCE}"
-   fi
-}
-export -f source-once
-
 function isTrue() {
    case "$1" in
    1|[tT][rR][uU][eE]|[yY]|[yY][eE][sS]) return 0 ;;

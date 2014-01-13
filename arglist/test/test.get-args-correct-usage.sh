@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../../common/src/test-utils.sh
+source ../../core/src/test-utils.sh
 source common.sh
 
 function testWithoutMainParam() {
@@ -80,4 +80,4 @@ file1 file2 .file3" ''
 
 }
 
-source ../../common/lib/shunit/src/shunit2
+source ../../core/lib/shunit/src/shunit2

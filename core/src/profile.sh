@@ -32,5 +32,5 @@ trp() { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
 
 PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
 
-source "${HOME}/.bash-toolkit/common/utils.sh"
-source "${HOME}/.bash-toolkit/init/inputrc.sh"
+source "${HOME}/.bash-toolkit/core/src/utils.sh"
+source "${HOME}/.bash-toolkit/core/src/inputrc.sh"

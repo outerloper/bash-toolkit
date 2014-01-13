@@ -8,7 +8,7 @@ then
    SPACE_MARKER="\xe2\x80\xa2"
 fi
 
-for dir in ${1:-$(readlink -f .)/../**/test}
+for dir in ${1:-$(readlink -f .)/../../**/test}
 do
    if [ -d "${dir}" ]
    then

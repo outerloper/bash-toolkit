@@ -10,7 +10,7 @@ To get it, clone the repository into your home directory as `.bash-toolkit`:
 
 To have it active any time you log in, include: `source "${HOME}/.bash-toolkit/profile.sh"` line into your `.bash_profile`:
 
-    echo -e '\nsource "${HOME}/.bash-toolkit/init/profile.sh"' >> ~/.bash_profile
+    echo -e '\nsource "${HOME}/.bash-toolkit/core/src/profile.sh"' >> ~/.bash_profile
 
 To pull the latest version from GitHub, execute this:
 

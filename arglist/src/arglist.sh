@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(dirname ${BASH_SOURCE})/../../common/src/utils.sh"
+source "$(dirname ${BASH_SOURCE})/../../core/src/utils.sh"
 
 ### SETTINGS ###
 

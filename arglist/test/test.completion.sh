@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../../common/src/test-utils.sh
+source ../../core/src/test-utils.sh
 source common.sh
 
 DISPLAY_INSTANT_HELP=1
@@ -88,5 +88,5 @@ then
    getCompletion options
 fi
 
-source ../../common/lib/shunit/src/shunit2
+source ../../core/lib/shunit/src/shunit2
 

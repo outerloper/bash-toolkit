@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../../common/src/test-utils.sh
+source ../../core/src/test-utils.sh
 source common.sh
 
 function testGreet() {
@@ -62,5 +62,5 @@ Options:
   --dir <value>                    " ''
 }
 
-source ../../common/lib/shunit/src/shunit2
+source ../../core/lib/shunit/src/shunit2
 
