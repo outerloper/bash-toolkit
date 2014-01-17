@@ -4,53 +4,53 @@ source ../src/arglist.sh
 source ../../core/src/test-utils.sh
 
 function testIsTrueFunctionReturnsTrue() {
-   isTrue yes
+   is-true yes
    assertResult 0
-   isTrue YES
+   is-true YES
    assertResult 0
-   isTrue Yes
+   is-true Yes
    assertResult 0
-   isTrue 1
+   is-true 1
    assertResult 0
-   isTrue y
+   is-true y
    assertResult 0
-   isTrue Y
+   is-true Y
    assertResult 0
-   isTrue true
+   is-true true
    assertResult 0
-   isTrue TRUE
+   is-true TRUE
    assertResult 0
-   isTrue True
+   is-true True
    assertResult 0
 }
 
 function testIsTrueFunctionReturnsFalse() {
-   isTrue no
+   is-true no
    assertResult 1
-   isTrue NO
+   is-true NO
    assertResult 1
-   isTrue No
+   is-true No
    assertResult 1
-   isTrue 0
+   is-true 0
    assertResult 1
-   isTrue
+   is-true
    assertResult 1
-   isTrue n
+   is-true n
    assertResult 1
-   isTrue N
+   is-true N
    assertResult 1
-   isTrue false
+   is-true false
    assertResult 1
-   isTrue FALSE
+   is-true FALSE
    assertResult 1
-   isTrue False
+   is-true False
    assertResult 1
 }
 
 function testIsTrueFunctionReturnsFalseButProducesWarning() {
-   isTrue invalidValue 2>/dev/null
+   is-true invalidValue 2>/dev/null
    assertResult 1
-   assertEquals "Warning: Invalid boolean value. False assumed." "$(isTrue invalidValue 2>&1)"
+   assertEquals "Warning: Invalid boolean value. False assumed." "$(is-true invalidValue 2>&1)"
 }
 
 function testIsFunction() {

@@ -81,7 +81,7 @@ function _argsAutocompletion() {
    _extractArgs "${COMP_WORDS[@]:${from}:${completedArgsCount}}"
    _getCompletion
    COMPREPLY=( $(compgen -W "${compReply[*]}" -- ${currentWord}) )
-   isTrue "${DISPLAY_INSTANT_HELP}" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp
+   is-true "${DISPLAY_INSTANT_HELP}" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp
 }
 
 function _getCompletion() {
@@ -114,7 +114,7 @@ function _generateCompletions() {
    local currentOptionArity="${optionSpec["${currentOption}.arity"]}"
    local currentOptionRequired="${optionSpec["${currentOption}.required"]}"
    local currentOptionCompletion
-   if [[ "${currentOption}" == main ]] && ! isTrue "${currentOptionRequired}" || no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
+   if [[ "${currentOption}" == main ]] && ! is-true "${currentOptionRequired}" || no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
    then
       compReply=( "${compReply[@]}" ${unusedOptions[@]} )
    fi
@@ -215,7 +215,7 @@ function _handleOptionSwitch() {
    is ${currentOption} && unset "unusedOptions[${currentOption}]"
    if is "${usedOptions[$optionSwitch]}"
    then
-      alert "Duplicate usage of option ${optionSwitch}."
+      error "Duplicate usage of option ${optionSwitch}."
       discardOption=1
       resultCode=1
    fi
@@ -229,12 +229,12 @@ function _handleOptionParam() {
    fi
    if no "${currentOptionArity}"
    then
-      alert "Unexpected value: ${arg}."
+      error "Unexpected value: ${arg}."
       resultCode=1
    else
       if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount > 0 ))
       then
-         alert "Unexpected value: ${arg}."
+         error "Unexpected value: ${arg}."
          resultCode=1
       else
          printf -v "${currentOption}[${currentOptionArgsCount}]" -- "${arg}"
@@ -253,7 +253,7 @@ function _initOption() {
       eval ${currentOption}'=()'
       discardOption=''
    else
-      alert "Unknown option: ${optionSwitch}."
+      error "Unknown option: ${optionSwitch}."
       discardOption=1
       resultCode=1
    fi
@@ -262,13 +262,13 @@ function _initOption() {
 function _handleOptionWithoutParams() {
    if (( currentOptionArgsCount == 0 ))
    then
-      if is "${currentOptionArity}" # if not flag, alert
+      if is "${currentOptionArity}" # if not flag, error
       then
          if is ${first}
          then
             _handleMissingMainParameter
          else
-            no ${discardOption} && alert "Missing required parameter for ${optionSwitch}."
+            no ${discardOption} && error "Missing required parameter for ${optionSwitch}."
             resultCode=1
          fi
       elif [[ "${currentOption}" != main ]] # if flag, assign 1 to value
@@ -282,11 +282,11 @@ function _handleOptionWithoutParams() {
 function _handleMissingMainParameter() {
    unset ${currentOption}
    local currentOptionRequired="${optionSpec["${currentOption}.required"]}"
-   if isTrue "${currentOptionRequired}"
+   if is-true "${currentOptionRequired}"
    then
       local currentOptionName="${optionSpec["${currentOption}"]}"
       local currentOptionName="${currentOptionName:-main parameter}"
-      alert "Missing ${currentOptionName}."
+      error "Missing ${currentOptionName}."
       resultCode=1
    else
       local currentOptionDefault="${optionSpec["${currentOption}.default"]}"
@@ -301,9 +301,9 @@ function _handleUnusedOptions() {
    for currentOption in ${!unusedOptions[@]}
    do
       optionRequired="${optionSpec["${currentOption}.required"]}"
-      if isTrue "${optionRequired}"
+      if is-true "${optionRequired}"
       then
-         alert "Missing mandatory option: ${unusedOptions[${currentOption}]}."
+         error "Missing mandatory option: ${unusedOptions[${currentOption}]}."
          resultCode=1
       else
          printf -v ${currentOption} -- ''
@@ -374,7 +374,7 @@ function _printCommandHelp() {
       then
          optionUsageText="<${currentOptionName}> [...]"
       fi
-      if ! isTrue "${currentOptionRequired}"
+      if ! is-true "${currentOptionRequired}"
       then
          optionUsageText="[${optionUsageText}]"
       fi
@@ -404,7 +404,7 @@ function _printOptionHelp() {
    fi
 
    currentOptionDescription="${optionSpec["${currentOption}.desc"]}"
-   if isTrue "${currentOptionRequired}"
+   if is-true "${currentOptionRequired}"
    then
       currentOptionDescription="REQUIRED. ${currentOptionDescription}"
    fi
@@ -480,7 +480,7 @@ then
             echo "${main} ${persons[@]}${loud:+!!}"
          }
       else
-         return 1 # parameters misusage should return with alert code
+         return 1 # parameters misusage should return with error code
       fi
    }
 fi
