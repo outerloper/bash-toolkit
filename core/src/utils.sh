@@ -50,21 +50,60 @@ function rename-function() {
    unset -f "${oldFunctionName}"
 }
 
+function echo-function() {
+   local functionName="${1:?Missing function name}"
+   declare -f "${functionName}"
+}
+
+function echo-function-body() {
+   local functionName="${1:?Missing function name}"
+   declare -f "${functionName}" | sed -e '1,2 d' -e '$ d'
+}
+
 function is-utf() {
    [[ "${LANG}" == *UTF-8 ]]
+}
+
+function echo-region() {
+   local regionName="${1:?Missing region name}"
+   local fileName="${2:?Missing input file name}"
+
+   local beginTag="#begin ${regionName}"
+   local endTag="#end ${regionName}"
+
+   sed -n -e "/${beginTag}/,/${endTag}/ {/${beginTag}/ d; /${endTag}/ d; p}" <"${fileName}"
+}
+
+function delete-region() {
+   local regionName="${1:?Missing region name}"
+   local fileName="${2:?Missing input file name}"
+
+   local beginTag="#begin ${regionName}"
+   local endTag="#end ${regionName}"
+
+   sed -e "/${beginTag}/,/${endTag}/ d" <"${fileName}"
+}
+
+function set-region() {
+   local regionName="${1:?Missing region name}"
+   local fileName="${2:?Missing input file name}"
+
+   local beginTag="#begin ${regionName}"
+   local endTag="#end ${regionName}"
+
+   tmp="$(mktemp)"
+   sed -e "/${beginTag}/,/${endTag}/ d" <"${fileName}" > "${tmp}"
+   cat "${tmp}"
+   echo "${beginTag}"
+   cat <&0
+   echo "${endTag}"
+   rm "${tmp}"
 }
 
 export nc="\033[0m"
 export underscore="\033[4m"
 export black="\033[30m"
-export Red="\033[31m"
-export Green="\033[32m"
-export Yellow="\033[33m"
-export Blue="\033[34m"
-export Magenta="\033[35m"
-export Cyan="\033[36m"
 export gray="\033[37m"
-export Gray="\033[1;30m"
 export red="\033[1;31m"
 export green="\033[1;32m"
 export yellow="\033[1;33m"
@@ -72,6 +111,13 @@ export blue="\033[1;34m"
 export magenta="\033[1;35m"
 export cyan="\033[1;36m"
 export white="\033[1;37m"
+export Red="\033[31m"
+export Green="\033[32m"
+export Yellow="\033[33m"
+export Blue="\033[34m"
+export Magenta="\033[35m"
+export Cyan="\033[36m"
+export Gray="\033[1;30m"
 export BLACK="\033[40m"
 export RED="\033[41m"
 export GREEN="\033[42m"

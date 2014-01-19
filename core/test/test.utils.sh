@@ -121,11 +121,11 @@ function testIsDirEmpty() {
 }
 
 function testRenderTemplate() {
-   dir="/tmp/testRenderTemplate"
+   local dir="/tmp/testRenderTemplate"
    rm -rf "${dir}"
    mkdir "${dir}"
-   templateFile=$(mktemp -p "${dir}")
-   varDefsFile=$(mktemp -p "${dir}")
+   local templateFile=$(mktemp -p "${dir}")
+   local varDefsFile=$(mktemp -p "${dir}")
    cat >"${templateFile}" <<< 'Her name is ${name} ${surname}.
 Alice is ${age} years old.
 John shouted: ${name}, ${name}!
@@ -144,6 +144,118 @@ curse="%#&@"
 Alice is 20 years old.
 John shouted: Alice, Alice!
 But she replied: %#&@ you!'
+   rm -rf "${dir}"
+}
+
+function initRegionTest() {
+   dir="/tmp/testRenderTemplate"
+   rm -rf "${dir}"
+   mkdir "${dir}"
+   file=$(mktemp -p "${dir}")
+   cat >"${file}" <<< 'First line
+Second line
+#begin region
+Third line
+Fourth line
+#end region
+#begin footer
+Fifth line
+#end footer'
+}
+
+function testEchoRegion() {
+   local dir file
+   initRegionTest
+
+   echo-region region "${file}" >"${STDOUT}"
+   assertStdOut 'Third line
+Fourth line'
+
+   echo-region footer "${file}" >"${STDOUT}"
+   assertStdOut 'Fifth line'
+
+   echo-region non-existing "${file}" >"${STDOUT}"
+   assertStdOut ''
+
+   rm -rf "${dir}"
+}
+
+function testDeleteRegion() {
+   local dir file
+   initRegionTest
+
+   delete-region region "${file}" >"${STDOUT}"
+   assertStdOut 'First line
+Second line
+#begin footer
+Fifth line
+#end footer'
+
+   delete-region footer "${file}" >"${STDOUT}"
+   assertStdOut 'First line
+Second line
+#begin region
+Third line
+Fourth line
+#end region'
+
+   delete-region non-existing "${file}" >"${STDOUT}"
+   assertStdOut 'First line
+Second line
+#begin region
+Third line
+Fourth line
+#end region
+#begin footer
+Fifth line
+#end footer'
+
+   rm -rf "${dir}"
+}
+
+function testSetRegion() {
+   local dir file
+   initRegionTest
+
+   set-region region "${file}" >"${STDOUT}" <<< ''
+   assertStdOut 'First line
+Second line
+#begin footer
+Fifth line
+#end footer
+#begin region
+
+#end region'
+
+   set-region footer "${file}" >"${STDOUT}" <<< "Foo
+Bar"
+   assertStdOut 'First line
+Second line
+#begin region
+Third line
+Fourth line
+#end region
+#begin footer
+Foo
+Bar
+#end footer'
+
+   set-region non-existing "${file}" >"${STDOUT}" <<< "Foo
+Bar"
+   assertStdOut 'First line
+Second line
+#begin region
+Third line
+Fourth line
+#end region
+#begin footer
+Fifth line
+#end footer
+#begin non-existing
+Foo
+Bar
+#end non-existing'
+
    rm -rf "${dir}"
 }
 
