@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source ../src/utils.sh
-source ../../core/src/test-utils.sh
+source ../src/utils.tests.sh
 
 function ret() {
    return $1

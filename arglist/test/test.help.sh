@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../../core/src/test-utils.sh
+source ../../core/src/utils.tests.sh
 source common.sh
 
 function testGreet() {

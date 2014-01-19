@@ -1,105 +1,5 @@
 #!/bin/bash
 
-function is-true() {
-   case "$1" in
-   1|[tT][rR][uU][eE]|[yY]|[yY][eE][sS]) return 0 ;;
-   0|[fF][aA][lL][sS][eE]|[nN]|[nN][oO]|"") return 1 ;;
-   esac
-   error "Warning: Invalid boolean value. False assumed."
-   return 1
-}
-
-function is() {
-   [[ -n "$1" ]]
-}
-
-function no() {
-   [[ -z "$1" ]]
-}
-
-function is-num() {
-   [ -n "$1" ] && [ -z "${1//[0-9]}" ]
-}
-
-function is-int() {
-   if [ -z "$1" ] || [ "$1" = "-" ]
-   then
-      return 1
-   fi
-   local v="$1"
-   v="${v##-}"
-   v="${v//[0-9]}"
-   [ -z "$v" ]
-}
-
-function is-function() {
-   local functionName="${1:?Missing function name.}"
-   [[ $(type -t "${functionName}") == "function" ]]
-}
-
-function rename-function() {
-   local oldFunctionName="${1:?Missing old function name.}"
-   if ! is-function "${oldFunctionName}"
-   then
-      error "No such function: ${oldFunctionName}"
-      return 1
-   fi
-   local oldFunction="$(declare -f "${oldFunctionName}")"
-   local newFunction="${2:?Missing new function name.}${oldFunction#$oldFunctionName}"
-   eval "${newFunction}"
-   unset -f "${oldFunctionName}"
-}
-
-function echo-function() {
-   local functionName="${1:?Missing function name}"
-   declare -f "${functionName}"
-}
-
-function echo-function-body() {
-   local functionName="${1:?Missing function name}"
-   declare -f "${functionName}" | sed -e '1,2 d' -e '$ d'
-}
-
-function is-utf() {
-   [[ "${LANG}" == *UTF-8 ]]
-}
-
-function echo-region() {
-   local regionName="${1:?Missing region name}"
-   local fileName="${2:?Missing input file name}"
-
-   local beginTag="#begin ${regionName}"
-   local endTag="#end ${regionName}"
-
-   sed -n -e "/${beginTag}/,/${endTag}/ {/${beginTag}/ d; /${endTag}/ d; p}" <"${fileName}"
-}
-
-function delete-region() {
-   local regionName="${1:?Missing region name}"
-   local fileName="${2:?Missing input file name}"
-
-   local beginTag="#begin ${regionName}"
-   local endTag="#end ${regionName}"
-
-   sed -e "/${beginTag}/,/${endTag}/ d" <"${fileName}"
-}
-
-function set-region() {
-   local regionName="${1:?Missing region name}"
-   local fileName="${2:?Missing input file name}"
-
-   local beginTag="#begin ${regionName}"
-   local endTag="#end ${regionName}"
-
-   tmp="$(mktemp)"
-   sed -e "/${beginTag}/,/${endTag}/ d" <"${fileName}" > "${tmp}"
-   cat "${tmp}"
-   echo "${beginTag}"
-   cat <&0
-   echo "${endTag}"
-   rm "${tmp}"
-}
-
 export nc="\033[0m"
 export underscore="\033[4m"
 export black="\033[30m"
@@ -126,6 +26,49 @@ export BLUE="\033[44m"
 export MAGENTA="\033[45m"
 export CYAN="\033[46m"
 export WHITE="\033[47m"
+
+function is-true() {
+   case "$1" in
+   1|[tT][rR][uU][eE]|[yY]|[yY][eE][sS]) return 0 ;;
+   0|[fF][aA][lL][sS][eE]|[nN]|[nN][oO]|"") return 1 ;;
+   esac
+   error "Warning: Invalid boolean value. False assumed."
+   return 1
+}
+export -f is-true
+
+function is() {
+   [[ -n "$1" ]]
+}
+export -f is
+
+function no() {
+   [[ -z "$1" ]]
+}
+export -f no
+
+function is-num() {
+   [ -n "$1" ] && [ -z "${1//[0-9]}" ]
+}
+export -f is-num
+
+function is-int() {
+   if [ -z "$1" ] || [ "$1" = "-" ]
+   then
+      return 1
+   fi
+   local v="$1"
+   v="${v##-}"
+   v="${v//[0-9]}"
+   [ -z "$v" ]
+}
+export -f is-int
+
+
+function is-utf() {
+   [[ "${LANG}" == *UTF-8 ]]
+}
+export -f is-utf
 
 function put() { echo -ne "$1"; }
 function say() { echo -e "$1";}
@@ -156,39 +99,4 @@ function is-dir-empty() {
    local dir="${1:-.}"
    [ "${dir}" = "$(find "${dir}")" ]
 }
-
-function render-template() {
-   local varDefsFile="$(mktemp)"
-   declare -A vars
-   cat <&0 >"${varDefsFile}"
-   local varDecl="^\([a-Z_][a-Z0-9_]*\)=.*"
-   (
-      source "${varDefsFile}"
-      for var in $(sed -n -e "/${varDecl}/ {s/${varDecl}/\1/; p}" < "${varDefsFile}")
-      do
-         vars[$var]="${!var}"
-      done
-      while read -r line
-      do
-         while [[ "${line}" =~ \$\{([a-Z_][a-Z0-9_]*)\} ]]
-         do
-            placeholder=${BASH_REMATCH[0]}
-            value=${vars[${BASH_REMATCH[1]}]}
-            line=${line//${placeholder}/${value}}
-         done
-         echo "${line}"
-      done <"${1}"
-   )
-   rm "${varDefsFile}"
-}
-
-export -f is-true
-export -f is
-export -f no
-export -f is-num
-export -f is-int
-export -f is-function
-export -f rename-function
-export -f is-utf
-export -f render-template
 export -f is-dir-empty

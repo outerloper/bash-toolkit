@@ -12,6 +12,7 @@ function assertResult() {
       assertEquals "Wrong result." "$1" ${result}
    fi
 }
+export -f assertResult
 
 function assertOk() {
    local result=$?
@@ -22,6 +23,7 @@ function assertOk() {
       assertEquals "Expected success but was failure." 0 ${result}
    fi
 }
+export -f assertOk
 
 function assertNotOk() {
    local result=$?
@@ -32,6 +34,7 @@ function assertNotOk() {
       assertNotEquals "Expected failure but was success." 0 ${result}
    fi
 }
+export -f assertNotOk
 
 function assertStdOut() {
    if (( $# > 1 ))
@@ -41,6 +44,7 @@ function assertStdOut() {
       assertEquals "Difference on STDOUT." "$1" "$(cat <${STDOUT})"
    fi
 }
+export -f assertStdOut
 
 function assertStdErr() {
    if (( $# > 1 ))
@@ -50,6 +54,7 @@ function assertStdErr() {
       assertEquals "Difference on STDERR." "$1" "$(cat <${STDERR})"
    fi
 }
+export -f assertStdErr
 
 
 function assertOutput() {
@@ -62,3 +67,4 @@ function assertOutput() {
       assertEquals "Difference in STDERR." "$2" "$(cat <${STDERR})"
    fi
 }
+export -f assertOutput

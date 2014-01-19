@@ -1,89 +1,70 @@
 #!/bin/bash
 
 source ../src/utils.sh
-source ../../core/src/test-utils.sh
+source ../src/utils.tests.sh
 
-function testIsNumReturnsTrueForNaturalNumbers() {
-   is-num 0
-   assertOk
-   is-num 4
-   assertOk
-   is-num 45665644
-   assertOk
+function testIsTrueFunctionReturnsTrue() {
+   is-true yes
+   assertResult 0
+   is-true YES
+   assertResult 0
+   is-true Yes
+   assertResult 0
+   is-true 1
+   assertResult 0
+   is-true y
+   assertResult 0
+   is-true Y
+   assertResult 0
+   is-true true
+   assertResult 0
+   is-true TRUE
+   assertResult 0
+   is-true True
+   assertResult 0
 }
 
-function testIsNumReturnsTrueForNotNaturalNumbersAndEmptyValue() {
-   is-num xxx
-   assertNotOk
-   is-num 61x
-   assertNotOk
-   is-num x45
-   assertNotOk
-   is-num 666g666
-   assertNotOk
-   is-num ''
-   assertNotOk
+function testIsTrueFunctionReturnsFalse() {
+   is-true no
+   assertResult 1
+   is-true NO
+   assertResult 1
+   is-true No
+   assertResult 1
+   is-true 0
+   assertResult 1
+   is-true
+   assertResult 1
+   is-true n
+   assertResult 1
+   is-true N
+   assertResult 1
+   is-true false
+   assertResult 1
+   is-true FALSE
+   assertResult 1
+   is-true False
+   assertResult 1
 }
 
-function testIsIntReturnsTrueForIntegerNumbers() {
-   is-int 0
-   assertOk
-   is-int 4
-   assertOk
-   is-int 45665644
-   assertOk
-   is-int -4
-   assertOk
-   is-int -45665644
-   assertOk
+function testIsTrueReturnsFalseButProducesWarningOnInvalidValue() {
+   is-true invalidValue 2>/dev/null
+   assertResult 1
+   assertEquals "Warning: Invalid boolean value. False assumed." "$(is-true invalidValue 2>&1)"
 }
 
-function testIsIntReturnsTrueForNotIntegerNumbersAndEmptyValue() {
-   is-int xxx
-   assertNotOk xxx
-   is-int 61x
-   assertNotOk 61x
-   is-int x45
-   assertNotOk x45
-   is-int 666g666
-   assertNotOk 666g666
-   is-int -xxx
-   assertNotOk -xxx
-   is-int -61x
-   assertNotOk -61x
-   is-int -x45
-   assertNotOk -x45
-   is-int -666g666
-   assertNotOk -666g666
-   is-int 3-
-   assertNotOk 3-
-   is-int -
-   assertNotOk -
-   is-int ''
-   assertNotOk 'empty string'
+function testIs() {
+   no ""
+   assertResult 0
+   no "x"
+   assertResult 1
 }
 
-function testIsFunction() {
-   function _testFunction() {
-      :
-   }
-   is-function _testFunction || fail 'is-function should return true when function exists'
-
-   unset -f _testFunction
-   is-function _testFunction && fail 'is-function should return false when function does not exist'
-}
-
-function testRenameFunction() {
-   function _testFunction() {
-      :
-   }
-   is-function _renamedFunction && unset -f _renamedFunction
-   is-function _renamedFunction && fail '_renamedFunction should not exist'
-   is-function _testFunction || fail '_testFunction should exist'
-
-   rename-function _testFunction _renamedFunction
-   is-function _testFunction && fail '_testFunction should not exist'
-   is-function _renamedFunction || fail '_renamedFunction should exist'
+function testNo() {
+   is ""
+   assertResult 1
+   is "x"
+   assertResult 0
 }
 
 function testIsUtfReturnsOk() {
@@ -116,145 +97,6 @@ function testIsDirEmpty() {
    mkdir "${dir}/d"
    is-dir-empty "${dir}"
    assertNotOk 'Dir with subdir is not empty'
-
-   rm -rf "${dir}"
-}
-
-function testRenderTemplate() {
-   local dir="/tmp/testRenderTemplate"
-   rm -rf "${dir}"
-   mkdir "${dir}"
-   local templateFile=$(mktemp -p "${dir}")
-   local varDefsFile=$(mktemp -p "${dir}")
-   cat >"${templateFile}" <<< 'Her name is ${name} ${surname}.
-Alice is ${age} years old.
-John shouted: ${name}, ${name}!
-But she replied: ${curse} you!
-${a}'
-   cat >"${varDefsFile}" <<< '
- a=10
-name=Alice
- # xxx
-surname=Smith
-age=$(( a << 1 ))
-curse="%#&@"
-'
-   render-template "${templateFile}" <"${varDefsFile}" >"${STDOUT}"
-   assertStdOut 'Her name is Alice Smith.
-Alice is 20 years old.
-John shouted: Alice, Alice!
-But she replied: %#&@ you!'
-   rm -rf "${dir}"
-}
-
-function initRegionTest() {
-   dir="/tmp/testRenderTemplate"
-   rm -rf "${dir}"
-   mkdir "${dir}"
-   file=$(mktemp -p "${dir}")
-   cat >"${file}" <<< 'First line
-Second line
-#begin region
-Third line
-Fourth line
-#end region
-#begin footer
-Fifth line
-#end footer'
-}
-
-function testEchoRegion() {
-   local dir file
-   initRegionTest
-
-   echo-region region "${file}" >"${STDOUT}"
-   assertStdOut 'Third line
-Fourth line'
-
-   echo-region footer "${file}" >"${STDOUT}"
-   assertStdOut 'Fifth line'
-
-   echo-region non-existing "${file}" >"${STDOUT}"
-   assertStdOut ''
-
-   rm -rf "${dir}"
-}
-
-function testDeleteRegion() {
-   local dir file
-   initRegionTest
-
-   delete-region region "${file}" >"${STDOUT}"
-   assertStdOut 'First line
-Second line
-#begin footer
-Fifth line
-#end footer'
-
-   delete-region footer "${file}" >"${STDOUT}"
-   assertStdOut 'First line
-Second line
-#begin region
-Third line
-Fourth line
-#end region'
-
-   delete-region non-existing "${file}" >"${STDOUT}"
-   assertStdOut 'First line
-Second line
-#begin region
-Third line
-Fourth line
-#end region
-#begin footer
-Fifth line
-#end footer'
-
-   rm -rf "${dir}"
-}
-
-function testSetRegion() {
-   local dir file
-   initRegionTest
-
-   set-region region "${file}" >"${STDOUT}" <<< ''
-   assertStdOut 'First line
-Second line
-#begin footer
-Fifth line
-#end footer
-#begin region
-
-#end region'
-
-   set-region footer "${file}" >"${STDOUT}" <<< "Foo
-Bar"
-   assertStdOut 'First line
-Second line
-#begin region
-Third line
-Fourth line
-#end region
-#begin footer
-Foo
-Bar
-#end footer'
-
-   set-region non-existing "${file}" >"${STDOUT}" <<< "Foo
-Bar"
-   assertStdOut 'First line
-Second line
-#begin region
-Third line
-Fourth line
-#end region
-#begin footer
-Fifth line
-#end footer
-#begin non-existing
-Foo
-Bar
-#end non-existing'
 
    rm -rf "${dir}"
 }
