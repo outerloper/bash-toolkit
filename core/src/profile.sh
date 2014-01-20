@@ -1,36 +1,32 @@
 #!/bin/bash
 
 export EDITOR=vim
-export HISTCONTROL=erasedups
-export HISTSIZE=1000
+PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
 
-
-alias bpe="${EDITOR:-vim} ~/.bash_profile" # Bash Profile Edit
+alias bpe="${EDITOR} ~/.bash_profile" # Bash Profile Edit
 alias bpr="source ~/.bash_profile" # Bash Profile Reload
-alias ls="ls --color -l" # funkified ls
-alias grep="grep --color=always" # funkified grep
-alias g="grep" # Grep
-alias hg="history | grep" # History Grep
-alias pg="ps aux | grep" # Processes Grep
-alias jpg="jps -l -m" # Java Processes
+alias l="ls --color -l"
+alias la="ls --color -al"
+alias lt="ls --color -ltr"
+alias g="grep --color=always"
+alias s="sed -n"
+alias vi=vim
 
-# ReMove CR from file - convert Windows line endings to POSIX
-rmcr() {
-   for file in $@ ; do
-      if [ -f "$file" ] ; then
-         sed -e 's/\r//' < "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-         if [ -f "$file.tmp" ] ; then
-            rm "$file.tmp"
-         fi
+# ensure LF line endings (not CR-LF)
+lf() {
+   for file in $@
+   do
+      if [ -f "${file}" ]
+      then
+         tr -d "\r" < "${file}" > "${file}.tmp" && mv "${file}.tmp" "${file}" && rm "${file}.tmp"
       fi
    done
 }
 
-# TRanslate Path from Windows to POSIX
-trp() { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
+type cygpath >/dev/null 2>/dev/null || { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
 
-
-PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
-
-source ${HOME}/.bash-toolkit/core/src/utils*.sh
+source ${HOME}/.bash-toolkit/core/src/utils.sh
+source ${HOME}/.bash-toolkit/core/src/utils.tests.sh
+source ${HOME}/.bash-toolkit/core/src/utils.functions.sh
+source ${HOME}/.bash-toolkit/core/src/utils.text-files.sh
 source ${HOME}/.bash-toolkit/core/src/inputrc.sh

@@ -100,3 +100,59 @@ function is-dir-empty() {
    [ "${dir}" = "$(find "${dir}")" ]
 }
 export -f is-dir-empty
+
+function chdir() {
+   DIR_STACK_SIZE=10
+   [ "${1}" == "--help" ] && {
+      \cd --help 2>&1 | sed '1 d'
+      echo "Options:
+  -P   Do not follow symbolic links
+  -L   Follow symbolic links (default)
+Special values for dir:
+  -    Previous directory
+  -N   Directory with stack index N=0..$((DIR_STACK_SIZE - 1))
+  --   Print dir stack
+"
+      return 127
+   }
+
+   [ "${1}" == "--" ] && {
+      dirs -v
+      return 0
+   }
+
+   local dir="${1-"~"}"
+   [[ "${dir}" =~ ^-[0-9]+$ ]] && {
+      dir="$(dirs "+${dir:1}")" || {
+         error 'No directory with such index'
+         return 1
+      }
+   }
+   local tildeExpandedDir="${dir/\~/$HOME}"
+   pushd "${tildeExpandedDir}" >/dev/null 2>/dev/null || {
+      \cd "${tildeExpandedDir}"
+      return $?
+   }
+   local dirs=( $(dirs -p) )
+   for ((i = ${#dirs[@]} - 1; i > 0; i--))
+   do
+      [ "${dirs[${i}]}" = "${dirs}" ] && popd -n "+${i}" >/dev/null
+   done
+   while popd -n "+${DIR_STACK_SIZE}" >/dev/null 2>/dev/null
+   do :
+   done
+   return 0
+}
+export -f chdir
+
+function debug-array() {
+   local arr=${1}
+   local count=0
+   debug -n "${arr}=( "
+   for e in ${!arr[@]}
+   do
+      debug -n "[$(( count++ ))]=${e} "
+   done
+   debug ")"
+}
+export -f debug-array

@@ -68,3 +68,13 @@ function assertOutput() {
    fi
 }
 export -f assertOutput
+
+function assertPwd() {
+   if (( $# > 1 ))
+   then
+      assertEquals "Unexpected PWD: ${1}." "${PWD}" "${2}"
+   else
+      assertEquals "Unexpected PWD." "${PWD}" "${1}"
+   fi
+}
+export -f assertPwd

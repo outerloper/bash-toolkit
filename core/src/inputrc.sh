@@ -25,15 +25,13 @@ function grep-history() { history | grep --color=always "$1" | tail -n50; }
 
 function quick-find() { find . -regex ".*$1.*" 2> /dev/null; }
 
-#complete -d chdir
-#complete -d pushdir
-#function chdir() { cd $1 && \ls --color; }
-#function pushdir() { pushd $1 && \ls --color; }
-#function popdir() { popd $1 && \ls --color; }
-
-function env_bind() {
+function env-bind() {
    : ${ENV:=cd}
    : ${EDITOR:=vim}
+#   if [[ $- =~ *i* ]] # does not work
+#   then
+      alias cd=chdir
+#   fi
 
    # key definitions
 
@@ -131,7 +129,9 @@ function env_bind() {
 
    #bindToMacro kill-whole-line
    bindToMacro undo "${Alt}z"
-   bindToMacro paste-from-clipboard "${Alt}v"
+   bindToMacro paste-from-clipboard "${Alt}v" "{Ins}"
+   bindToMacro magic-space "${Ins}"
+   bind ' ':magic-space # bindToMacro does not work for magic-space don't know why
 
    bindToMacro end-of-history "${EndOfHist}"
    bindToMacro forward-search-history "${Ctrl}t" "${CtrlDown}"
@@ -154,15 +154,14 @@ function env_bind() {
    local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
    local executize=${Home}'./'${FwdWord}''${End}'\t'
-   local makeVar=${BkwWord}'${'${FwdWord}'\t'
+   local makeVar=${BkwWord}'${'${FwdWord}}${Left}'\t'
    local initVar='}'${Left}':='
-   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'
+   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}${Left}${Left}'\t'
    local goToHome=${ClrLn}'cd ~\n'
    local goToPrev=${ClrLn}'cd -\n'
-   local goDownDir=${ClrLn}'cd \t'
+   local goDownDir=${ClrLn}'cd --\ncd \t'
    local goUpDir=${ClrLn}'cd ..\n'
-   local pushd=${ClrLn}'pushd \t'
-   local popd=${ClrLn}'popd\n'
+   local chDir=${ClrLn}'cd --\ncd -'
    local editFile=${ClrLn}${EDITOR}' \t'
    local mkdir=${ClrLn}'mkdir -p '
    local rm=${ClrLn}'rm -rf \t'
@@ -183,30 +182,28 @@ function env_bind() {
    bindToChars "${ClrLn}" "${AltCtrlDown}"
    bindToChars "${nextWord}" "${CtrlRight}"
    bindToChars "${help}" "${F1}"
-#   bindToChars "${man}" "${AltF1}" # ISSUE collides with Alt+Del
+   bindToChars "${man}" "${AltF1}"
    bindToChars "${lsAndPwd}" "${F2}"
    bindToChars "${lsLtr}" "${AltF2}"
    bindToChars "${pipeToGrep}" "${Alt}g"
    bindToChars "${pipeToSed}" "${Alt}s"
    bindToChars "${echoize}" "${Alt}e"
    bindToChars "${find}" "${Alt}f"
-   bindToChars "${grepHistory}" "${CtrlUp}"
+   bindToChars "${grepHistory}" "${CtrlUp}" "${AltCtrlUp}"
    bindToChars "${grepPs}" "${Alt}p"
    bindToChars "${kill}" "${Alt}k"
    bindToChars "${jps}" "${Alt}j"
    bindToChars "${executize}" "${Alt}."
-   bindToChars "${makeVar}" "${Alt}$" "${Ctrl}"
-   bindToChars "${initVar}" "${Alt}=" "${Alt}"
+   bindToChars "${makeVar}" "${Alt}$"
+   bindToChars "${initVar}" "${Alt}="
    bindToChars "${arrayVar}" "${Alt}@"
    bindToChars "${goToHome}" "${AltHome}"
    bindToChars "${goToPrev}" "${AltEnd}"
    bindToChars "${goDownDir}" "${PgDown}"
    bindToChars "${goUpDir}" "${PgUp}"
-   bindToChars "${pushd}" "${AltPgDown}"
-   bindToChars "${popd}" "${AltPgUp}"
-   bindToChars "${editFile}" "${Ins}"
+   bindToChars "${chDir}" "${AltPgDown}" "${AltPgUp}"
    bindToChars "${mkdir}" "${AltIns}"
-   bindToChars "${rm}" "${AltDel}"
+#   bindToChars "${rm}" "${AltDel}"  # ISSUE collides with Alt+F1
    bindToChars "${currAbsPath}" "${ShiftTab}"
    bindToChars "${useLastCommentedLine}" "${Alt}!"
    bindToChars "${envCommand}" "${F3}"
@@ -232,9 +229,12 @@ function env_bind() {
    HISTFILESIZE=1000
    HISTSIZE=1000
    HISTTIMEFORMAT="%Y-%m-%d %T  "
+   shopt -s histappend # to check if duplicates handled as desired here
+   PROMPT_COMMAND='history -a'
    bind "set completion-ignore-case on"
    bind "set show-all-if-ambiguous on"
-   bind "set completion-query-items 1000"
+   bind "set completion-query-items 600"
 }
 
-env_bind
+env-bind
+unset -f env-bind
