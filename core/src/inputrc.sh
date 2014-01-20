@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function bindToMacro() {
+function bind-to-macro() {
    macro=$1
    shift
    for key in $@
@@ -9,7 +9,7 @@ function bindToMacro() {
    done
 }
 
-function bindToChars() {
+function bind-to-chars() {
    local macro=$1
    shift
    for key in $@
@@ -21,9 +21,13 @@ function bindToChars() {
    done
 }
 
-function grep-history() { history | grep --color=always "$1" | tail -n50; }
+function grep-history() {
+   history | g "$1" | tail -50
+}
 
-function quick-find() { find . -regex ".*$1.*" 2> /dev/null; }
+function quick-find() {
+   find . -regex ".*$1.*" 2> /dev/null
+}
 
 function env-bind() {
    : ${ENV:=cd}
@@ -111,38 +115,50 @@ function env-bind() {
    local ClrLnRight=${AltDel}
    local ClrLnLeft=${AltBsp}
 
+   # key codes used for substitution
+
+   local Aux0='\e[90~'
+   local Aux1='\e[91~'
+   local Aux2='\e[92~'
+   local Aux3='\e[93~'
+   local Aux4='\e[94~'
+   local Aux5='\e[95~'
+   local Aux6='\e[96~'
+   local Aux7='\e[97~'
+   local Aux8='\e[98~'
+   local Aux9='\e[99~'
+
    # macro bindings
 
-   bindToMacro forward-char "${Right}"
-   bindToMacro forward-word "${FwdWord}"
-   bindToMacro delete-char "${Del}"
-   bindToMacro kill-word "${AltCtrlRight}"
-   bindToMacro end-of-line "${End}"
-   #bindToMacro kill-line
+   bind-to-macro forward-char "${Right}"
+   bind-to-macro forward-word "${FwdWord}"
+   bind-to-macro delete-char "${Del}"
+   bind-to-macro kill-word "${AltCtrlRight}"
+   bind-to-macro end-of-line "${End}"
+   bind-to-macro kill-line "${ClrLnRight}"
 
-   bindToMacro backward-char "${Left}"
-   bindToMacro backward-word "${BkwWord}" "${CtrlLeft}"
-   bindToMacro backward-delete-char "${Bsp}"
-   bindToMacro backward-kill-word "${AltCtrlLeft}"
-   bindToMacro beginning-of-line "${Home}"
-   bindToMacro unix-line-discard "${ClrLnLeft}"
+   bind-to-macro backward-char "${Left}"
+   bind-to-macro backward-word "${BkwWord}" "${CtrlLeft}"
+   bind-to-macro backward-delete-char "${Bsp}"
+   bind-to-macro backward-kill-word "${AltCtrlLeft}"
+   bind-to-macro beginning-of-line "${Home}"
+   bind-to-macro unix-line-discard "${ClrLnLeft}"
 
-   #bindToMacro kill-whole-line
-   bindToMacro undo "${Alt}z"
-   bindToMacro paste-from-clipboard "${Alt}v" "{Ins}"
-   bindToMacro magic-space "${Ins}"
-   bind ' ':magic-space # bindToMacro does not work for magic-space don't know why
+   #bind-to-macro kill-whole-line
+   bind-to-macro undo "${Alt}z"
+   bind-to-macro paste-from-clipboard "${Alt}v"
+   bind ' ':magic-space # bind-to-macro does not work for magic-space don't know why
 
-   bindToMacro end-of-history "${EndOfHist}"
-   bindToMacro forward-search-history "${Ctrl}t" "${CtrlDown}"
-   bindToMacro history-search-backward "${AltUp}"
-   bindToMacro history-search-forward "${AltDown}"
+   bind-to-macro end-of-history "${EndOfHist}"
+   bind-to-macro forward-search-history "${Ctrl}t" "${CtrlDown}"
+   bind-to-macro history-search-backward "${AltUp}"
+   bind-to-macro history-search-forward "${AltDown}"
 
    # custom char sequences definitions
 
    local nextWord=${FwdWord}${FwdWord}${BkwWord}
    local help=${End}' --help\n'
-   local man=${Home}'man '${FwdWord}${ClrLnRight}'\n'
+   local man=${Home}'man '${FwdWord}${AltDel}'\n'
    local lsAndPwd=${ClrLn}'\\ls --color -l\npwd\n'
    local lsLtr=${ClrLn}'\\ls --color -ltr\n'
    local pipeToGrep=${End}' | grep \"\"'${Left}
@@ -159,7 +175,7 @@ function env-bind() {
    local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}${Left}${Left}'\t'
    local goToHome=${ClrLn}'cd ~\n'
    local goToPrev=${ClrLn}'cd -\n'
-   local goDownDir=${ClrLn}'cd --\ncd \t'
+   local goDownDir=${ClrLn}'cd \t'
    local goUpDir=${ClrLn}'cd ..\n'
    local chDir=${ClrLn}'cd --\ncd -'
    local editFile=${ClrLn}${EDITOR}' \t'
@@ -174,54 +190,46 @@ function env-bind() {
    local parentheses='q)'${BkwWord}'('${FwdWord}${Bsp}
    local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
    local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
+   local historyExpansion=${Home}'!'${End}${Aux0}
 
    # custom char sequences bindings
 
    # Ctrl+Num not working
 
-   bindToChars "${ClrLn}" "${AltCtrlDown}"
-   bindToChars "${nextWord}" "${CtrlRight}"
-   bindToChars "${help}" "${F1}"
-   bindToChars "${man}" "${AltF1}"
-   bindToChars "${lsAndPwd}" "${F2}"
-   bindToChars "${lsLtr}" "${AltF2}"
-   bindToChars "${pipeToGrep}" "${Alt}g"
-   bindToChars "${pipeToSed}" "${Alt}s"
-   bindToChars "${echoize}" "${Alt}e"
-   bindToChars "${find}" "${Alt}f"
-   bindToChars "${grepHistory}" "${CtrlUp}" "${AltCtrlUp}"
-   bindToChars "${grepPs}" "${Alt}p"
-   bindToChars "${kill}" "${Alt}k"
-   bindToChars "${jps}" "${Alt}j"
-   bindToChars "${executize}" "${Alt}."
-   bindToChars "${makeVar}" "${Alt}$"
-   bindToChars "${initVar}" "${Alt}="
-   bindToChars "${arrayVar}" "${Alt}@"
-   bindToChars "${goToHome}" "${AltHome}"
-   bindToChars "${goToPrev}" "${AltEnd}"
-   bindToChars "${goDownDir}" "${PgDown}"
-   bindToChars "${goUpDir}" "${PgUp}"
-   bindToChars "${chDir}" "${AltPgDown}" "${AltPgUp}"
-   bindToChars "${mkdir}" "${AltIns}"
-#   bindToChars "${rm}" "${AltDel}"  # ISSUE collides with Alt+F1
-   bindToChars "${currAbsPath}" "${ShiftTab}"
-   bindToChars "${useLastCommentedLine}" "${Alt}!"
-   bindToChars "${envCommand}" "${F3}"
-   bindToChars "${macro}" "${Alt}m"
-   bindToChars "${echoLastResultCode}" "${Alt}?"
-   bindToChars "${doubleQuote}" "${Alt}\'"
-   bindToChars "${parentheses}" "${Alt}("
-   bindToChars "${braces}" "${Alt}{"
-   bindToChars "${rerunLast2Commands}" "${Alt}%"
-
-   bindToChars "${Up}${Home}remembered-1() { ${End}; }\n" "${Alt}r1"
-   bindToChars "${Up}${Home}remembered-2() { ${End}; }\n" "${Alt}r2"
-   bindToChars "${Up}${Home}remembered-3() { ${End}; }\n" "${Alt}r3"
-   bindToChars "${Up}${Home}remembered-4() { ${End}; }\n" "${Alt}r4"
-   bindToChars "${ClrLn} remembered-1\n" "${BackTick}1"
-   bindToChars "${ClrLn} remembered-2\n" "${BackTick}2"
-   bindToChars "${ClrLn} remembered-3\n" "${BackTick}3"
-   bindToChars "${ClrLn} remembered-4\n" "${BackTick}4"
+   bind-to-chars "${ClrLn}" "${AltCtrlDown}"
+   bind-to-chars "${nextWord}" "${CtrlRight}"
+   bind-to-chars "${help}" "${F1}"
+   bind-to-chars "${man}" "${AltF1}"
+   bind-to-chars "${lsAndPwd}" "${F2}"
+   bind-to-chars "${lsLtr}" "${AltF2}"
+   bind-to-chars "${pipeToGrep}" "${Alt}g"
+   bind-to-chars "${pipeToSed}" "${Alt}s"
+   bind-to-chars "${echoize}" "${Alt}e"
+   bind-to-chars "${find}" "${Alt}f"
+   bind-to-chars "${grepHistory}" "${CtrlUp}" "${AltCtrlUp}"
+   bind-to-chars "${grepHistory}!" "${AltCtrlUp}"
+   bind-to-chars "${grepPs}" "${Alt}p"
+   bind-to-chars "${kill}" "${Alt}k"
+   bind-to-chars "${jps}" "${Alt}j"
+   bind-to-chars "${executize}" "${Alt}."
+   bind-to-chars "${makeVar}" "${Alt}$"
+   bind-to-chars "${initVar}" "${Alt}="
+   bind-to-chars "${arrayVar}" "${Alt}@"
+   bind-to-chars "${goToHome}" "${AltHome}"
+   bind-to-chars "${goToPrev}" "${AltEnd}"
+   bind-to-chars "${goDownDir}" "${PgDown}"
+   bind-to-chars "${goUpDir}" "${PgUp}"
+   bind-to-chars "${chDir}" "${AltPgDown}" "${AltPgUp}"
+   bind-to-chars "${mkdir}" "${AltIns}"
+   bind-to-chars "${currAbsPath}" "${ShiftTab}"
+   bind-to-chars "${useLastCommentedLine}" "${Alt}!"
+   bind-to-chars "${envCommand}" "${F3}"
+   bind-to-chars "${macro}" "${Alt}m"
+   bind-to-chars "${echoLastResultCode}" "${Alt}?"
+   bind-to-chars "${doubleQuote}" "${Alt}\'"
+   bind-to-chars "${parentheses}" "${Alt}("
+   bind-to-chars "${braces}" "${Alt}{"
+   bind-to-chars "${rerunLast2Commands}" "${Alt}%"
 
    # history setup
 

@@ -5,9 +5,9 @@ PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
 
 alias bpe="${EDITOR} ~/.bash_profile" # Bash Profile Edit
 alias bpr="source ~/.bash_profile" # Bash Profile Reload
-alias l="ls --color -l"
+alias l="ls --color -al"
 alias la="ls --color -al"
-alias lt="ls --color -ltr"
+alias lt="ls --color -altr"
 alias g="grep --color=always"
 alias s="sed -n"
 alias vi=vim
