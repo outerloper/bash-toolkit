@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export EDITOR=vim
+export EDITOR=${EDITOR:-vim}
 PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
 
 alias bpe="${EDITOR} ~/.bash_profile" # Bash Profile Edit
@@ -12,8 +12,8 @@ alias g="grep --color=always"
 alias s="sed -n"
 alias vi=vim
 
-# ensure LF line endings (not CR-LF)
-lf() {
+# ReMove CR from line endings
+rmcr() {
    for file in $@
    do
       if [ -f "${file}" ]
@@ -25,8 +25,8 @@ lf() {
 
 type cygpath >/dev/null 2>/dev/null || { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
 
-source ${HOME}/.bash-toolkit/core/src/utils.sh
-source ${HOME}/.bash-toolkit/core/src/utils.tests.sh
-source ${HOME}/.bash-toolkit/core/src/utils.functions.sh
-source ${HOME}/.bash-toolkit/core/src/utils.text-files.sh
-source ${HOME}/.bash-toolkit/core/src/inputrc.sh
+for util in ${HOME}/.bash-toolkit/core/src/utils*.sh
+do
+   source "${util}"
+done
+source "${HOME}/.bash-toolkit/core/src/inputrc.sh"

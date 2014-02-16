@@ -233,12 +233,12 @@ function env-bind() {
 
    # history setup
 
-   HISTCONTROL=ignorespace:ignoredups:erasedups
-   HISTFILESIZE=1000
-   HISTSIZE=1000
-   HISTTIMEFORMAT="%Y-%m-%d %T  "
+   export HISTCONTROL=ignorespace:ignoredups:erasedups
+   export HISTFILESIZE=1000
+   export HISTSIZE=1000
+   export HISTTIMEFORMAT="%Y-%m-%d %T  "
+   export PROMPT_COMMAND=''
    shopt -s histappend # to check if duplicates handled as desired here
-   PROMPT_COMMAND='history -a'
    bind "set completion-ignore-case on"
    bind "set show-all-if-ambiguous on"
    bind "set completion-query-items 600"
