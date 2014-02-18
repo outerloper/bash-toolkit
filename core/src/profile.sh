@@ -18,7 +18,7 @@ rmcr() {
    do
       if [ -f "${file}" ]
       then
-         tr -d "\r" < "${file}" > "${file}.tmp" && mv "${file}.tmp" "${file}" && rm "${file}.tmp"
+         tr -d "\r" < "${file}" > "${file}.tmp" && mv "${file}.tmp" "${file}"
       fi
    done
 }

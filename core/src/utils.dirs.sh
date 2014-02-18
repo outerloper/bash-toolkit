@@ -9,7 +9,7 @@ export -f is-dir-empty
 
 
 DIRHISTFILE=${HOME}/.dirstack
-DIRHISTSIZE=20
+DIRHISTSIZE=50
 
 function _dirs-history-print() {
    nl -w 5 "${DIRHISTFILE}"
@@ -30,13 +30,6 @@ function _dirs-history-add-pwd() {
    echo "${dir}" >>"${DIRHISTFILE}"
 }
 
-
-
-complete -F f o
-function f() {
-   COMPREPLY=( dddddddddddddddd )
-
-}
 
 function chdir() {
    [ "${1}" == "--help" ] && {
@@ -83,3 +76,32 @@ Special values for dir:
    return 0
 }
 export -f chdir
+
+
+complete -o nospace -F histdir-tab-completion cd
+function histdir-tab-completion() {
+   local cword=${#COMP_WORDS[@]}
+   local arg=${COMP_WORDS[1]}
+   if (( COMP_CWORD == 1 )) && (( cword == 2 )) && [[ "${arg}" =~ ^- ]]
+   then
+      COMPREPLY=( '-NR[<tab>]' '-REGEX<tab>' )
+      if is-num "${arg:1}"
+      then
+         local pattern="^\s*${arg:1}\s*\s"
+         COMPREPLY=( "$(chdir -- | sed -n "/${pattern}/ {s/${pattern}//; p}")" )
+      else
+         local lines=$(chdir -- | grep "${arg:1}" | wc -l)
+         if [ "${lines}" = "1" ]
+         then
+            COMPREPLY=( "$(chdir -- | grep "${arg:1}" | sed "s/^\s*\w*\s*//")" )
+         else
+            chdir -- | g "${arg:1}" | while read line
+            do
+               echo -ne "\n${line}"
+            done
+         fi
+      fi
+   else
+      _cd
+   fi
+}

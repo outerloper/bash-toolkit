@@ -241,7 +241,7 @@ function env-bind() {
    shopt -s histappend # to check if duplicates handled as desired here
    bind "set completion-ignore-case on"
    bind "set show-all-if-ambiguous on"
-   bind "set completion-query-items 600"
+   bind "set completion-query-items 1000"
 }
 
 env-bind
