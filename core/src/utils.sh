@@ -121,6 +121,18 @@ function sponge() {
    mv "${tmp}" "${file}"
 }
 
+# ReMove CR from line endings
+rmcr() {
+   for file in $@
+   do
+      if [ -f "${file}" ]
+      then
+         tr -d "\r" < "${file}" > "${file}.tmp" && mv "${file}.tmp" "${file}"
+      fi
+   done
+}
+
+type cygpath >/dev/null 2>/dev/null || { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
 
 function debug-array() {
    local arr=${1}

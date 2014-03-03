@@ -8,23 +8,33 @@ function is-dir-empty() {
 export -f is-dir-empty
 
 
-DIRHISTFILE=${HOME}/.dirstack
-DIRHISTSIZE=50
+DIRHISTFILE=${HOME}/.dir_history
+DIRHISTSIZE=40
+
+function _dirs-ensure-history-exists() {
+   if ! [ -f "${DIRHISTFILE}" ]
+   then
+      _dirs-init-empty-history #TODO test when missing file, cd - returns no completion results (with no empty line)
+   fi
+}
 
 function _dirs-history-print() {
+   _dirs-ensure-history-exists
    nl -w 5 "${DIRHISTFILE}"
 }
 
-function _dirs-history-clear() {
+function _dirs-init-empty-history() {
    echo -n > "${DIRHISTFILE}"
 }
 
 function _dirs-history-fetch() {
+   _dirs-ensure-history-exists
    local nr=${1:-'$'}
    sed -n "${nr} p" < "${DIRHISTFILE}"
 }
 
 function _dirs-history-add-pwd() {
+   _dirs-ensure-history-exists
    local dir="$(dirs +0)"
    grep -v "^${dir}\$" <"${DIRHISTFILE}" | tail "-$((DIRHISTSIZE - 1))" | sponge "${DIRHISTFILE}"
    echo "${dir}" >>"${DIRHISTFILE}"
@@ -53,7 +63,7 @@ Special values for dir:
    }
 
    [ "${1}" == "-c" ] && {
-      _dirs-history-clear
+      _dirs-init-empty-history
       return 0
    }
 
@@ -84,18 +94,27 @@ function histdir-tab-completion() {
    local arg=${COMP_WORDS[1]}
    if (( COMP_CWORD == 1 )) && (( cword == 2 )) && [[ "${arg}" =~ ^- ]]
    then
-      COMPREPLY=( '-NR[<tab>]' '-REGEX<tab>' )
+      COMPREPLY=( '-NR[<tab>]' '-REGEX<tab>' '--REGEX<tab>' )
       if is-num "${arg:1}"
       then
          local pattern="^\s*${arg:1}\s*\s"
          COMPREPLY=( "$(chdir -- | sed -n "/${pattern}/ {s/${pattern}//; p}")" )
       else
-         local lines=$(chdir -- | grep "${arg:1}" | wc -l)
-         if [ "${lines}" = "1" ]
+         local phrase
+         local completeIfOne
+         if [ "${arg:1:1}" = "-" ]
          then
-            COMPREPLY=( "$(chdir -- | grep "${arg:1}" | sed "s/^\s*\w*\s*//")" )
+            phrase="${arg:2}"
          else
-            chdir -- | g "${arg:1}" | while read line
+            phrase="${arg:1}"
+            completeIfOne=1 # TODO test this
+         fi
+         local lines=$(chdir -- | grep "${phrase}" | wc -l)
+         if [ "${lines}" = "1" ] && [ "${completeIfOne}" ]
+         then
+            COMPREPLY=( "$(chdir -- | grep "${phrase}" | sed "s/^\s*\w*\s*//")" )
+         else
+            for line in "$(chdir -- | g -i "${phrase}")"
             do
                echo -ne "\n${line}"
             done

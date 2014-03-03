@@ -5,6 +5,9 @@ function bind-to-macro() {
    shift
    for key in $@
    do
+      case ${key} in
+         '\e'|'\C-'|'\e\C-') key="${key} " ;;
+      esac
       bind "\"${key}\": ${macro}"
    done
 }
@@ -22,7 +25,10 @@ function bind-to-chars() {
 }
 
 function grep-history() {
-   history | g "$1" | tail -50
+   history -a
+   history -c
+   history -r
+   history | g -i "$1" | tail -50
 }
 
 function quick-find() {
@@ -117,7 +123,7 @@ function env-bind() {
 
    # key codes used for substitution
 
-   local Aux0='\e[90~'
+   local MagicSpace='\e[90~'
    local Aux1='\e[91~'
    local Aux2='\e[92~'
    local Aux3='\e[93~'
@@ -147,42 +153,49 @@ function env-bind() {
    #bind-to-macro kill-whole-line
    bind-to-macro undo "${Alt}z"
    bind-to-macro paste-from-clipboard "${Alt}v"
-   bind ' ':magic-space # bind-to-macro does not work for magic-space don't know why
+   #   bind '1':magic-space # space somehow cannot be set for magic-space..
+   bind-to-macro magic-space "${MagicSpace}"
+   bind-to-macro menu-complete "${Ctrl} "
+   bind-to-macro menu-complete-backward "${Alt} "
 
    bind-to-macro end-of-history "${EndOfHist}"
-   bind-to-macro forward-search-history "${Ctrl}t" "${CtrlDown}"
-   bind-to-macro history-search-backward "${AltUp}"
-   bind-to-macro history-search-forward "${AltDown}"
+   bind-to-macro history-search-forward "${CtrlDown}"
+   bind-to-macro history-search-backward "${CtrlUp}"
+
+   bind-to-macro insert-comment "${Alt}3"
 
    # custom char sequences definitions
 
    local nextWord=${FwdWord}${FwdWord}${BkwWord}
-   local help=${End}' --help\n'
+   local help=${End}' --help\n'--color
    local man=${Home}'man '${FwdWord}${AltDel}'\n'
-   local lsAndPwd=${ClrLn}'\\ls --color -l\npwd\n'
-   local lsLtr=${ClrLn}'\\ls --color -ltr\n'
-   local pipeToGrep=${End}' | grep \"\"'${Left}
-   local pipeToSed=${End}' | sed -e \"\"'${Left}
+   local ls=${ClrLn}'lc\n'
+   local lsLtr=${ClrLn}'l\n'
+   local pipeToGrep=${End}' | g \"\"'${Left}
+   local pipeToSed=${End}' | sed \"\"'${Left}
    local echoize=${Home}'echo \"'${End}'\"'${Left}
    local find=${ClrLn}'quick-find \"\"'${Left}
-   local grepHistory=${Home}' grep-history \"'${End}'\"\n'
+   local grepHistory=${Home}' grep-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
+   local expandHistoryEntry=${Home}'!'${End}${MagicSpace}
+   local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}
+   local expandDirHistoryEntry=${Home}${FwdWord}${ClrLnRight}${Home}'cd -'${End}'\t'
    local grepPs=${ClrLn}'ps ux | grep \"\"'${Left}
    local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
    local executize=${Home}'./'${FwdWord}''${End}'\t'
-   local makeVar=${BkwWord}'${'${FwdWord}}${Left}'\t'
+   local change1stWord=${Home}${AltCtrlRight}
+   local makeVar=${BkwWord}'${'${FwdWord}}${Left}
    local initVar='}'${Left}':='
-   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}${Left}${Left}'\t'
+   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}${Left}${Left}
    local goToHome=${ClrLn}'cd ~\n'
    local goToPrev=${ClrLn}'cd -\n'
    local goDownDir=${ClrLn}'cd \t'
    local goUpDir=${ClrLn}'cd ..\n'
    local chDir=${ClrLn}'cd --\ncd -'
    local editFile=${ClrLn}${EDITOR}' \t'
-   local mkdir=${ClrLn}'mkdir -p '
    local rm=${ClrLn}'rm -rf \t'
    local currAbsPath='$PWD/\t'
-   local useLastCommentedLine=${ClrLn}'#'${AltUp}${Bsp}${End}
+   local useLastCommentedLine=${ClrLn}'#'${CtrlUp}${Bsp}${End}
    local envCommand=${ClrLn}${ENV}' \t'
    local macro=${End}'; }'${Home}'() { '${Home}'function '
    local echoLastResultCode=${End}'echo $?\n'
@@ -190,7 +203,6 @@ function env-bind() {
    local parentheses='q)'${BkwWord}'('${FwdWord}${Bsp}
    local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
    local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
-   local historyExpansion=${Home}'!'${End}${Aux0}
 
    # custom char sequences bindings
 
@@ -200,47 +212,50 @@ function env-bind() {
    bind-to-chars "${nextWord}" "${CtrlRight}"
    bind-to-chars "${help}" "${F1}"
    bind-to-chars "${man}" "${AltF1}"
-   bind-to-chars "${lsAndPwd}" "${F2}"
-   bind-to-chars "${lsLtr}" "${AltF2}"
+   bind-to-chars "${ls}" "${F12}"
+   bind-to-chars "${lsLtr}" "${AltF12}"
    bind-to-chars "${pipeToGrep}" "${Alt}g"
    bind-to-chars "${pipeToSed}" "${Alt}s"
    bind-to-chars "${echoize}" "${Alt}e"
    bind-to-chars "${find}" "${Alt}f"
-   bind-to-chars "${grepHistory}" "${CtrlUp}" "${AltCtrlUp}"
-   bind-to-chars "${grepHistory}!" "${AltCtrlUp}"
+   bind-to-chars "${grepHistory}" "${AltUp}"
+   bind-to-chars "${expandHistoryEntry}" "${AltDown}"
+   bind-to-chars "${grepDirHistory}" "${AltPgUp}"
+   bind-to-chars "${expandDirHistoryEntry}" "${AltPgDown}"
    bind-to-chars "${grepPs}" "${Alt}p"
    bind-to-chars "${kill}" "${Alt}k"
    bind-to-chars "${jps}" "${Alt}j"
    bind-to-chars "${executize}" "${Alt}."
-   bind-to-chars "${makeVar}" "${Alt}$"
+   bind-to-chars "${change1stWord}" "${Alt}6" # like Alt+^ but without Shift
+   bind-to-chars "${makeVar}" "${Alt}4" # like Alt+$ but without Shift
    bind-to-chars "${initVar}" "${Alt}="
-   bind-to-chars "${arrayVar}" "${Alt}@"
+   bind-to-chars "${arrayVar}" "${Alt}2" # like Alt+@ but without Shift
    bind-to-chars "${goToHome}" "${AltHome}"
    bind-to-chars "${goToPrev}" "${AltEnd}"
    bind-to-chars "${goDownDir}" "${PgDown}"
    bind-to-chars "${goUpDir}" "${PgUp}"
-   bind-to-chars "${chDir}" "${AltPgDown}" "${AltPgUp}"
-   bind-to-chars "${mkdir}" "${AltIns}"
+   bind-to-chars "${editFile}" "${Ins}"
    bind-to-chars "${currAbsPath}" "${ShiftTab}"
-   bind-to-chars "${useLastCommentedLine}" "${Alt}!"
-   bind-to-chars "${envCommand}" "${F3}"
+   bind-to-chars "${useLastCommentedLine}" "${Alt}1" # like Alt+! but without Shift
+   bind-to-chars "${envCommand}" "${F2}"
    bind-to-chars "${macro}" "${Alt}m"
-   bind-to-chars "${echoLastResultCode}" "${Alt}?"
+   bind-to-chars "${echoLastResultCode}" "${Alt}/"  # like Alt+? but without Shift
    bind-to-chars "${doubleQuote}" "${Alt}\'"
-   bind-to-chars "${parentheses}" "${Alt}("
-   bind-to-chars "${braces}" "${Alt}{"
-   bind-to-chars "${rerunLast2Commands}" "${Alt}%"
+   bind-to-chars "${parentheses}" "${Alt}9" # like Alt+( but without Shift
+   bind-to-chars "${braces}" "${Alt}]"
+   bind-to-chars "${rerunLast2Commands}" "${Alt}5" # like Alt+% but without Shift
 
    # history setup
 
-   export HISTCONTROL=ignorespace:ignoredups:erasedups
+   export HISTCONTROL=ignorespace:ignoredups # :erasedups # no erasedups - make history numbers change as rarely as possible
    export HISTFILESIZE=1000
    export HISTSIZE=1000
-   export HISTTIMEFORMAT="%Y-%m-%d %T  "
-   export PROMPT_COMMAND=''
-   shopt -s histappend # to check if duplicates handled as desired here
+   export HISTTIMEFORMAT="%a %Y-%m-%d %T  "
+   export PROMPT_COMMAND='history -a;history -c;history -r' # having common history for concurrent sessions
+   shopt -s histappend
    bind "set completion-ignore-case on"
    bind "set show-all-if-ambiguous on"
+   bind "set completion-map-case on"
    bind "set completion-query-items 1000"
 }
 

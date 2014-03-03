@@ -23,47 +23,49 @@
     <option name="SHOW_CLOSE_PROMPT" value="true" />
     <option name="TOOL_WINDOW_SELECTED_CONTENT_INDEX" value="0" />
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
+    <treeState key="project">
+      <selectedPath>
+        <pathElement>
+          <option name="myNodeId" value="helperText" />
+          <option name="myNodeType" value="jetbrains.buildServer.tree.descriptors.LinkedTextDescriptor" />
+        </pathElement>
+      </selectedPath>
+    </treeState>
+    <treeState key="responsibilities">
+      <selectedPath>
+        <pathElement>
+          <option name="myNodeId" value="helperText" />
+          <option name="myNodeType" value="jetbrains.buildServer.tree.descriptors.LinkedTextDescriptor" />
+        </pathElement>
+      </selectedPath>
+    </treeState>
+    <treeState key="changes">
+      <selectedPath>
+        <pathElement>
+          <option name="myNodeId" value="helperText" />
+          <option name="myNodeType" value="jetbrains.buildServer.tree.descriptors.LinkedTextDescriptor" />
+        </pathElement>
+      </selectedPath>
+    </treeState>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa117a97-27a1-4380-afc5-f6b81d87f672" name="Default" comment="utils.sh: 'region' functions&#10;">
-      <change type="DELETED" beforePath="C:\Workspace\playground\bash-toolkit\arglist\src\bash.exe.stackdump" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/arglist.iml" afterPath="$PROJECT_DIR$/arglist/arglist.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/sandbox/arglist.old.sh" afterPath="$PROJECT_DIR$/core/sandbox/arglist.old.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/src/arglist.sh" afterPath="$PROJECT_DIR$/arglist/src/arglist.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bash-toolkit.iml" afterPath="$PROJECT_DIR$/bash-toolkit.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/test/common.sh" afterPath="$PROJECT_DIR$/arglist/test/common.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/core.iml" afterPath="$PROJECT_DIR$/core/core.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/sandbox/init.old.sh" afterPath="$PROJECT_DIR$/core/sandbox/init.old.sh" />
+    <list default="true" id="fa117a97-27a1-4380-afc5-f6b81d87f672" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/core/src/vimrc.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/inputrc.sh" afterPath="$PROJECT_DIR$/core/src/inputrc.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myenv/myenv.iml" afterPath="$PROJECT_DIR$/myenv/myenv.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/sandbox/myenv.old.sh" afterPath="$PROJECT_DIR$/core/sandbox/myenv.old.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/profile.sh" afterPath="$PROJECT_DIR$/core/src/profile.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/bin/run-tests.sh" afterPath="$PROJECT_DIR$/core/bin/run-tests.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/test/suite.sh" afterPath="$PROJECT_DIR$/arglist/test/suite.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/test/suite.sh" afterPath="$PROJECT_DIR$/core/test/suite.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/test/test.completion.sh" afterPath="$PROJECT_DIR$/arglist/test/test.completion.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/test/test.get-args-correct-usage.sh" afterPath="$PROJECT_DIR$/arglist/test/test.get-args-correct-usage.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/test/test.get-args-wrong-usage.sh" afterPath="$PROJECT_DIR$/arglist/test/test.get-args-wrong-usage.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/test/test.help.sh" afterPath="$PROJECT_DIR$/arglist/test/test.help.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/test/test.utils.functions.sh" afterPath="$PROJECT_DIR$/core/test/test.utils.functions.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/test/test.utils.sh" afterPath="$PROJECT_DIR$/core/test/test.utils.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/test/test.utils.tests.sh" afterPath="$PROJECT_DIR$/core/test/test.utils.tests.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/test/test.utils.text-files.sh" afterPath="$PROJECT_DIR$/core/test/test.utils.text-files.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.dirs.sh" afterPath="$PROJECT_DIR$/core/src/utils.dirs.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.functions.sh" afterPath="$PROJECT_DIR$/core/src/utils.functions.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.sh" afterPath="$PROJECT_DIR$/core/src/utils.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.tests.sh" afterPath="$PROJECT_DIR$/core/src/utils.tests.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.text-files.sh" afterPath="$PROJECT_DIR$/core/src/utils.text-files.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="bash-toolkit.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1392667245673" ignored="false" />
-    <file path="/utils.dirs.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1392682724561" ignored="false" />
-    <file path="/a.dummy" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1392597683849" ignored="false" />
+    <file path="/Dummy.txt" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393782408726" ignored="false" />
+    <file path="/utils.dirs.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393803537738" ignored="false" />
+    <file path="/a.dummy" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393804166719" ignored="false" />
     <file path="$PROJECT_DIR$/../../apd_airvision/trunk/nextgen/.idea/workspace.xml" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1392667247600" ignored="false" />
+    <file path="/inputrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393807053874" ignored="false" />
+    <file path="/profile.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393807156628" ignored="false" />
+    <file path="/vimrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393805634583" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,16 +129,7 @@
       <file leaf-file-name="utils.dirs.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="26" selection-start="1012" selection-end="1012" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="14" selection-start="577" selection-end="577" vertical-scroll-proportion="0.56122446">
+            <state line="17" column="5" selection-start="379" selection-end="379" vertical-scroll-proportion="-7.8">
               <folding />
             </state>
           </provider>
@@ -145,7 +138,16 @@
       <file leaf-file-name="inputrc.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="236" column="27" selection-start="6946" selection-end="6946" vertical-scroll-proportion="0.0">
+            <state line="179" column="11" selection-start="4494" selection-end="4494" vertical-scroll-proportion="-3.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="vimrc.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/vimrc.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="0" selection-start="246" selection-end="246" vertical-scroll-proportion="-3.6">
               <folding />
             </state>
           </provider>
@@ -160,10 +162,19 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="utils.sh" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="130" column="8" selection-start="2569" selection-end="2569" vertical-scroll-proportion="0.7584541">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="profile.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="27" selection-start="279" selection-end="279" vertical-scroll-proportion="0.0">
+            <state line="13" column="7" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -253,7 +264,7 @@
       <file leaf-file-name="test.help.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arglist/test/test.help.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="5" selection-start="234" selection-end="234" vertical-scroll-proportion="0.0">
+            <state line="22" column="61" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -278,7 +289,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/common/src/utils.sh" />
         <option value="$PROJECT_DIR$/core/test/test-inject-vars.sh" />
         <option value="$PROJECT_DIR$/core/playground/trap.sh" />
         <option value="$PROJECT_DIR$/core/test/inject-vars-var-defs.sh" />
@@ -299,11 +309,12 @@
         <option value="$PROJECT_DIR$/core/sandbox/myenv.old.sh" />
         <option value="$PROJECT_DIR$/core/src/utils.tests.sh" />
         <option value="$PROJECT_DIR$/core/test/test.utils.sh" />
-        <option value="$PROJECT_DIR$/core/src/utils.sh" />
         <option value="$PROJECT_DIR$/arglist/src/arglist.sh" />
-        <option value="$PROJECT_DIR$/core/src/profile.sh" />
-        <option value="$PROJECT_DIR$/core/src/inputrc.sh" />
         <option value="$PROJECT_DIR$/core/src/utils.dirs.sh" />
+        <option value="$PROJECT_DIR$/core/src/vimrc.sh" />
+        <option value="$PROJECT_DIR$/core/src/inputrc.sh" />
+        <option value="$PROJECT_DIR$/core/src/profile.sh" />
+        <option value="$PROJECT_DIR$/core/src/utils.sh" />
       </list>
     </option>
   </component>
@@ -550,14 +561,15 @@
     <property name="SearchEverywhereHistory" value="" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/core/core.iml" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="GoToClass.includeJavaFiles" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="PublishConfig">
     <servers>
@@ -653,6 +665,14 @@
       <option name="PARAMETERS" value="" />
       <method />
     </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
     <configuration default="true" type="Specs2RunConfiguration" factoryName="Specs2">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <extension name="scalaCoverage" />
@@ -668,12 +688,17 @@
       <setting name="showProgressMessages" value="true" />
       <method />
     </configuration>
-    <configuration default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -702,19 +727,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -753,6 +765,21 @@
       <patterns />
       <method />
     </configuration>
+    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <method />
+    </configuration>
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="" />
       <option name="ACTIVITY_CLASS" value="" />
@@ -767,21 +794,6 @@
       <option name="NETWORK_SPEED" value="full" />
       <option name="NETWORK_LATENCY" value="none" />
       <option name="CLEAR_LOGCAT" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <extension name="scalaCoverage" />
-      <module name="" />
-      <setting name="path" value="" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="testName" value="" />
-      <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <method />
     </configuration>
     <list size="0" />
@@ -817,20 +829,26 @@
       <created>1389302874742</created>
       <updated>1389302874742</updated>
     </task>
+    <task id="LOCAL-00001" summary="utils.dirs.sh: directories history module (in progress)&#10;">
+      <created>1392683757253</created>
+      <updated>1392683757253</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1592" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32374868" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2886049" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29925454" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290735" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -843,7 +861,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16723745" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19743863" sideWeight="0.67625135" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2620064" sideWeight="0.7113951" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="simpleUML" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -851,11 +869,10 @@
       <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="SQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="SQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29925454" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Kotlin" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -909,7 +926,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="utils.sh: 'region' functions&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="utils.dirs.sh: directories history module (in progress)&#10;" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -927,6 +944,7 @@
     <MESSAGE value="Utils functions, tests, project rearrangement" />
     <MESSAGE value="utils.sh: new functions: is-function, rename-function, render-template" />
     <MESSAGE value="utils.sh: 'region' functions&#10;" />
+    <MESSAGE value="utils.dirs.sh: directories history module (in progress)&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -936,11 +954,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/doc/shunit2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="439" column="80" selection-start="14007" selection-end="14007" vertical-scroll-proportion="-7.423077" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/arglist/test/suite.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="43" vertical-scroll-proportion="0.0" />
@@ -953,44 +966,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/test/suite.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="0" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="3" column="0" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/test/test.utils.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="248" column="14" selection-start="4222" selection-end="4222" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="248" column="14" selection-start="4222" selection-end="4222" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/sandbox/arglist.old.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="13" selection-start="370" selection-end="370" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="15" column="13" selection-start="370" selection-end="370" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/sandbox/init.old.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="0" selection-start="942" selection-end="942" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="44" column="0" selection-start="942" selection-end="942" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/utils.text-files.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="8" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="124" column="20" selection-start="2393" selection-end="2404" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="50" column="8" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/arglist/src/arglist.sh">
@@ -1010,13 +1006,6 @@
     <entry file="file://$PROJECT_DIR$/arglist/test/test.completion.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="23" selection-start="442" selection-end="442" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arglist/test/test.help.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="5" selection-start="234" selection-end="234" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1049,13 +1038,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/utils.functions.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="0" selection-start="609" selection-end="609" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/utils.tests.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="41" column="64" selection-start="893" selection-end="893" vertical-scroll-proportion="0.0">
@@ -1084,30 +1066,56 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="236" column="27" selection-start="6946" selection-end="6946" vertical-scroll-proportion="0.0">
+        <state line="11" column="0" selection-start="310" selection-end="310" vertical-scroll-proportion="0.5427632" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arglist/test/test.help.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="61" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
+    <entry file="file://$PROJECT_DIR$/core/src/utils.functions.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="27" selection-start="279" selection-end="279" vertical-scroll-proportion="0.0">
+        <state line="21" column="0" selection-start="609" selection-end="609" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/vimrc.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="0" selection-start="246" selection-end="246" vertical-scroll-proportion="-3.6">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="26" selection-start="1012" selection-end="1012" vertical-scroll-proportion="0.0">
+        <state line="17" column="5" selection-start="379" selection-end="379" vertical-scroll-proportion="-7.8">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
+    <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="14" selection-start="577" selection-end="577" vertical-scroll-proportion="0.56122446">
+        <state line="179" column="11" selection-start="4494" selection-end="4494" vertical-scroll-proportion="-3.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="7" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="130" column="8" selection-start="2569" selection-end="2569" vertical-scroll-proportion="0.7584541">
           <folding />
         </state>
       </provider>
