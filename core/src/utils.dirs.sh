@@ -8,8 +8,8 @@ function is-dir-empty() {
 export -f is-dir-empty
 
 
-DIRHISTFILE=${HOME}/.dir_history
-DIRHISTSIZE=40
+: ${DIRHISTFILE:=${HOME}/.dir_history}
+: ${DIRHISTSIZE:=40}
 
 function _dirs-ensure-history-exists() {
    if ! [ -f "${DIRHISTFILE}" ]
@@ -52,7 +52,7 @@ function chdir() {
 Special values for dir:
   -    Go to previous directory
   --   Print dir history
-  -N   Go to dir with given number in history
+  -N   Go to dir with number N in history
 "
       return 127
    }
@@ -88,7 +88,7 @@ Special values for dir:
 export -f chdir
 
 
-complete -o nospace -F histdir-tab-completion cd
+complete -o nospace -o dirnames -F histdir-tab-completion cd
 function histdir-tab-completion() {
    local cword=${#COMP_WORDS[@]}
    local arg=${COMP_WORDS[1]}
@@ -120,7 +120,5 @@ function histdir-tab-completion() {
             done
          fi
       fi
-   else
-      _cd
    fi
 }

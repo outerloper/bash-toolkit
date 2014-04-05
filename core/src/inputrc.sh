@@ -178,7 +178,8 @@ function env-bind() {
    local grepHistory=${Home}' grep-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
    local expandHistoryEntry=${Home}'!'${End}${MagicSpace}
    local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}
-   local expandDirHistoryEntry=${Home}${FwdWord}${ClrLnRight}${Home}'cd -'${End}'\t'
+#   local expandDirHistoryEntry=${Home}${FwdWord}${ClrLnRight}${Home}'cd -'${End}'\t' # smart dir history completion
+   local expandDirHistoryEntry=${ClrLn}'cd -\t'
    local grepPs=${ClrLn}'ps ux | grep \"\"'${Left}
    local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
@@ -203,6 +204,9 @@ function env-bind() {
    local parentheses='q)'${BkwWord}'('${FwdWord}${Bsp}
    local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
    local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
+   local expandPrevCmdMainArg='!:0'${MagicSpace}
+   local expandPrevCmd1stArg='!^'${MagicSpace}
+   local expandPrevCmdLastArg='!$'${MagicSpace}
 
    # custom char sequences bindings
 
@@ -211,7 +215,7 @@ function env-bind() {
    bind-to-chars "${ClrLn}" "${AltCtrlDown}"
    bind-to-chars "${nextWord}" "${CtrlRight}"
    bind-to-chars "${help}" "${F1}"
-   bind-to-chars "${man}" "${AltF1}"
+   bind-to-chars "${man}" "${F11}"
    bind-to-chars "${ls}" "${F12}"
    bind-to-chars "${lsLtr}" "${AltF12}"
    bind-to-chars "${pipeToGrep}" "${Alt}g"
@@ -244,6 +248,10 @@ function env-bind() {
    bind-to-chars "${parentheses}" "${Alt}9" # like Alt+( but without Shift
    bind-to-chars "${braces}" "${Alt}]"
    bind-to-chars "${rerunLast2Commands}" "${Alt}5" # like Alt+% but without Shift
+
+   bind-to-chars "${expandPrevCmdMainArg}" "${Alt}${F1}"
+   bind-to-chars "${expandPrevCmd1stArg}" "${Alt}${F2}"
+   bind-to-chars "${expandPrevCmdLastArg}" "${Alt}${F3}"
 
    # history setup
 

@@ -50,22 +50,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa117a97-27a1-4380-afc5-f6b81d87f672" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/core/src/vimrc.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/inputrc.sh" afterPath="$PROJECT_DIR$/core/src/inputrc.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/profile.sh" afterPath="$PROJECT_DIR$/core/src/profile.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.dirs.sh" afterPath="$PROJECT_DIR$/core/src/utils.dirs.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.sh" afterPath="$PROJECT_DIR$/core/src/utils.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/vimrc.sh" afterPath="$PROJECT_DIR$/core/src/vimrc.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="bash-toolkit.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393782408726" ignored="false" />
-    <file path="/utils.dirs.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393803537738" ignored="false" />
-    <file path="/a.dummy" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393804166719" ignored="false" />
+    <file path="/Dummy.txt" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396635705217" ignored="false" />
+    <file path="/utils.dirs.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396699792161" ignored="false" />
+    <file path="/a.dummy" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396645771985" ignored="false" />
     <file path="$PROJECT_DIR$/../../apd_airvision/trunk/nextgen/.idea/workspace.xml" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1392667247600" ignored="false" />
-    <file path="/inputrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393807053874" ignored="false" />
+    <file path="/inputrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396699712953" ignored="false" />
     <file path="/profile.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393807156628" ignored="false" />
-    <file path="/vimrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393805634583" ignored="false" />
+    <file path="/vimrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396649052761" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +127,7 @@
       <file leaf-file-name="utils.dirs.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="5" selection-start="379" selection-end="379" vertical-scroll-proportion="-7.8">
+            <state line="98" column="10" selection-start="2235" selection-end="2235" vertical-scroll-proportion="-15.48">
               <folding />
             </state>
           </provider>
@@ -138,16 +136,16 @@
       <file leaf-file-name="inputrc.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="179" column="11" selection-start="4494" selection-end="4494" vertical-scroll-proportion="-3.0">
+            <state line="179" column="44" selection-start="4527" selection-end="4527" vertical-scroll-proportion="-8.44">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vimrc.sh" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="vimrc.sh" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/src/vimrc.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="0" selection-start="246" selection-end="246" vertical-scroll-proportion="-3.6">
+            <state line="8" column="0" selection-start="271" selection-end="271" vertical-scroll-proportion="0.17467248">
               <folding />
             </state>
           </provider>
@@ -162,10 +160,37 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utils.sh" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="utils.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="130" column="8" selection-start="2569" selection-end="2569" vertical-scroll-proportion="0.7584541">
+            <state line="20" column="23" selection-start="480" selection-end="480" vertical-scroll-proportion="-12.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="suite.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/test/suite.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="arglist.old.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/sandbox/arglist.old.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="init.old.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/sandbox/init.old.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -289,15 +314,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/core/test/test-inject-vars.sh" />
-        <option value="$PROJECT_DIR$/core/playground/trap.sh" />
-        <option value="$PROJECT_DIR$/core/test/inject-vars-var-defs.sh" />
-        <option value="$PROJECT_DIR$/core/test/inject-vars-text.txt" />
-        <option value="$PROJECT_DIR$/core/src/init.old.sh" />
-        <option value="$PROJECT_DIR$/core/src/test-utils.sh" />
-        <option value="$PROJECT_DIR$/core/src/function-utils.sh" />
-        <option value="$PROJECT_DIR$/core/src/text-utils.sh" />
-        <option value="$PROJECT_DIR$/core/src/utils.functions.sh" />
         <option value="$PROJECT_DIR$/arglist/test/test.completion.sh" />
         <option value="$PROJECT_DIR$/arglist/test/test.get-args-correct-usage.sh" />
         <option value="$PROJECT_DIR$/arglist/test/test.get-args-wrong-usage.sh" />
@@ -310,11 +326,11 @@
         <option value="$PROJECT_DIR$/core/src/utils.tests.sh" />
         <option value="$PROJECT_DIR$/core/test/test.utils.sh" />
         <option value="$PROJECT_DIR$/arglist/src/arglist.sh" />
-        <option value="$PROJECT_DIR$/core/src/utils.dirs.sh" />
-        <option value="$PROJECT_DIR$/core/src/vimrc.sh" />
-        <option value="$PROJECT_DIR$/core/src/inputrc.sh" />
         <option value="$PROJECT_DIR$/core/src/profile.sh" />
         <option value="$PROJECT_DIR$/core/src/utils.sh" />
+        <option value="$PROJECT_DIR$/core/src/vimrc.sh" />
+        <option value="$PROJECT_DIR$/core/src/inputrc.sh" />
+        <option value="$PROJECT_DIR$/core/src/utils.dirs.sh" />
       </list>
     </option>
   </component>
@@ -377,6 +393,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -547,8 +565,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -833,14 +849,18 @@
       <created>1392683757253</created>
       <updated>1392683757253</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="utils.dirs.sh: directories history module - fixed: error when history file empty, added: cd --&lt;tab&gt; completion&#10;inputrc: changes in key bindings, common history for concurrent bash sessions&#10;adding .vimrc">
+      <created>1393807570943</created>
+      <updated>1393807570943</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1592" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2886049" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19169329" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29925454" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -861,7 +881,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16723745" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2620064" sideWeight="0.7113951" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20384204" sideWeight="0.8083067" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="simpleUML" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -926,7 +946,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="utils.dirs.sh: directories history module (in progress)&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="utils.dirs.sh: directories history module - fixed: error when history file empty, added: cd --&lt;tab&gt; completion&#10;inputrc: changes in key bindings, common history for concurrent bash sessions&#10;adding .vimrc" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -945,6 +965,7 @@
     <MESSAGE value="utils.sh: new functions: is-function, rename-function, render-template" />
     <MESSAGE value="utils.sh: 'region' functions&#10;" />
     <MESSAGE value="utils.dirs.sh: directories history module (in progress)&#10;" />
+    <MESSAGE value="utils.dirs.sh: directories history module - fixed: error when history file empty, added: cd --&lt;tab&gt; completion&#10;inputrc: changes in key bindings, common history for concurrent bash sessions&#10;adding .vimrc" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -954,76 +975,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/arglist/test/suite.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="43" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arglist/test/common.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="44" selection-start="418" selection-end="418" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/test/suite.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="0" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/test/test.utils.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="248" column="14" selection-start="4222" selection-end="4222" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/sandbox/arglist.old.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="13" selection-start="370" selection-end="370" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/sandbox/init.old.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="0" selection-start="942" selection-end="942" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/utils.text-files.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="8" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arglist/src/arglist.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="8" selection-start="2711" selection-end="2711" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/sandbox/myenv.old.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="7" selection-start="801" selection-end="801" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arglist/test/test.completion.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="23" selection-start="442" selection-end="442" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arglist/test/test.get-args-correct-usage.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="2" selection-start="402" selection-end="402" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arglist/test/test.get-args-wrong-usage.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="7" selection-start="20" selection-end="20" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/bin/run-tests.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -1085,27 +1036,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/vimrc.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="246" selection-end="246" vertical-scroll-proportion="-3.6">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="5" selection-start="379" selection-end="379" vertical-scroll-proportion="-7.8">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="179" column="11" selection-start="4494" selection-end="4494" vertical-scroll-proportion="-3.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="7" selection-start="353" selection-end="353" vertical-scroll-proportion="0.0">
@@ -1115,7 +1045,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="8" selection-start="2569" selection-end="2569" vertical-scroll-proportion="0.7584541">
+        <state line="20" column="23" selection-start="480" selection-end="480" vertical-scroll-proportion="-12.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/test/suite.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/sandbox/arglist.old.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/sandbox/init.old.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="179" column="44" selection-start="4527" selection-end="4527" vertical-scroll-proportion="-8.44">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="98" column="10" selection-start="2235" selection-end="2235" vertical-scroll-proportion="-15.48">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/vimrc.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="0" selection-start="271" selection-end="271" vertical-scroll-proportion="0.17467248">
           <folding />
         </state>
       </provider>

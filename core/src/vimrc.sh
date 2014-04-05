@@ -4,3 +4,5 @@
 
 syntax on
 set backspace=indent,eol,start
+
+hi comment ctermfg=blue
