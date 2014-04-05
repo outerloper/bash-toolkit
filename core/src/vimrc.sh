@@ -1,6 +1,7 @@
-"         this file should be sorced in ~/.vimrc :                "
-"           source ~/.bash-toolkit/core/src/vimrc.sh              "
-"         sh extension is only for syntax coloring in IDE         "
+" This is not a bash script. '.sh' extension is to enable some syntax coloring. "
+
+" To make use of this file, insert the following line in your ~/.vimrc :        "
+"      source ~/.bash-toolkit/core/src/vimrc.sh                                 "
 
 syntax on
 set backspace=indent,eol,start

@@ -3,10 +3,10 @@
 SPACE_MARKER="\xb7"
 SED_ERR="\x1b[31m"
 SED_NC="\x1b[0m"
-if [[ "$LANG" =~ .*UTF-8 ]]
-then
-   SPACE_MARKER="\xe2\x80\xa2"
-fi
+#if [[ "$LANG" =~ .*UTF-8 ]]
+#then
+#   SPACE_MARKER="\xe2\x80\xa2"
+#fi
 
 for dir in ${1:-$(readlink -f .)/../../**/test}
 do

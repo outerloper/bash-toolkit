@@ -185,6 +185,7 @@ function env-bind() {
    local jps=${ClrLn}'jps -lm\n'
    local executize=${Home}'./'${FwdWord}''${End}'\t'
    local change1stWord=${Home}${AltCtrlRight}
+   local insert2ndWord=${Home}${AltRight}' '
    local makeVar=${BkwWord}'${'${FwdWord}}${Left}
    local initVar='}'${Left}':='
    local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}${Left}${Left}
@@ -204,9 +205,9 @@ function env-bind() {
    local parentheses='q)'${BkwWord}'('${FwdWord}${Bsp}
    local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
    local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
-   local expandPrevCmdMainArg='!:0'${MagicSpace}
-   local expandPrevCmd1stArg='!^'${MagicSpace}
-   local expandPrevCmdLastArg='!$'${MagicSpace}
+   local expandPrevCmd1stWord='!:0'${MagicSpace}
+   local expandPrevCmd2ndWord='!^'${MagicSpace}
+   local expandPrevCmdLastWord='!$'${MagicSpace}
 
    # custom char sequences bindings
 
@@ -231,6 +232,7 @@ function env-bind() {
    bind-to-chars "${jps}" "${Alt}j"
    bind-to-chars "${executize}" "${Alt}."
    bind-to-chars "${change1stWord}" "${Alt}6" # like Alt+^ but without Shift
+   bind-to-chars "${insert2ndWord}" "${Alt}-" # like Alt+^ but without Shift
    bind-to-chars "${makeVar}" "${Alt}4" # like Alt+$ but without Shift
    bind-to-chars "${initVar}" "${Alt}="
    bind-to-chars "${arrayVar}" "${Alt}2" # like Alt+@ but without Shift
@@ -247,11 +249,12 @@ function env-bind() {
    bind-to-chars "${doubleQuote}" "${Alt}\'"
    bind-to-chars "${parentheses}" "${Alt}9" # like Alt+( but without Shift
    bind-to-chars "${braces}" "${Alt}]"
+#   bind-to-chars "${braces}" "${Alt}["
    bind-to-chars "${rerunLast2Commands}" "${Alt}5" # like Alt+% but without Shift
 
-   bind-to-chars "${expandPrevCmdMainArg}" "${Alt}${F1}"
-   bind-to-chars "${expandPrevCmd1stArg}" "${Alt}${F2}"
-   bind-to-chars "${expandPrevCmdLastArg}" "${Alt}${F3}"
+   bind-to-chars "${expandPrevCmd1stWord}" "${Alt}${F1}"
+   bind-to-chars "${expandPrevCmd2ndWord}" "${Alt}${F2}"
+   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}${F3}"
 
    # history setup
 

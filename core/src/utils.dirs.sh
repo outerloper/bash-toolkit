@@ -30,7 +30,7 @@ function _dirs-init-empty-history() {
 function _dirs-history-fetch() {
    _dirs-ensure-history-exists
    local nr=${1:-'$'}
-   sed -n "${nr} p" < "${DIRHISTFILE}"
+   [[ "${nr}" != "0" ]] && sed -n "${nr} p" < "${DIRHISTFILE}"
 }
 
 function _dirs-history-add-pwd() {
@@ -44,15 +44,15 @@ function _dirs-history-add-pwd() {
 function chdir() {
    [ "${1}" == "--help" ] && {
       \cd --help 2>&1 | sed '1 d'
-      echo "       or: cd -c"
-      echo "Options:
+      echo "       or: cd -c
+Options:
   -P   Do not follow symbolic links
   -L   Follow symbolic links (default)
   -c   Clear dir history
 Special values for dir:
   -    Go to previous directory
   --   Print dir history
-  -N   Go to dir with number N in history
+  -N   Go to dir with index N in history
 "
       return 127
    }
@@ -73,7 +73,7 @@ Special values for dir:
    then
       dir="$(_dirs-history-fetch "${dir:1}")"
       is "${dir}" || {
-         error 'No dir with such number in history'
+         error 'No dir with such index in history.'
          return 1
       }
       option=''
