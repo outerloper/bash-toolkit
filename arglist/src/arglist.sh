@@ -442,9 +442,10 @@ function printArgs() {
 
 
 ### EXAMPLE/DEMO ###
-# 1. execute: ARGLIST_DEMO=1; ./arglist.sh
-# 2. execute: greet --help
-# 3. basing on help displayed in 2. play with 'greet' command to see arglist in action
+# run:
+#    ARGLIST_DEMO=1
+#    ./arglist.sh
+#    greet --help
 
 if is "${ARGLIST_DEMO}"
 then

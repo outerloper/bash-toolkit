@@ -50,22 +50,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa117a97-27a1-4380-afc5-f6b81d87f672" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/vimrc.sh" afterPath="$PROJECT_DIR$/core/src/vimrc.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arglist/src/arglist.sh" afterPath="$PROJECT_DIR$/arglist/src/arglist.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/test/test.utils.sh" afterPath="$PROJECT_DIR$/core/test/test.utils.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/utils.sh" afterPath="$PROJECT_DIR$/core/src/utils.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="bash-toolkit.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396708822506" ignored="false" />
+    <file path="/Dummy.txt" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396822382470" ignored="false" />
     <file path="/utils.dirs.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396708190392" ignored="false" />
-    <file path="/a.dummy" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396706023592" ignored="false" />
+    <file path="/a.dummy" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396820347851" ignored="false" />
     <file path="$PROJECT_DIR$/../../apd_airvision/trunk/nextgen/.idea/workspace.xml" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1392667247600" ignored="false" />
-    <file path="/inputrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396705328636" ignored="false" />
+    <file path="/inputrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396709679469" ignored="false" />
     <file path="/profile.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1393807156628" ignored="false" />
     <file path="/vimrc.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396709348919" ignored="false" />
-    <file path="/utils.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396704724208" ignored="false" />
+    <file path="/utils.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396822185018" ignored="false" />
     <file path="/test.utils.dirs.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396708643097" ignored="false" />
     <file path="/README.md" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396709494303" ignored="false" />
+    <file path="/arglist.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396732407264" ignored="false" />
+    <file path="/test.utils.sh" changelist="fa117a97-27a1-4380-afc5-f6b81d87f672" time="1396822259782" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,14 +132,32 @@
       <file leaf-file-name="utils.dirs.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="10" selection-start="2245" selection-end="2245" vertical-scroll-proportion="-56.44">
+            <state line="117" column="14" selection-start="2912" selection-end="2912" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="inputrc.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
+      <file leaf-file-name="arglist.old.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/sandbox/arglist.old.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="23" column="0" selection-start="503" selection-end="503" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="arglist.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/arglist/src/arglist.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="55" column="36" selection-start="1199" selection-end="1199" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.functions.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/utils.functions.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
@@ -144,10 +165,64 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="suite.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/test/suite.sh">
+      <file leaf-file-name="utils.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="141" column="5" selection-start="2935" selection-end="2935" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tmp" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tmp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1" column="0" selection-start="38" selection-end="38" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TODO.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/lib/shunit/doc/TODO.txt">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.text-files.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/utils.text-files.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="55" column="31" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="common.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/arglist/test/common.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="56" column="16" selection-start="1326" selection-end="1326" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="init.old.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/sandbox/init.old.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="60" column="39" selection-start="1415" selection-end="1415" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="myenv.old.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/sandbox/myenv.old.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="19" column="11" selection-start="520" selection-end="520" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -157,78 +232,6 @@
         <entry file="file://$PROJECT_DIR$/core/src/vimrc.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state line="1" column="42" selection-start="124" selection-end="124" vertical-scroll-proportion="-0.6">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.utils.dirs.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/test/test.utils.dirs.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="79" column="24" selection-start="1469" selection-end="1469" vertical-scroll-proportion="-13.2">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="profile.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="utils.tests.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/utils.tests.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="58" selection-start="1724" selection-end="1724" vertical-scroll-proportion="-16.24">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.utils.functions.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/test/test.utils.functions.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="32" selection-start="336" selection-end="336" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="0" selection-start="761" selection-end="761" vertical-scroll-proportion="0.78488374">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lineno_test.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/lib/shunit/examples/lineno_test.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="math.inc" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/lib/shunit/examples/math.inc">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="math_test.sh" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/lib/shunit/examples/math_test.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -270,10 +273,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test.utils.sh" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="test.utils.sh" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/test/test.utils.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="0" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.0">
+            <state line="112" column="19" selection-start="1998" selection-end="1998" vertical-scroll-proportion="1.3507752">
               <folding />
             </state>
           </provider>
@@ -325,9 +328,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/core/lib/shunit/lib/shlib" />
-        <option value="$PROJECT_DIR$/core/lib/shunit/lib/versions" />
-        <option value="$PROJECT_DIR$/core/lib/shunit/examples/equality_test.sh" />
         <option value="$PROJECT_DIR$/core/lib/shunit/examples/lineno_test.sh" />
         <option value="$PROJECT_DIR$/core/lib/shunit/examples/math.inc" />
         <option value="$PROJECT_DIR$/core/lib/shunit/examples/math_test.sh" />
@@ -336,12 +336,15 @@
         <option value="$PROJECT_DIR$/core/lib/shunit/bin/gen_test_results.sh" />
         <option value="$PROJECT_DIR$/core/lib/shunit/bin/which" />
         <option value="$PROJECT_DIR$/core/bin/run-tests.sh" />
-        <option value="$PROJECT_DIR$/core/test/test.utils.sh" />
         <option value="$PROJECT_DIR$/core/src/utils.tests.sh" />
         <option value="$PROJECT_DIR$/core/src/utils.dirs.sh" />
         <option value="$PROJECT_DIR$/core/test/test.utils.dirs.sh" />
         <option value="$PROJECT_DIR$/core/src/vimrc.sh" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/core/src/inputrc.sh" />
+        <option value="$PROJECT_DIR$/arglist/src/arglist.sh" />
+        <option value="$PROJECT_DIR$/core/src/utils.sh" />
+        <option value="$PROJECT_DIR$/core/test/test.utils.sh" />
       </list>
     </option>
   </component>
@@ -503,6 +506,54 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="sandbox" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bash-toolkit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bash-toolkit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="shunit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bash-toolkit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bash-toolkit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="shunit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="doc" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -872,8 +923,32 @@
       <created>1396708828937</created>
       <updated>1396708828937</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="readme for vimrc.sh">
+      <created>1396709592846</created>
+      <updated>1396709592846</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
+  </component>
+  <component name="TodoView" selected-index="4">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="1592" y="-8" width="1936" height="1096" extended-state="6" />
@@ -896,7 +971,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290735" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290735" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16723745" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -965,7 +1040,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="utils.dirs.sh: updating failing tests&#10;-- All tests pass --" />
+    <option name="LAST_COMMIT_MESSAGE" value="utils.sh test for debug-array" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -987,6 +1062,8 @@
     <MESSAGE value="utils.dirs.sh: directories history module - fixed: error when history file empty, added: cd --&lt;tab&gt; completion&#10;inputrc: changes in key bindings, common history for concurrent bash sessions&#10;adding .vimrc" />
     <MESSAGE value="utils.dirs.sh: allowing to set DIRHISTFILE and DIRHISTSIZE externally&#10;inputrc: changes in key bindings, expansion of args from previous command with Alt+F1/2/3&#10;.vimrc: change coloring of comments to lighter blue" />
     <MESSAGE value="utils.dirs.sh: updating failing tests&#10;-- All tests pass --" />
+    <MESSAGE value="readme for vimrc.sh" />
+    <MESSAGE value="utils.sh test for debug-array" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -996,30 +1073,9 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/src/shunit2_test_macros.sh">
+    <entry file="file://$PROJECT_DIR$/core/sandbox/init.old.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/test/suite.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/src/shunit2_test_misc.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="36" selection-start="670" selection-end="670" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/test/test.utils.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="0" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.0">
+        <state line="60" column="39" selection-start="1415" selection-end="1415" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1031,72 +1087,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="10" selection-start="2245" selection-end="2245" vertical-scroll-proportion="-56.44">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/test/test.utils.dirs.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="24" selection-start="1469" selection-end="1469" vertical-scroll-proportion="-13.2">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/src/shunit2_test_standalone.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="6" selection-start="869" selection-end="869" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/test/test.utils.functions.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="32" selection-start="336" selection-end="336" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/lib/shflags">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/lib/shlib">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/lib/versions">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/lib/shunit/examples/equality_test.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1108,9 +1101,93 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/utils.text-files.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="31" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/profile.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/utils.functions.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/sandbox/myenv.old.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="11" selection-start="520" selection-end="520" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/inputrc.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="259" column="0" selection-start="8160" selection-end="8160" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="38" selection-end="38" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="761" selection-end="761" vertical-scroll-proportion="0.78488374">
+        <state line="20" column="22" selection-start="658" selection-end="658" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/lib/shunit/examples/math_test.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arglist/src/arglist.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="36" selection-start="1199" selection-end="1199" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/lib/shunit/doc/TODO.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/utils.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="141" column="5" selection-start="2935" selection-end="2935" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/utils.dirs.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="117" column="14" selection-start="2912" selection-end="2912" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/test/test.utils.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="112" column="19" selection-start="1998" selection-end="1998" vertical-scroll-proportion="1.3507752">
           <folding />
         </state>
       </provider>

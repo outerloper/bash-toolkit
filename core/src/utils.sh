@@ -72,10 +72,10 @@ export -f is-utf
 
 function put() { echo -ne "$1"; }
 function say() { echo -e "$1";}
-function warn() { echo -e "${yellow}$1${nc}"; }
+function warn() { echo -e "${fgYellow}$1${txtNormal}"; }
 function error() { echo -e "$1" >&2; }
-function debug() { echo -e "${blue}$1${nc}" >&2; }
-function success() { echo -e "${green}$1${nc}";}
+function debug() { echo -e "${fgBlue}$1${txtNormal}" >&2; } # TODO test
+function success() { echo -e "${fgGreen}$1${txtNormal}";}
 
 function ask() {
    local var=${1:?'Missed variable name.'}
@@ -137,11 +137,11 @@ type cygpath >/dev/null 2>/dev/null || { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\
 function debug-array() {
    local arr=${1}
    local count=0
-   debug -n "${arr}=( "
-   for e in ${!arr[@]}
+   echo -n "${arr}=( "
+   for index in $(eval 'echo ${!'"${arr}"'[@]}')
    do
-      debug -n "[$(( count++ ))]=${e} "
+      eval 'echo -n "['"${index}"']=${'"${arr}"'['"${index}"']} "'
    done
-   debug ")"
+   echo ")"
 }
 export -f debug-array

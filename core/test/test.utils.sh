@@ -101,4 +101,19 @@ function testIsDirEmpty() {
    rm -rf "${dir}"
 }
 
+function testDebugArray() {
+   a=()
+   debug-array a > "${STDOUT}"
+   assertStdOut "a=( )"
+
+   a=(2 4 5 6 10)
+   debug-array a > "${STDOUT}"
+   assertStdOut "a=( [0]=2 [1]=4 [2]=5 [3]=6 [4]=10 )"
+
+   declare -A assoc
+   assoc=( [bar]=qux [foo]=12 )
+   debug-array assoc > "${STDOUT}"
+   assertStdOut "assoc=( [bar]=qux [foo]=12 )"
+}
+
 source ../../core/lib/shunit/src/shunit2
