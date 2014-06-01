@@ -354,6 +354,8 @@ declare -A TYPESPEC=(
    [path.verify]='verifyPath'
    [path.validate]='validatePath'
    [path.process]='processPath'
+
+   [password.maskInput]='yes'
 )
 TYPE_CURRENT=
 VALSPEC_CURRENT=

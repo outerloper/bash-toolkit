@@ -1,11 +1,5 @@
 #!/bin/sh
 
-# TODO git proxy http://user:pwd@host:port - script asking for password every time using password type
-
-# TODO switch alt-ctrl within history
-# TODO !@#$%.. with shift
-# use numeric args with alt+num, not alt+FX
-
 function bind-to-macro() {
    macro=$1
    shift
@@ -30,11 +24,12 @@ function bind-to-chars() {
    done
 }
 
-function grep-history() {
+function filter-history() {
    history -a
    history -c
    history -r
-   history | g -i "$1" | tail -50
+   history | g -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -40
+   echo 'To expand an instruction, type its number and press Alt+Down.'
 }
 
 function quick-find() {
@@ -161,8 +156,8 @@ function env-bind() {
    bind-to-macro paste-from-clipboard "${Alt}v"
    #   bind '1':magic-space # space somehow cannot be set for magic-space..
    bind-to-macro magic-space "${MagicSpace}"
-   bind-to-macro menu-complete "${Ctrl} "
-   bind-to-macro menu-complete-backward "${Alt} "
+   bind-to-macro menu-complete "${AltDown}"
+   bind-to-macro menu-complete-backward "${AltUp}"
 
    bind-to-macro end-of-history "${EndOfHist}"
    bind-to-macro history-search-forward "${CtrlDown}"
@@ -175,19 +170,19 @@ function env-bind() {
    local nextWord=${FwdWord}${FwdWord}${BkwWord}
    local help=${End}' --help\n'
    local man=${Home}'man '${FwdWord}${AltDel}'\n'
-   local ls=${ClrLn}'l\n'
-   local lsa=${ClrLn}'la\n'
+   local ls1=${ClrLn}'la\n'
+   local ls2=${ClrLn}'lt\n'
    local pipeToGrep=${End}' | g \"\"'${Left}
    local pipeToSed=${End}' | sed \"\"'${Left}
    local echoize=${Home}'echo \"'${End}'\"'${Left}
    local find=${ClrLn}'quick-find \"\"'${Left}
-   local grepHistory=${Home}' grep-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
+   local grepHistory=${Home}' filter-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
    local expandHistoryEntry=${Home}'!'${End}${MagicSpace}
    local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}'cd -'
    local grepPs=${ClrLn}'ps ux | grep \"\"'${Left}
    local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
-   local executize=${Home}'./'${FwdWord}''${End}'\t'
+   local executize=${Home}'./'${FwdWord}${End}'\t'
    local change1stWord=${Home}${AltCtrlRight}
    local insert2ndWord=${Home}${AltRight}' '
    local makeVar=${BkwWord}'${'${FwdWord}}${Left}
@@ -212,27 +207,31 @@ function env-bind() {
    local expandPrevCmd3rdWord='!:2'${MagicSpace}
    local expandPrevCmd4thWord='!:3'${MagicSpace}
    local expandPrevCmdLastWord='!$'${MagicSpace}
+   local expandPrevCmdAllArgs='!:*'${MagicSpace}
 
    # custom char sequences bindings
 
    # Ctrl+Num not working
 
+   bind-to-chars "" "${F1}" "${F2}" "${F3}" "${F4}" "${F5}" "${F6}" "${F7}" "${F8}" "${F9}" "${F10}" "${F11}" "${F12}"
+
    bind-to-chars "${ClrLn}" "${AltCtrlDown}"
    bind-to-chars "${nextWord}" "${CtrlRight}"
    bind-to-chars "${help}" "${F1}"
    bind-to-chars "${man}" "${F11}"
-   bind-to-chars "${ls}" "${F12}"
-   bind-to-chars "${lsa}" "${AltF12}"
+   bind-to-chars "${ls1}" "${F12}"
+   bind-to-chars "${ls2}" "${AltF12}"
    bind-to-chars "${pipeToGrep}" "${Alt}g"
    bind-to-chars "${pipeToSed}" "${Alt}s"
    bind-to-chars "${echoize}" "${Alt}e"
    bind-to-chars "${find}" "${Alt}f"
-   bind-to-chars "${grepHistory}" "${AltUp}"
-   bind-to-chars "${expandHistoryEntry}" "${AltDown}"
+   bind-to-chars "${grepHistory}" "${Ctrl} " "${AltCtrlUp}"
+   bind-to-chars "${expandHistoryEntry}" "${Alt} "
    bind-to-chars "${grepDirHistory}" "${AltPgUp}" "${AltPgDown}"
    bind-to-chars "${grepPs}" "${Alt}p"
    bind-to-chars "${kill}" "${Alt}k"
    bind-to-chars "${jps}" "${Alt}j"
+   bind-to-chars "${rm}" "${Alt}r"
    bind-to-chars "${executize}" "${Alt}."
    bind-to-chars "${change1stWord}" "${AltIns}"
    bind-to-chars "${insert2ndWord}" "${Ins}"
@@ -243,7 +242,6 @@ function env-bind() {
    bind-to-chars "${goToPrev}" "${AltEnd}"
    bind-to-chars "${goDownDir}" "${PgDown}"
    bind-to-chars "${goUpDir}" "${PgUp}"
-   bind-to-chars "${rm}" "${AltDel}"
    bind-to-chars "${currAbsPath}" "${ShiftTab}"
    bind-to-chars "${useLastCommentedLine}" "${Alt}!"
    bind-to-chars "${envCommand}" "${F10}"
@@ -256,6 +254,7 @@ function env-bind() {
    bind-to-chars "${expandPrevCmd3rdWord}" "${Alt}3"
    bind-to-chars "${expandPrevCmd4thWord}" "${Alt}4"
    bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}9" "${Alt}8" "${Alt}7" "${Alt}6" "${Alt}5"
+   bind-to-chars "${expandPrevCmdAllArgs}" "${Alt}-"
 
    # history setup
 
