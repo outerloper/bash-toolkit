@@ -41,9 +41,15 @@ function set-region() {
 export -f set-region
 
 function render-template() {
-   local varDefsFile="$(mktemp)"
+   local templateFile="${1}"
+   local varDefsFile="${2}"
+
+   if [ -z "${varDefsFile}" ]
+   then
+      local varDefsFile="$(mktemp)"
+      cat <&0 >"${varDefsFile}"
+   fi
    declare -A vars
-   cat <&0 >"${varDefsFile}"
    local varDecl="^\([a-Z_][a-Z0-9_]*\)=.*"
    (
       source "${varDefsFile}"
@@ -60,7 +66,7 @@ function render-template() {
             line=${line//${placeholder}/${value}}
          done
          echo "${line}"
-      done <"${1}"
+      done <"${templateFile}"
    )
    rm "${varDefsFile}"
 }

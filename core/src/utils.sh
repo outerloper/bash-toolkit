@@ -77,24 +77,6 @@ function error() { echo -e "$1" >&2; }
 function debug() { echo -e "${fgBlue}$1${txtNormal}" >&2; } # TODO test
 function success() { echo -e "${fgGreen}$1${txtNormal}";}
 
-function ask() {
-   local var=${1:?'Missed variable name.'}
-   local value
-   local desc="${2:-$1}"
-   local default=$3
-
-   prompt="Provide ${desc}${default:+" (default is $default)"}: "
-   while [ -z "${value}" ]
-   do
-      read -p "${prompt}" value
-      if [ -z "${value}" ] && [ -n "${default}" ]
-      then
-         value="${default}"
-      fi
-   done
-   printf -v ${var} -- "${value}"
-}
-
 
 ON_EXIT=":"
 trap "${ON_EXIT}" EXIT

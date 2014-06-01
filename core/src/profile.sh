@@ -5,15 +5,17 @@ PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
 
 alias bpe="${EDITOR} ~/.bash_profile" # Bash Profile Edit
 alias bpr="source ~/.bash_profile" # Bash Profile Reload
-alias l="ls --color -al"
+alias l="ls --color"
 alias la="ls --color -al"
 alias lt="ls --color -altr"
-alias lc="ls --color"
 alias g="grep --color=always"
 alias s="sed"
-alias t="tail -F"
+alias h="head"
+alias t="tail"
+alias tf="tail -F"
 alias vi=vim
 
+shopt -s expand_aliases
 for util in ${HOME}/.bash-toolkit/core/src/utils*.sh
 do
    source "${util}"

@@ -94,7 +94,7 @@ function histdir-tab-completion() {
    local arg=${COMP_WORDS[1]}
    if (( COMP_CWORD == 1 )) && (( cword == 2 )) && [[ "${arg}" =~ ^- ]]
    then
-      COMPREPLY=( '-NR[<tab>]' '-REGEX<tab>' '--REGEX<tab>' )
+      COMPREPLY=( '-NR<tab>' '-REGEX<tab>' )
       if is-num "${arg:1}"
       then
          local pattern="^\s*${arg:1}\s*\s"

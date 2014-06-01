@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# TODO git proxy http://user:pwd@host:port - script asking for password every time using password type
+
+# TODO switch alt-ctrl within history
+# TODO !@#$%.. with shift
+# use numeric args with alt+num, not alt+FX
+
 function bind-to-macro() {
    macro=$1
    shift
@@ -167,19 +173,17 @@ function env-bind() {
    # custom char sequences definitions
 
    local nextWord=${FwdWord}${FwdWord}${BkwWord}
-   local help=${End}' --help\n'--color
+   local help=${End}' --help\n'
    local man=${Home}'man '${FwdWord}${AltDel}'\n'
-   local ls=${ClrLn}'lc\n'
-   local lsLtr=${ClrLn}'l\n'
+   local ls=${ClrLn}'l\n'
+   local lsa=${ClrLn}'la\n'
    local pipeToGrep=${End}' | g \"\"'${Left}
    local pipeToSed=${End}' | sed \"\"'${Left}
    local echoize=${Home}'echo \"'${End}'\"'${Left}
    local find=${ClrLn}'quick-find \"\"'${Left}
    local grepHistory=${Home}' grep-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
    local expandHistoryEntry=${Home}'!'${End}${MagicSpace}
-   local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}
-#   local expandDirHistoryEntry=${Home}${FwdWord}${ClrLnRight}${Home}'cd -'${End}'\t' # smart dir history completion
-   local expandDirHistoryEntry=${ClrLn}'cd -\t'
+   local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}'cd -'
    local grepPs=${ClrLn}'ps ux | grep \"\"'${Left}
    local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
@@ -193,8 +197,6 @@ function env-bind() {
    local goToPrev=${ClrLn}'cd -\n'
    local goDownDir=${ClrLn}'cd \t'
    local goUpDir=${ClrLn}'cd ..\n'
-   local chDir=${ClrLn}'cd --\ncd -'
-   local editFile=${ClrLn}${EDITOR}' \t'
    local rm=${ClrLn}'rm -rf \t'
    local currAbsPath='$PWD/\t'
    local useLastCommentedLine=${ClrLn}'#'${CtrlUp}${Bsp}${End}
@@ -206,7 +208,9 @@ function env-bind() {
    local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
    local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
    local expandPrevCmd1stWord='!:0'${MagicSpace}
-   local expandPrevCmd2ndWord='!^'${MagicSpace}
+   local expandPrevCmd2ndWord='!:1'${MagicSpace}
+   local expandPrevCmd3rdWord='!:2'${MagicSpace}
+   local expandPrevCmd4thWord='!:3'${MagicSpace}
    local expandPrevCmdLastWord='!$'${MagicSpace}
 
    # custom char sequences bindings
@@ -218,56 +222,55 @@ function env-bind() {
    bind-to-chars "${help}" "${F1}"
    bind-to-chars "${man}" "${F11}"
    bind-to-chars "${ls}" "${F12}"
-   bind-to-chars "${lsLtr}" "${AltF12}"
+   bind-to-chars "${lsa}" "${AltF12}"
    bind-to-chars "${pipeToGrep}" "${Alt}g"
    bind-to-chars "${pipeToSed}" "${Alt}s"
    bind-to-chars "${echoize}" "${Alt}e"
    bind-to-chars "${find}" "${Alt}f"
    bind-to-chars "${grepHistory}" "${AltUp}"
    bind-to-chars "${expandHistoryEntry}" "${AltDown}"
-   bind-to-chars "${grepDirHistory}" "${AltPgUp}"
-   bind-to-chars "${expandDirHistoryEntry}" "${AltPgDown}"
+   bind-to-chars "${grepDirHistory}" "${AltPgUp}" "${AltPgDown}"
    bind-to-chars "${grepPs}" "${Alt}p"
    bind-to-chars "${kill}" "${Alt}k"
    bind-to-chars "${jps}" "${Alt}j"
    bind-to-chars "${executize}" "${Alt}."
-   bind-to-chars "${change1stWord}" "${Alt}6" # like Alt+^ but without Shift
-   bind-to-chars "${insert2ndWord}" "${Alt}-" # like Alt+^ but without Shift
-   bind-to-chars "${makeVar}" "${Alt}4" # like Alt+$ but without Shift
+   bind-to-chars "${change1stWord}" "${AltIns}"
+   bind-to-chars "${insert2ndWord}" "${Ins}"
+   bind-to-chars "${makeVar}" "${Alt}$"
    bind-to-chars "${initVar}" "${Alt}="
-   bind-to-chars "${arrayVar}" "${Alt}2" # like Alt+@ but without Shift
+   bind-to-chars "${arrayVar}" "${Alt}@"
    bind-to-chars "${goToHome}" "${AltHome}"
    bind-to-chars "${goToPrev}" "${AltEnd}"
    bind-to-chars "${goDownDir}" "${PgDown}"
    bind-to-chars "${goUpDir}" "${PgUp}"
-   bind-to-chars "${editFile}" "${Ins}"
+   bind-to-chars "${rm}" "${AltDel}"
    bind-to-chars "${currAbsPath}" "${ShiftTab}"
-   bind-to-chars "${useLastCommentedLine}" "${Alt}1" # like Alt+! but without Shift
-   bind-to-chars "${envCommand}" "${F2}"
-   bind-to-chars "${macro}" "${Alt}m"
-   bind-to-chars "${echoLastResultCode}" "${Alt}/"  # like Alt+? but without Shift
-   bind-to-chars "${doubleQuote}" "${Alt}\'"
-   bind-to-chars "${parentheses}" "${Alt}9" # like Alt+( but without Shift
-   bind-to-chars "${braces}" "${Alt}]"
-#   bind-to-chars "${braces}" "${Alt}["
-   bind-to-chars "${rerunLast2Commands}" "${Alt}5" # like Alt+% but without Shift
+   bind-to-chars "${useLastCommentedLine}" "${Alt}!"
+   bind-to-chars "${envCommand}" "${F10}"
+#   bind-to-chars "${macro}" "${Alt}m"
+   bind-to-chars "${echoLastResultCode}" "${Alt}?"
+   bind-to-chars "${rerunLast2Commands}" "${Alt}%"
 
-   bind-to-chars "${expandPrevCmd1stWord}" "${Alt}${F1}"
-   bind-to-chars "${expandPrevCmd2ndWord}" "${Alt}${F2}"
-   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}${F3}"
+   bind-to-chars "${expandPrevCmd1stWord}" "${Alt}1"
+   bind-to-chars "${expandPrevCmd2ndWord}" "${Alt}2"
+   bind-to-chars "${expandPrevCmd3rdWord}" "${Alt}3"
+   bind-to-chars "${expandPrevCmd4thWord}" "${Alt}4"
+   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}9" "${Alt}8" "${Alt}7" "${Alt}6" "${Alt}5"
 
    # history setup
 
    export HISTCONTROL=ignorespace:ignoredups # :erasedups # no erasedups - make history numbers change as rarely as possible
    export HISTFILESIZE=1000
    export HISTSIZE=1000
-   export HISTTIMEFORMAT="%a %Y-%m-%d %T  "
+   export HISTTIMEFORMAT=""
    export PROMPT_COMMAND='history -a;history -c;history -r' # having common history for concurrent sessions
    shopt -s histappend
    bind "set completion-ignore-case on"
    bind "set show-all-if-ambiguous on"
    bind "set completion-map-case on"
    bind "set completion-query-items 1000"
+
+   complete -D # do not suggest when <tab> pressed on empty line
 }
 
 env-bind
