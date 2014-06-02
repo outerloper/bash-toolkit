@@ -29,7 +29,7 @@ function filter-history() {
    history -c
    history -r
    history | g -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -40
-   echo 'To expand an instruction, type its number and press Alt+Down.'
+   echo 'Type the number of the instruction to expand and press Alt+Space.'
 }
 
 function quick-find() {

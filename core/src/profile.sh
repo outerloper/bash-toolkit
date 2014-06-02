@@ -8,7 +8,7 @@ alias bpr="source ~/.bash_profile" # Bash Profile Reload
 alias l="ls --color"
 alias la="ls --color -al"
 alias lt="ls --color -altr"
-alias g="grep --color=always"
+alias g="egrep --color=always"
 alias s="sed"
 alias h="head"
 alias t="tail"
