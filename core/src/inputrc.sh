@@ -206,6 +206,8 @@ function env-bind() {
    local expandPrevCmd2ndWord='!:1'${MagicSpace}
    local expandPrevCmd3rdWord='!:2'${MagicSpace}
    local expandPrevCmd4thWord='!:3'${MagicSpace}
+   local expandPrevCmd5thWord='!:4'${MagicSpace}
+   local expandPrevCmd6thWord='!:5'${MagicSpace}
    local expandPrevCmdLastWord='!$'${MagicSpace}
    local expandPrevCmdAllArgs='!:*'${MagicSpace}
 
@@ -253,7 +255,9 @@ function env-bind() {
    bind-to-chars "${expandPrevCmd2ndWord}" "${Alt}2"
    bind-to-chars "${expandPrevCmd3rdWord}" "${Alt}3"
    bind-to-chars "${expandPrevCmd4thWord}" "${Alt}4"
-   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}9" "${Alt}8" "${Alt}7" "${Alt}6" "${Alt}5"
+   bind-to-chars "${expandPrevCmd5thWord}" "${Alt}5"
+   bind-to-chars "${expandPrevCmd6thWord}" "${Alt}6"
+   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}9" "${Alt}8" "${Alt}7"
    bind-to-chars "${expandPrevCmdAllArgs}" "${Alt}-"
 
    # history setup
