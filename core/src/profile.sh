@@ -12,7 +12,7 @@ alias g="egrep --color=always"
 alias s="sed"
 alias h="head"
 alias t="tail"
-alias tf="tail -F"
+alias f="tail -F"
 alias vi=vim
 
 shopt -s expand_aliases

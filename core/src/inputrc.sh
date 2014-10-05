@@ -28,12 +28,16 @@ function filter-history() {
    history -a
    history -c
    history -r
-   history | g -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -40
-   echo 'Type the number of the instruction to expand and press Alt+Space.'
+   history | g -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -30
+   echo 'Type instruction number and press Alt+Space.'
 }
 
-function quick-find() {
+function find-by-name() {
    find . -regex ".*$1.*" 2> /dev/null
+}
+
+function find-by-text() {
+   g -r "$1" . 2> /dev/null
 }
 
 function env-bind() {
@@ -44,7 +48,7 @@ function env-bind() {
       alias cd=chdir
 #   fi
 
-   # key definitions
+   ### key definitions
 
    local Ctrl='\C-'
    local Alt='\e'
@@ -113,7 +117,7 @@ function env-bind() {
    local AltF11=${Alt}${F11}
    local AltF12=${Alt}${F12}
 
-   # key sequences definitions
+   ### key sequences definitions
 
    local EndOfHist="${Alt}>"
    local FwdWord=${AltRight}
@@ -122,7 +126,7 @@ function env-bind() {
    local ClrLnRight=${AltDel}
    local ClrLnLeft=${AltBsp}
 
-   # key codes used for substitution
+   ### key codes used for substitution
 
    local MagicSpace='\e[90~'
    local Aux1='\e[91~'
@@ -135,7 +139,7 @@ function env-bind() {
    local Aux8='\e[98~'
    local Aux9='\e[99~'
 
-   # macro bindings
+   ### macro bindings
 
    bind-to-macro forward-char "${Right}"
    bind-to-macro forward-word "${FwdWord}"
@@ -156,16 +160,16 @@ function env-bind() {
    bind-to-macro paste-from-clipboard "${Alt}v"
    #   bind '1':magic-space # space somehow cannot be set for magic-space..
    bind-to-macro magic-space "${MagicSpace}"
-   bind-to-macro menu-complete "${AltDown}"
-   bind-to-macro menu-complete-backward "${AltUp}"
+   bind-to-macro menu-complete "${CtrlDown}"
+   bind-to-macro menu-complete-backward "${CtrlUp}"
 
    bind-to-macro end-of-history "${EndOfHist}"
-   bind-to-macro history-search-forward "${CtrlDown}"
-   bind-to-macro history-search-backward "${CtrlUp}"
+   bind-to-macro history-search-forward "${AltDown}"
+   bind-to-macro history-search-backward "${AltUp}"
 
    bind-to-macro insert-comment "${Alt}3"
 
-   # custom char sequences definitions
+   ### custom key sequences definitions
 
    local nextWord=${FwdWord}${FwdWord}${BkwWord}
    local help=${End}' --help\n'
@@ -175,7 +179,8 @@ function env-bind() {
    local pipeToGrep=${End}' | g \"\"'${Left}
    local pipeToSed=${End}' | sed \"\"'${Left}
    local echoize=${Home}'echo \"'${End}'\"'${Left}
-   local find=${ClrLn}'quick-find \"\"'${Left}
+   local findByName=${ClrLn}'find-by-name \"\"'${Left}
+   local findByText=${ClrLn}'find-by-text \"\"'${Left}
    local grepHistory=${Home}' filter-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
    local expandHistoryEntry=${Home}'!'${End}${MagicSpace}
    local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}'cd -'
@@ -183,6 +188,7 @@ function env-bind() {
    local kill=${ClrLn}'ps ux\nkill -9 '
    local jps=${ClrLn}'jps -lm\n'
    local executize=${Home}'./'${FwdWord}${End}'\t'
+   local setExecutable=${Home}'chmod u+x '${End}'\t'
    local change1stWord=${Home}${AltCtrlRight}
    local insert2ndWord=${Home}${AltRight}' '
    local makeVar=${BkwWord}'${'${FwdWord}}${Left}
@@ -208,13 +214,17 @@ function env-bind() {
    local expandPrevCmd4thWord='!:3'${MagicSpace}
    local expandPrevCmd5thWord='!:4'${MagicSpace}
    local expandPrevCmd6thWord='!:5'${MagicSpace}
+   local expandPrevCmd7thWord='!:6'${MagicSpace}
+   local expandPrevCmd8thWord='!:7'${MagicSpace}
+   local expandPrevCmd9thWord='!:8'${MagicSpace}
    local expandPrevCmdLastWord='!$'${MagicSpace}
    local expandPrevCmdAllArgs='!:*'${MagicSpace}
 
-   # custom char sequences bindings
+   ### custom key sequences bindings
 
    # Ctrl+Num not working
 
+   # currently not used
    bind-to-chars "" "${F1}" "${F2}" "${F3}" "${F4}" "${F5}" "${F6}" "${F7}" "${F8}" "${F9}" "${F10}" "${F11}" "${F12}"
 
    bind-to-chars "${ClrLn}" "${AltCtrlDown}"
@@ -226,7 +236,8 @@ function env-bind() {
    bind-to-chars "${pipeToGrep}" "${Alt}g"
    bind-to-chars "${pipeToSed}" "${Alt}s"
    bind-to-chars "${echoize}" "${Alt}e"
-   bind-to-chars "${find}" "${Alt}f"
+   bind-to-chars "${findByName}" "${Alt}f"
+   bind-to-chars "${findByText}" "${Alt}F"
    bind-to-chars "${grepHistory}" "${Ctrl} " "${AltCtrlUp}"
    bind-to-chars "${expandHistoryEntry}" "${Alt} "
    bind-to-chars "${grepDirHistory}" "${AltPgUp}" "${AltPgDown}"
@@ -234,6 +245,7 @@ function env-bind() {
    bind-to-chars "${kill}" "${Alt}k"
    bind-to-chars "${jps}" "${Alt}j"
    bind-to-chars "${rm}" "${Alt}r"
+   bind-to-chars "${setExecutable}" "${Alt}x"
    bind-to-chars "${executize}" "${Alt}."
    bind-to-chars "${change1stWord}" "${AltIns}"
    bind-to-chars "${insert2ndWord}" "${Ins}"
@@ -257,10 +269,13 @@ function env-bind() {
    bind-to-chars "${expandPrevCmd4thWord}" "${Alt}4"
    bind-to-chars "${expandPrevCmd5thWord}" "${Alt}5"
    bind-to-chars "${expandPrevCmd6thWord}" "${Alt}6"
-   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}9" "${Alt}8" "${Alt}7"
+   bind-to-chars "${expandPrevCmd7thWord}" "${Alt}7"
+   bind-to-chars "${expandPrevCmd8thWord}" "${Alt}8"
+   bind-to-chars "${expandPrevCmd9thWord}" "${Alt}9"
+   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}\`"
    bind-to-chars "${expandPrevCmdAllArgs}" "${Alt}-"
 
-   # history setup
+   ### history setup
 
    export HISTCONTROL=ignorespace:ignoredups # :erasedups # no erasedups - make history numbers change as rarely as possible
    export HISTFILESIZE=1000
@@ -273,7 +288,9 @@ function env-bind() {
    bind "set completion-map-case on"
    bind "set completion-query-items 1000"
 
-   complete -D # do not suggest when <tab> pressed on empty line
+   ### other setup
+
+   shopt -s no_empty_cmd_completion
 }
 
 env-bind
