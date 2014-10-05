@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData">
+    <serverData>
+      <paths name="ltxl0299.dev.sabre.com">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/arglist" />
+            <mapping local="$PROJECT_DIR$" />
+            <mapping local="$PROJECT_DIR$/core" />
+            <mapping local="$PROJECT_DIR$/myenv" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="sqmdfw15.dev.sabre.com">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/arglist" />
+            <mapping local="$PROJECT_DIR$" />
+            <mapping local="$PROJECT_DIR$/core" />
+            <mapping local="$PROJECT_DIR$/myenv" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="tomcat@local">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/arglist" />
+            <mapping local="$PROJECT_DIR$" />
+            <mapping local="$PROJECT_DIR$/core" />
+            <mapping local="$PROJECT_DIR$/myenv" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
+
