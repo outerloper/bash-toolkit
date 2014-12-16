@@ -176,8 +176,9 @@ function env-bind() {
    local man=${Home}'man '${FwdWord}${AltDel}'\n'
    local ls1=${ClrLn}'la\n'
    local ls2=${ClrLn}'lt\n'
-   local pipeToGrep=${End}' | g \"\"'${Left}
-   local pipeToSed=${End}' | sed \"\"'${Left}
+   local pipeToGrep=${End}' | g '"''"${Left}
+   local pipeToSed=${End}' | sed -e '"''"${Left}
+   local pipeToAwk=${End}' | awk '"'{}'"${Left}${Left}
    local echoize=${Home}'echo \"'${End}'\"'${Left}
    local findByName=${ClrLn}'find-by-name \"\"'${Left}
    local findByText=${ClrLn}'find-by-text \"\"'${Left}
@@ -193,7 +194,7 @@ function env-bind() {
    local insert2ndWord=${Home}${AltRight}' '
    local makeVar=${BkwWord}'${'${FwdWord}}${Left}
    local initVar='}'${Left}':='
-   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}${Left}${Left}
+   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}
    local goToHome=${ClrLn}'cd ~\n'
    local goToPrev=${ClrLn}'cd -\n'
    local goDownDir=${ClrLn}'cd \t'
@@ -235,6 +236,7 @@ function env-bind() {
    bind-to-chars "${ls2}" "${AltF12}"
    bind-to-chars "${pipeToGrep}" "${Alt}g"
    bind-to-chars "${pipeToSed}" "${Alt}s"
+   bind-to-chars "${pipeToAwk}" "${Alt}a"
    bind-to-chars "${echoize}" "${Alt}e"
    bind-to-chars "${findByName}" "${Alt}f"
    bind-to-chars "${findByText}" "${Alt}F"
