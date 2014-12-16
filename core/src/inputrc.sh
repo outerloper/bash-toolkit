@@ -33,11 +33,15 @@ function filter-history() {
 }
 
 function find-by-name() {
-   find . -regex ".*$1.*" 2> /dev/null
+   local regexp="${1?Regexp missing}"
+   shift
+   find . $@ -regex ".*${regexp}.*" 2> /dev/null
 }
 
 function find-by-text() {
-   g -r "$1" . 2> /dev/null
+   local regexp="${1?Regexp missing}"
+   shift
+   g -r $@ "${regexp}" . 2> /dev/null
 }
 
 function env-bind() {
