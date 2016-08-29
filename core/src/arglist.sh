@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# TODO delete
 declare -A ARGLISTS=(
 
 )

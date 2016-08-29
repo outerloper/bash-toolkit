@@ -4,7 +4,7 @@ source "$(dirname ${BASH_SOURCE})/../../core/src/utils.sh"
 
 ### SETTINGS ###
 
-DISPLAY_INSTANT_HELP=yes
+DISPLAY_INSTANT_HELP=yes # TODO some prefix
 
 ### UTILS ###
 
@@ -449,7 +449,7 @@ function printArgs() {
 
 if is "${ARGLIST_DEMO}"
 then
-   declare -A options=( # note associative array should be visible inside the executable thet it supports
+   declare -A options=( # note associative array should be visible inside the executable that it supports
       ["help"]='greet'
       ["help.desc"]='This is arglist.sh demo.'
       ["main"]='phrase'

@@ -27,6 +27,7 @@ export bgMagenta="\033[45m"
 export bgCyan="\033[46m"
 export bgWhite="\033[47m"
 
+# Lenient test for 'true' value.
 function is-true() {
    case "$1" in
    1|[tT][rR][uU][eE]|[yY]|[yY][eE][sS]) return 0 ;;
@@ -37,21 +38,45 @@ function is-true() {
 }
 export -f is-true
 
+# Test for non-empty value
 function is() {
-   [[ -n "$1" ]]
+   [ -n "$1" ]
 }
 export -f is
 
+# Test for empty value
 function no() {
-   [[ -z "$1" ]]
+   [ -z "$1" ]
 }
 export -f no
 
+function is-file() {
+   [ -f "$1" ]
+}
+export -f is-file
+
+function no-file() {
+   ! [ -f "$1" ]
+}
+export -f no-file
+
+function is-dir() {
+   [ -d "$1" ]
+}
+export -f is-dir
+
+function no-dir() {
+   ! [ -d "$1" ]
+}
+export -f no-dir
+
+# Test for positive integer value
 function is-num() {
    [ -n "$1" ] && [ -z "${1//[0-9]}" ]
 }
 export -f is-num
 
+# Test for integer value
 function is-int() {
    if [ -z "$1" ] || [ "$1" = "-" ]
    then
@@ -65,19 +90,34 @@ function is-int() {
 export -f is-int
 
 
+# Test if encoding is UTF.
 function is-utf() {
    [[ "${LANG}" == *UTF-8 ]]
 }
 export -f is-utf
 
+
+# Formatted printing.
 function put() { echo -ne "$1"; }
 function say() { echo -e "$1";}
+function em() { echo -e "${fgWhite}$1${txtNormal}"; }
 function warn() { echo -e "${fgYellow}$1${txtNormal}"; }
 function error() { echo -e "$1" >&2; }
 function debug() { echo -e "${fgBlue}$1${txtNormal}" >&2; } # TODO test
-function success() { echo -e "${fgGreen}$1${txtNormal}";}
+function success() { echo -e "${fgGreen}$1${txtNormal}"; }
+function failure() { echo -e "${fgRed}$1${txtNormal}"; }
 
+function ok() {
+    ok=$?
+    if [ ${ok} -eq 0 ] ; then
+        [[ -n "${1}" ]] && success "${1}"
+    elif [ ${ok} -ne 0 ] ; then
+        [[ -n "${2}" ]] && failure "${2}"
+    fi
+    return ${ok}
+}
 
+# TODO ok method for last return == 0
 ON_EXIT=":"
 trap "${ON_EXIT}" EXIT
 
@@ -96,14 +136,15 @@ _create-session
 ON_EXIT="${ON_EXIT};_destroy-session"
 
 
-function sponge() {
+# sponge command emulation. Provide file name as a parameter.
+type sponge >/dev/null 2>/dev/null || function sponge() {
    file=${1}
    local tmp=${file}.tmp
    cat >"${tmp}"
    mv "${tmp}" "${file}"
 }
 
-# ReMove CR from line endings
+# ReMove CR from line endings in list of files provided as parameters. Overwrites the files.
 rmcr() {
    for file in $@
    do
@@ -116,6 +157,9 @@ rmcr() {
 
 type cygpath >/dev/null 2>/dev/null || { sed -e 's/^\(\w\):[\/\\]*/\/cygdrive\/\L\1\//' -e 's/\\/\//g' <<<$1; }
 
+type cygstart >/dev/null 2>/dev/null && ! type start >/dev/null 2>/dev/null && alias start=cygstart
+
+# Print array or associative array in readable form. Provide array name as a parameter.
 function debug-array() {
    local arr=${1}
    local count=0

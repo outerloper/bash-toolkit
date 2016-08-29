@@ -14,9 +14,8 @@ function setUp() {
 }
 
 function testChdirHelp() {
-   chdir --help >"${STDOUT}"
-   assertStdOut 'cd: usage: cd [-L|-P] [dir]
-       or: cd -c
+   chdir --help | tail -n +2 >"${STDOUT}" # ignoring first line as it may vary between different systems
+   assertStdOut '       or: cd -c
 Options:
   -P   Do not follow symbolic links
   -L   Follow symbolic links (default)

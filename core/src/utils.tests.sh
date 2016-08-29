@@ -1,5 +1,48 @@
 #!/bin/bash
 
+# Self-check - executes tests. Takes 2 optional params which narrow range of test files to execute. $1 is module name and $2 - pattern to match to a test file.
+function run-tests() {
+    local path=${HOME}/.bash-toolkit
+    if [[ -n ${1} ]]
+    then
+        path=${path}/${1}
+    else
+        path=${path}/**
+    fi
+
+    for dir in ${path}/test
+    do
+       if [ -d "${dir}" ]
+       then
+          pushd "${dir}" >/dev/null
+          echo "======= suite $(readlink -f ${dir}) ========="
+          for test in test.*.sh
+          do
+             if ! [[ -f "${test}" ]] ; then continue ; fi
+             if [[ -n "${2}" ]] && ! [[ "${test}" =~ ${2} ]] ; then continue ; fi
+             _run-test "${test}"
+          done
+          popd >/dev/null
+          echo
+       fi
+    done
+}
+
+function _run-test() {
+    local VISIBLE_SPACE="\xb7"
+    local ERROR_COLOR="\x1b[31m"
+    local NO_COLOR="\x1b[0m"
+    #if [[ "$LANG" =~ .*UTF-8 ]]
+    #then
+    #   VISIBLE_SPACE="\xe2\x80\xa2"
+    #fi
+    echo -e "\nExecuting $test\n----------------------------------"
+    "./${1}" | sed \
+        -e 's/\(ASSERT:expected:\)</'"${ERROR_COLOR}"'\1\n<'"${NO_COLOR}"'/' \
+        -e 's/> \(but was:\)</'"${ERROR_COLOR}"'>\n\1\n<'"${NO_COLOR}"'/' \
+        -e 's/ /'"${VISIBLE_SPACE}"'/g'
+}
+
 STDOUT=/tmp/unittest-out
 STDERR=/tmp/unittest-err
 

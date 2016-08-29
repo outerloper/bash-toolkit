@@ -1,6 +1,7 @@
 #!/bin/bash
 
-
+# Prints fragment of the file between lines "#begin [region-name]" and "#end [region-name]"
+# 1st parameter is [region-name], 2nd parameter is file name
 function echo-region() {
    local regionName="${1:?Missing region name}"
    local fileName="${2:?Missing input file name}"
@@ -12,6 +13,8 @@ function echo-region() {
 }
 export -f echo-region
 
+# Deletes from the file its fragment between lines "#begin [region-name]" and "#end [region-name]"
+# 1st parameter is [region-name], 2nd parameter is file name
 function delete-region() {
    local regionName="${1:?Missing region name}"
    local fileName="${2:?Missing input file name}"
@@ -23,6 +26,8 @@ function delete-region() {
 }
 export -f delete-region
 
+# Appends to the file content from STDIN surrounded with lines "#begin [region-name]" and "#end [region-name]"
+# 1st parameter is [region-name], 2nd parameter is file name
 function set-region() {
    local regionName="${1:?Missing region name}"
    local fileName="${2:?Missing input file name}"
@@ -40,34 +45,45 @@ function set-region() {
 }
 export -f set-region
 
+# Replaces occurrences of ${var} placeholders with their values in the file provided as a first argument, called template. The result file is returned on STDOUT.
+# If 2nd argument is provided, a file with this path is executed as a bash script and variable assignments in this file will be used for the template.
+# The assignment should be in the form: var=val.
+# If no 2nd argument, values will be taken from shell variables.
 function render-template() {
    local templateFile="${1}"
    local varDefsFile="${2}"
 
-   if [ -z "${varDefsFile}" ]
-   then
-      local varDefsFile="$(mktemp)"
-      cat <&0 >"${varDefsFile}"
-   fi
-   declare -A vars
-   local varDecl="^\([a-Z_][a-Z0-9_]*\)=.*"
+   local varDecl="^ *\([a-zA-Z_][a-zA-Z0-9_]*\)=.*"
    (
-      source "${varDefsFile}"
-      for var in $(sed -n -e "/${varDecl}/ {s/${varDecl}/\1/; p}" < "${varDefsFile}")
+      declare -A vars
+
+      if [ -n "${varDefsFile}" ]
+      then
+          source "${varDefsFile}"
+          for var in $(sed -n -e "/${varDecl}/ {s/${varDecl}/\1/; p}" < "${varDefsFile}")
+          do
+             vars[$var]="${!var}"
+          done
+      fi
+      neof=0
+      while [[ ${neof} -eq 0 ]]
       do
-         vars[$var]="${!var}"
-      done
-      while read -r line
-      do
-         while [[ "${line}" =~ \$\{([a-Z_][a-Z0-9_]*)\} ]]
+         read -r line
+         neof=$?
+         while [[ "${line}" =~ \$\{([a-zA-Z_][a-zA-Z0-9_]*)\} ]]
          do
             placeholder=${BASH_REMATCH[0]}
-            value=${vars[${BASH_REMATCH[1]}]}
+            var=${BASH_REMATCH[1]}
+            if [ -n "${varDefsFile}" ]
+            then
+                value=${vars[$var]}
+            else
+                value="${!var}"
+            fi
             line=${line//${placeholder}/${value}}
          done
          echo "${line}"
       done <"${templateFile}"
    )
-   rm "${varDefsFile}"
 }
 export -f render-template

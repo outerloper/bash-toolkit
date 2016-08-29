@@ -23,7 +23,7 @@ function tearDown() {
    rm -rf "${dir}"
 }
 
-function testRenderTemplate() {
+function testRenderTemplateWithVarDefsFile() {
    local dir="/tmp/testRenderTemplate"
    rm -rf "${dir}"
    mkdir "${dir}"
@@ -42,11 +42,36 @@ surname=Smith
 age=$(( a << 1 ))
 curse="%#&@"
 '
-   render-template "${templateFile}" <"${varDefsFile}" >"${STDOUT}"
+   render-template "${templateFile}" "${varDefsFile}" >"${STDOUT}"
    assertStdOut 'Her name is Alice Smith.
 Alice is 20 years old.
 John shouted: Alice, Alice!
-But she replied: %#&@ you!'
+But she replied: %#&@ you!
+10'
+   rm -rf "${dir}"
+}
+
+function testRenderTemplateWithShellVars() {
+   local dir="/tmp/testRenderTemplate"
+   rm -rf "${dir}"
+   mkdir "${dir}"
+   local templateFile=$(mktemp -p "${dir}")
+   cat >"${templateFile}" <<< 'Her name is ${name} ${surname}.
+Alice is ${age} years old.
+John shouted: ${name}, ${name}!
+But she replied: ${curse} you!
+${a}'
+   local a=10
+   local name=Alice
+   local surname=Smith
+   local age=$(( a << 1 ))
+   local curse="%#&@"
+   render-template "${templateFile}" >"${STDOUT}"
+   assertStdOut 'Her name is Alice Smith.
+Alice is 20 years old.
+John shouted: Alice, Alice!
+But she replied: %#&@ you!
+10'
    rm -rf "${dir}"
 }
 

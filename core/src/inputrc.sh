@@ -54,6 +54,9 @@ function env-bind() {
 
    ### key definitions
 
+   [[ $(uname) =~ CYGWIN ]]
+   cygwin=$?
+
    local Ctrl='\C-'
    local Alt='\e'
    local AltCtrl=${Alt}${Ctrl}
@@ -81,6 +84,29 @@ function env-bind() {
    local Del='\e[3~'
    local PgUp='\e[5~'
    local PgDown='\e[6~'
+
+   if [[ ${cygwin} == 0 ]] ; then
+       local Alt='\e[1;5'
+
+       local CtrlLeft='\e[1;3D'
+       local CtrlRight='\e[1;3C'
+       local CtrlUp='\e[1;3A'
+       local CtrlDown='\e[1;3B'
+       local AltLeft='\e[1;5D'
+       local AltRight='\e[1;5C'
+       local AltUp='\e[1;5A'
+       local AltDown='\e[1;5B'
+       local AltCtrlLeft='\e[1;7D'
+       local AltCtrlRight='\e[1;7C'
+       local AltCtrlUp='\e[1;7A'
+       local AltCtrlDown='\e[1;7B'
+
+       local Home='\e[7~'
+       local End='\e[8~'
+       local Ins='\e[2~'
+       local Del='\e[3~'
+   fi
+
    local AltHome=${Alt}${Home}
    local AltEnd=${Alt}${End}
    local AltIns=${Alt}${Ins}
@@ -244,7 +270,7 @@ function env-bind() {
    bind-to-chars "${echoize}" "${Alt}e"
    bind-to-chars "${findByName}" "${Alt}f"
    bind-to-chars "${findByText}" "${Alt}F"
-   bind-to-chars "${grepHistory}" "${Ctrl} " "${AltCtrlUp}"
+   bind-to-chars "${grepHistory}" "${AltCtrlUp}"
    bind-to-chars "${expandHistoryEntry}" "${Alt} "
    bind-to-chars "${grepDirHistory}" "${AltPgUp}" "${AltPgDown}"
    bind-to-chars "${grepPs}" "${Alt}p"

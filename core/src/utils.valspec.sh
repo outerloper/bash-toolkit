@@ -1,10 +1,11 @@
 #!/bin/bash
-
+# TODO test this
+# Get property $1 of current type. Type is determined by vars VALSPEC_CURRENT and TYPE_CURRENT
 function type-get() {
    RESULT=
    local property=${1:?"Missed property."}
    shift
-   local returnRef=${1:?"Missed result name"}
+   local returnRef=${1:-${property}}
    shift
 
    local resultRef="${VALSPEC_CURRENT}[${TYPE_CURRENT}.${property}]}"
@@ -84,14 +85,14 @@ function type-def() {
 function verifyEnum() {
    RESULT=
    local values
-   type-get values values
+   type-get values
    [[ "${values// /}" ]] || RESULT="Enum values are undefined!"
 }
 
 function verifyPath() {
    RESULT=
    local pathType
-   type-get pathType pathType
+   type-get pathType
    [[ "${pathType}" ]] || RESULT="Path type is undefined!"
 }
 
@@ -99,15 +100,15 @@ function verifyPath() {
 function helpEnum() {
    RESULT=
    local values
-   type-get values values
+   type-get values
    RESULT="one of: ${values}"
 }
 
 function helpInt() {
    RESULT=
    local min max
-   type-get min min
-   type-get max max
+   type-get min
+   type-get max
    if [[ "${min}" ]]
    then
       if [[ "${max}" ]]
@@ -120,7 +121,7 @@ function helpInt() {
    then
       RESULT="max: ${max}"
    else
-      RESULT="a number"
+      RESULT="number"
    fi
 }
 
@@ -143,7 +144,7 @@ function validateEnum() {
 
    local values
 
-   type-get values values
+   type-get values
    grep " ${value} " <<<" ${values} " >/dev/null
    if (( $? != 0 ))
    then
@@ -156,7 +157,7 @@ function validatePattern() {
 
    local pattern
 
-   type-get pattern pattern
+   type-get pattern
    [[ "${pattern}" ]] || return
 
    egrep "^${pattern}$" <<<"${value}" >/dev/null
@@ -178,14 +179,14 @@ function validateInt() {
       return
    fi
 
-   type-get min min
+   type-get min
    if [[ "${min}" ]] && (( value < min ))
    then
       validationMessage lessThanMinMessage "Value must not be less than %s" "${min}"
       return
    fi
 
-   type-get max max
+   type-get max
    if [[ "${max}" ]] && (( value > max ))
    then
       validationMessage greaterThanMaxMessage message "Value must not be greater than %s" "${max}"
@@ -198,8 +199,8 @@ function validatePath() {
 
    local root pathType
 
-   type-get root root
-   type-get pathType pathType
+   type-get root
+   type-get pathType
 
    [[ "${value}" = /* ]] || value="${root}${value}"
 
@@ -212,7 +213,7 @@ function validatePath() {
             validationMessage dirDoesNotExistMessage "Directory '%s' does not exist" "${value}"
             return
          fi
-         if [[ "${type}" == empty-dir ]] && ! is-dir-empty "${value}"
+         if [[ "${pathType}" == empty-dir ]] && ! is-dir-empty "$(readlink -f "${value}")"
          then
             validationMessage dirNotEmptyMessage "Directory '%s' is not empty" "${value}"
             return
@@ -241,7 +242,7 @@ function validatePath() {
          fi
       ;;
       *)
-         error "Unsupported file type for validation: '${fileType}'"
+         error "Unsupported file type: '${pathType}'"
       ;;
       esac
    fi
@@ -284,14 +285,14 @@ function ask-for() {
          return 1
       fi
    fi
-   type-get desc desc
-   type-get help help
-   type-get reuse reuse
-   type-get maskInput maskInput
-   type-get default default
-   type-get required required
-   type-get validate validate
-   type-get process process
+   type-get desc
+   type-get help
+   type-get reuse
+   type-get maskInput
+   type-get default
+   type-get required
+   type-get validate
+   type-get process
 
    : ${required:=1}
 
@@ -323,7 +324,6 @@ function ask-for() {
             value="${default}" "${value}"
          else
             eval "${name}="
-            eval "${cleanupCmd}"
             return
          fi
       fi
