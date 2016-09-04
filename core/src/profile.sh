@@ -20,11 +20,11 @@ shopt -s expand_aliases
 
 
 ssh() {
-  [[ -z ${SSH_AUTH_SOCK} ]] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
+  [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
   eval $(which ssh) $@
 }
 
 scp() {
-  [[ -z ${SSH_AUTH_SOCK} ]] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9 &&  eval "$(ssh-agent -s)" && ssh-add
+  [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9 &&  eval "$(ssh-agent -s)" && ssh-add
   eval $(which scp) $@
 }
