@@ -463,7 +463,7 @@ function argspec-init() {
 argspec-init argspec
 argspec-init argspec-init --desc 'Initializes autocompletion and getArgs() function for executable of given name.'
 
-# TODO --arity -> --type: 0 - flag, ? - opt-value, 1 - value, * - opt-list, + - list
+# TODO flag with optional value
 # TODO add --value-type: int dir file...
 
 function argspec-demo() {
