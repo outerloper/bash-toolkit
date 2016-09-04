@@ -1,11 +1,10 @@
 #!/bin/bash
-# TODO test this
-# Get property $1 of current type. Type is determined by vars VALSPEC_CURRENT and TYPE_CURRENT
+
 function type-get() {
    RESULT=
    local property=${1:?"Missed property."}
    shift
-   local returnRef=${1:-${property}}
+   local returnRef=${1:?"Missed result name"}
    shift
 
    local resultRef="${VALSPEC_CURRENT}[${TYPE_CURRENT}.${property}]}"
@@ -85,14 +84,14 @@ function type-def() {
 function verifyEnum() {
    RESULT=
    local values
-   type-get values
+   type-get values values
    [[ "${values// /}" ]] || RESULT="Enum values are undefined!"
 }
 
 function verifyPath() {
    RESULT=
    local pathType
-   type-get pathType
+   type-get pathType pathType
    [[ "${pathType}" ]] || RESULT="Path type is undefined!"
 }
 
@@ -100,15 +99,15 @@ function verifyPath() {
 function helpEnum() {
    RESULT=
    local values
-   type-get values
+   type-get values values
    RESULT="one of: ${values}"
 }
 
 function helpInt() {
    RESULT=
    local min max
-   type-get min
-   type-get max
+   type-get min min
+   type-get max max
    if [[ "${min}" ]]
    then
       if [[ "${max}" ]]
@@ -121,7 +120,7 @@ function helpInt() {
    then
       RESULT="max: ${max}"
    else
-      RESULT="number"
+      RESULT="a number"
    fi
 }
 
@@ -144,7 +143,7 @@ function validateEnum() {
 
    local values
 
-   type-get values
+   type-get values values
    grep " ${value} " <<<" ${values} " >/dev/null
    if (( $? != 0 ))
    then
@@ -157,7 +156,7 @@ function validatePattern() {
 
    local pattern
 
-   type-get pattern
+   type-get pattern pattern
    [[ "${pattern}" ]] || return
 
    egrep "^${pattern}$" <<<"${value}" >/dev/null
@@ -179,14 +178,14 @@ function validateInt() {
       return
    fi
 
-   type-get min
+   type-get min min
    if [[ "${min}" ]] && (( value < min ))
    then
       validationMessage lessThanMinMessage "Value must not be less than %s" "${min}"
       return
    fi
 
-   type-get max
+   type-get max max
    if [[ "${max}" ]] && (( value > max ))
    then
       validationMessage greaterThanMaxMessage message "Value must not be greater than %s" "${max}"
@@ -199,8 +198,8 @@ function validatePath() {
 
    local root pathType
 
-   type-get root
-   type-get pathType
+   type-get root root
+   type-get pathType pathType
 
    [[ "${value}" = /* ]] || value="${root}${value}"
 
@@ -213,7 +212,7 @@ function validatePath() {
             validationMessage dirDoesNotExistMessage "Directory '%s' does not exist" "${value}"
             return
          fi
-         if [[ "${pathType}" == empty-dir ]] && ! is-dir-empty "$(readlink -f "${value}")"
+         if [[ "${type}" == empty-dir ]] && -ned "${value}"
          then
             validationMessage dirNotEmptyMessage "Directory '%s' is not empty" "${value}"
             return
@@ -242,7 +241,7 @@ function validatePath() {
          fi
       ;;
       *)
-         error "Unsupported file type: '${pathType}'"
+         stderr "Unsupported file type for validation: '${fileType}'"
       ;;
       esac
    fi
@@ -271,7 +270,8 @@ function ask-for() {
    VALSPEC_ASK=()
    type-def VALSPEC_ASK.${name} ${type} "$@"
 
-   local verify desc help reuse maskInput silent default required validate process prompt value
+   local verify desc help reuse maskInput silent suggestions default required validate process prompt value
+   local cleanupCmd=':'
 
    VALSPEC_CURRENT=VALSPEC_ASK
    TYPE_CURRENT=${name}
@@ -281,25 +281,38 @@ function ask-for() {
       ${verify}
       if [[ "${RESULT}" ]]
       then
-         error "${RESULT}"
+         stderr "${RESULT}"
          return 1
       fi
    fi
-   type-get desc
-   type-get help
-   type-get reuse
-   type-get maskInput
-   type-get default
-   type-get required
-   type-get validate
-   type-get process
+   type-get desc desc
+   type-get help help
+   type-get reuse reuse
+   type-get maskInput maskInput
+   type-get suggestions suggestions
+   type-get default default
+   type-get required required
+   type-get validate validate
+   type-get process process
 
    : ${required:=1}
+
+   if [[ "${suggestions}" ]]
+   then
+      local tmpDir="$(mktemp -d)" pwDir="${PWD}"
+      cleanupCmd='cd '${pwDir}'; rm -r '${tmpDir}'; trap - SIGINT SIGHUP EXIT; return'
+      trap "echo; ${cleanupCmd}" SIGINT SIGHUP EXIT
+      cd "${tmpDir}"
+      for suggestion in ${suggestions}
+      do
+         touch ${suggestions}
+      done
+   fi
 
    prompt="${desc:-"Provide ${name}"}${help:+" (${help})"}${default:+". Default is '${default}'"}${PS2}"
    while [ -z "${value}" ]
    do
-      is-true ${maskInput} && silent="-s"
+      -true ${maskInput} && silent="-s"
       read ${silent} -e -p "${prompt}" -i "${suggest}" value
       [[ ${silent} ]] && echo
       if [[ "${value}" ]] && [[ "${validate}" ]]
@@ -309,14 +322,14 @@ function ask-for() {
          then
             prompt="${validationMessage}. Try again${PS2}"
             suggest=''
-            is-true "${reuse}" && suggest="${value}"
+            -true "${reuse}" && suggest="${value}"
             value=''
             continue
          fi
       fi
       if [ -z "${value}" ]
       then
-         if is-true "${required}"
+         if -true "${required}"
          then
             prompt="Non empty value is required. Try again${PS2}"
          elif [[ "${default}" ]]
@@ -324,6 +337,7 @@ function ask-for() {
             value="${default}" "${value}"
          else
             eval "${name}="
+            eval "${cleanupCmd}"
             return
          fi
       fi
@@ -334,6 +348,7 @@ function ask-for() {
       value="${RESULT}"
    fi
    printf -v ${name} -- "${value}"
+   eval "${cleanupCmd}"
 }
 
 
@@ -354,8 +369,6 @@ declare -A TYPESPEC=(
    [path.verify]='verifyPath'
    [path.validate]='validatePath'
    [path.process]='processPath'
-
-   [password.maskInput]='yes'
 )
 TYPE_CURRENT=
 VALSPEC_CURRENT=

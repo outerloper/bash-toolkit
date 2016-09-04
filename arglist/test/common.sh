@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../src/arglist.sh
+source ../src/arglist.sh # TODO fix tests
 
 declare -A options=(
    ["help"]='greet'
@@ -61,7 +61,7 @@ function calculator() {
       printArgs calculatorOptions
       if (( ${#main[@]} < 2 ))
       then
-         error 'Missing first argument and/or operation name'
+         stderr 'Missing first argument and/or operation name'
          return 1
       fi
       operation=${main}
@@ -101,7 +101,7 @@ function list-dir() {
    then
       printArgs listDirOptions
 
-      if is ${hidden}
+      if -n ${hidden}
       then
          echo 'file1 file2 .file3'
       else

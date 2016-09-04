@@ -6,9 +6,9 @@ function bind-to-macro() {
    for key in $@
    do
       case ${key} in
-         '\e'|'\C-'|'\e\C-') key="${key} " ;;
+         '\e'|'\C-'|'\e\C-') key="$key " ;;
       esac
-      bind "\"${key}\": ${macro}"
+      bind "\"$key\": $macro"
    done
 }
 
@@ -17,10 +17,10 @@ function bind-to-chars() {
    shift
    for key in $@
    do
-      case ${key} in
-         '\e'|'\C-'|'\e\C-') key="${key} " ;;
+      case $key in
+         '\e'|'\C-'|'\e\C-') key="$key " ;;
       esac
-      bind "\"${key}\": \"${macro}\""
+      bind "\"$key\": \"$macro\""
    done
 }
 
@@ -35,13 +35,13 @@ function filter-history() {
 function find-by-name() {
    local regexp="${1?Regexp missing}"
    shift
-   find . $@ -regex ".*${regexp}.*" 2> /dev/null
+   find . $@ -regex ".*$regexp.*" 2> /dev/null
 }
 
 function find-by-text() {
    local regexp="${1?Regexp missing}"
    shift
-   g -r $@ "${regexp}" . 2> /dev/null
+   g -r $@ "$regexp" . 2> /dev/null
 }
 
 function env-bind() {
@@ -59,7 +59,7 @@ function env-bind() {
 
    local Ctrl='\C-'
    local Alt='\e'
-   local AltCtrl=${Alt}${Ctrl}
+   local AltCtrl=$Alt$Ctrl
 
    local Left='\e[D'
    local Right='\e[C'
@@ -69,14 +69,14 @@ function env-bind() {
    local CtrlRight='\eOC'
    local CtrlUp='\eOA'
    local CtrlDown='\eOB'
-   local AltLeft=${Alt}${Left}
-   local AltRight=${Alt}${Right}
-   local AltUp=${Alt}${Up}
-   local AltDown=${Alt}${Down}
-   local AltCtrlLeft=${Alt}${CtrlLeft}
-   local AltCtrlRight=${Alt}${CtrlRight}
-   local AltCtrlUp=${Alt}${CtrlUp}
-   local AltCtrlDown=${Alt}${CtrlDown}
+   local AltLeft=$Alt$Left
+   local AltRight=$Alt$Right
+   local AltUp=$Alt$Up
+   local AltDown=$Alt$Down
+   local AltCtrlLeft=$Alt$CtrlLeft
+   local AltCtrlRight=$Alt$CtrlRight
+   local AltCtrlUp=$Alt$CtrlUp
+   local AltCtrlDown=$Alt$CtrlDown
 
    local Home='\e[1~'
    local End='\e[4~'
@@ -85,7 +85,7 @@ function env-bind() {
    local PgUp='\e[5~'
    local PgDown='\e[6~'
 
-   if [[ ${cygwin} == 0 ]] ; then
+   if [[ $cygwin == 0 ]] ; then
        local Alt='\e[1;5'
 
        local CtrlLeft='\e[1;3D'
@@ -107,17 +107,17 @@ function env-bind() {
        local Del='\e[3~'
    fi
 
-   local AltHome=${Alt}${Home}
-   local AltEnd=${Alt}${End}
-   local AltIns=${Alt}${Ins}
-   local AltDel=${Alt}${Del}
-   local AltPgUp=${Alt}${PgUp}
-   local AltPgDown=${Alt}${PgDown}
+   local AltHome=$Alt$Home
+   local AltEnd=$Alt$End
+   local AltIns=$Alt$Ins
+   local AltDel=$Alt$Del
+   local AltPgUp=$Alt$PgUp
+   local AltPgDown=$Alt$PgDown
 
    local Sp=' '
    local Bsp='\C-?'
    local CtrlBsp='\e'
-   local AltBsp=${Alt}${Bsp}
+   local AltBsp=$Alt$Bsp
    local ShiftTab='\e[Z'
    local BackTick='\`'
 
@@ -134,27 +134,27 @@ function env-bind() {
    local F11='\e[23~'
    local F12='\e[24~'
 
-   local AltF1=${Alt}${F1}
-   local AltF2=${Alt}${F2}
-   local AltF3=${Alt}${F3}
-   local AltF4=${Alt}${F4}
-   local AltF5=${Alt}${F5}
-   local AltF6=${Alt}${F6}
-   local AltF7=${Alt}${F7}
-   local AltF8=${Alt}${F8}
-   local AltF9=${Alt}${F9}
-   local AltF10=${Alt}${F10}
-   local AltF11=${Alt}${F11}
-   local AltF12=${Alt}${F12}
+   local AltF1=$Alt$F1
+   local AltF2=$Alt$F2
+   local AltF3=$Alt$F3
+   local AltF4=$Alt$F4
+   local AltF5=$Alt$F5
+   local AltF6=$Alt$F6
+   local AltF7=$Alt$F7
+   local AltF8=$Alt$F8
+   local AltF9=$Alt$F9
+   local AltF10=$Alt$F10
+   local AltF11=$Alt$F11
+   local AltF12=$Alt$F12
 
    ### key sequences definitions
 
-   local EndOfHist="${Alt}>"
-   local FwdWord=${AltRight}
-   local BkwWord=${AltLeft}
-   local ClrLn=${EndOfHist}${End}${AltBsp}
-   local ClrLnRight=${AltDel}
-   local ClrLnLeft=${AltBsp}
+   local EndOfHist="$Alt>"
+   local FwdWord=$AltRight
+   local BkwWord=$AltLeft
+   local ClrLn=$EndOfHist$End$AltBsp
+   local ClrLnRight=$AltDel
+   local ClrLnLeft=$AltBsp
 
    ### key codes used for substitution
 
@@ -171,141 +171,141 @@ function env-bind() {
 
    ### macro bindings
 
-   bind-to-macro forward-char "${Right}"
-   bind-to-macro forward-word "${FwdWord}"
-   bind-to-macro delete-char "${Del}"
-   bind-to-macro kill-word "${AltCtrlRight}"
-   bind-to-macro end-of-line "${End}"
-   bind-to-macro kill-line "${ClrLnRight}"
+   bind-to-macro forward-char "$Right"
+   bind-to-macro forward-word "$FwdWord"
+   bind-to-macro delete-char "$Del"
+   bind-to-macro kill-word "$AltCtrlRight"
+   bind-to-macro end-of-line "$End"
+   bind-to-macro kill-line "$ClrLnRight"
 
-   bind-to-macro backward-char "${Left}"
-   bind-to-macro backward-word "${BkwWord}" "${CtrlLeft}"
-   bind-to-macro backward-delete-char "${Bsp}"
-   bind-to-macro backward-kill-word "${AltCtrlLeft}"
-   bind-to-macro beginning-of-line "${Home}"
-   bind-to-macro unix-line-discard "${ClrLnLeft}"
+   bind-to-macro backward-char "$Left"
+   bind-to-macro backward-word "$BkwWord" "$CtrlLeft"
+   bind-to-macro backward-delete-char "$Bsp"
+   bind-to-macro backward-kill-word "$AltCtrlLeft"
+   bind-to-macro beginning-of-line "$Home"
+   bind-to-macro unix-line-discard "$ClrLnLeft"
 
    #bind-to-macro kill-whole-line
-   bind-to-macro undo "${Alt}z"
-   bind-to-macro paste-from-clipboard "${Alt}v"
+   bind-to-macro undo "$Altz"
+   bind-to-macro paste-from-clipboard "$Altv"
    #   bind '1':magic-space # space somehow cannot be set for magic-space..
-   bind-to-macro magic-space "${MagicSpace}"
-   bind-to-macro menu-complete "${CtrlDown}"
-   bind-to-macro menu-complete-backward "${CtrlUp}"
+   bind-to-macro magic-space "$MagicSpace"
+   bind-to-macro menu-complete "$CtrlDown"
+   bind-to-macro menu-complete-backward "$CtrlUp"
 
-   bind-to-macro end-of-history "${EndOfHist}"
-   bind-to-macro history-search-forward "${AltDown}"
-   bind-to-macro history-search-backward "${AltUp}"
+   bind-to-macro end-of-history "$EndOfHist"
+   bind-to-macro history-search-forward "$AltDown"
+   bind-to-macro history-search-backward "$AltUp"
 
-   bind-to-macro insert-comment "${Alt}3"
+   bind-to-macro insert-comment "$Alt3"
 
    ### custom key sequences definitions
 
-   local nextWord=${FwdWord}${FwdWord}${BkwWord}
-   local help=${End}' --help\n'
-   local man=${Home}'man '${FwdWord}${AltDel}'\n'
-   local ls1=${ClrLn}'la\n'
-   local ls2=${ClrLn}'lt\n'
-   local pipeToGrep=${End}' | g '"''"${Left}
-   local pipeToSed=${End}' | sed -e '"''"${Left}
-   local pipeToAwk=${End}' | awk '"'{}'"${Left}${Left}
-   local echoize=${Home}'echo \"'${End}'\"'${Left}
-   local findByName=${ClrLn}'find-by-name \"\"'${Left}
-   local findByText=${ClrLn}'find-by-text \"\"'${Left}
-   local grepHistory=${Home}' filter-history \"'${End}'\"\n' # for performing PROMP_COMMAND before grep-history
-   local expandHistoryEntry=${Home}'!'${End}${MagicSpace}
-   local grepDirHistory=${Home}${FwdWord}${ClrLnRight}${Home}'cd --'${FwdWord}'\t'${ClrLn}'cd -'
-   local grepPs=${ClrLn}'ps ux | grep \"\"'${Left}
-   local kill=${ClrLn}'ps ux\nkill -9 '
-   local jps=${ClrLn}'jps -lm\n'
-   local executize=${Home}'./'${FwdWord}${End}'\t'
-   local setExecutable=${Home}'chmod u+x '${End}'\t'
-   local change1stWord=${Home}${AltCtrlRight}
-   local insert2ndWord=${Home}${AltRight}' '
-   local makeVar=${BkwWord}'${'${FwdWord}}${Left}
-   local initVar='}'${Left}':='
-   local arrayVar=${BkwWord}'${'${FwdWord}'[@]}'${Left}${Left}
-   local goToHome=${ClrLn}'cd ~\n'
-   local goToPrev=${ClrLn}'cd -\n'
-   local goDownDir=${ClrLn}'cd \t'
-   local goUpDir=${ClrLn}'cd ..\n'
-   local rm=${ClrLn}'rm -rf \t'
+   local nextWord=$FwdWord$FwdWord$BkwWord
+   local help=$End' --help\n'
+   local man=$Home'man '$FwdWord$AltDel'\n'
+   local ls1=$ClrLn'la\n'
+   local ls2=$ClrLn'lt\n'
+   local pipeToGrep=$End' | g '"''"$Left
+   local pipeToSed=$End' | sed -e '"''"$Left
+   local pipeToAwk=$End' | awk '"'{}'"$Left$Left
+   local echoize=$Home'echo \"'$End'\"'$Left
+   local findByName=$ClrLn'find-by-name \"\"'$Left
+   local findByText=$ClrLn'find-by-text \"\"'$Left
+   local grepHistory=$Home' filter-history \"'$End'\"\n' # for performing PROMP_COMMAND before grep-history
+   local expandHistoryEntry=$Home'!'$End$MagicSpace
+   local grepDirHistory=$Home$FwdWord$ClrLnRight$Home'cd --'$FwdWord'\t'$ClrLn'cd -'
+   local grepPs=$ClrLn'ps ux | grep \"\"'$Left
+   local kill=$ClrLn'ps ux\nkill -9 '
+   local jps=$ClrLn'jps -lm\n'
+   local executize=$Home'./'$FwdWord$End'\t'
+   local setExecutable=$Home'chmod u+x '$End'\t'
+   local change1stWord=$Home$AltCtrlRight
+   local insert2ndWord=$Home$AltRight' '
+   local makeVar=$BkwWord'${'$FwdWord}$Left
+   local initVar='}'$Left':='
+   local arrayVar=$BkwWord'${'$FwdWord'[@]}'$Left$Left
+   local goToHome=$ClrLn'cd ~\n'
+   local goToPrev=$ClrLn'cd -\n'
+   local goDownDir=$ClrLn'cd \t'
+   local goUpDir=$ClrLn'cd ..\n'
+   local rm=$ClrLn'rm -rf \t'
    local currAbsPath='$PWD/\t'
-   local useLastCommentedLine=${ClrLn}'#'${CtrlUp}${Bsp}${End}
-   local envCommand=${ClrLn}${ENV}' \t'
-   local macro=${End}'; }'${Home}'() { '${Home}'function '
-   local echoLastResultCode=${End}'echo $?\n'
-   local doubleQuote='q\"'${BkwWord}'\"'${FwdWord}${Bsp}
-   local parentheses='q)'${BkwWord}'('${FwdWord}${Bsp}
-   local braces='q}'${BkwWord}'{'${FwdWord}${Bsp}
-   local rerunLast2Commands=${Up}${Up}'\n'${Up}${Up}'\n'
-   local expandPrevCmd1stWord='!:0'${MagicSpace}
-   local expandPrevCmd2ndWord='!:1'${MagicSpace}
-   local expandPrevCmd3rdWord='!:2'${MagicSpace}
-   local expandPrevCmd4thWord='!:3'${MagicSpace}
-   local expandPrevCmd5thWord='!:4'${MagicSpace}
-   local expandPrevCmd6thWord='!:5'${MagicSpace}
-   local expandPrevCmd7thWord='!:6'${MagicSpace}
-   local expandPrevCmd8thWord='!:7'${MagicSpace}
-   local expandPrevCmd9thWord='!:8'${MagicSpace}
-   local expandPrevCmdLastWord='!$'${MagicSpace}
-   local expandPrevCmdAllArgs='!:*'${MagicSpace}
+   local useLastCommentedLine=$ClrLn'#'$CtrlUp$Bsp$End
+   local envCommand=$ClrLn$ENV' \t'
+   local macro=$End'; }'$Home'() { '$Home'function '
+   local echoLastResultCode=$End'echo $?\n'
+   local doubleQuote='q\"'$BkwWord'\"'$FwdWord$Bsp
+   local parentheses='q)'$BkwWord'('$FwdWord$Bsp
+   local braces='q}'$BkwWord'{'$FwdWord$Bsp
+   local rerunLast2Commands=$Up$Up'\n'$Up$Up'\n'
+   local expandPrevCmd1stWord='!:0'$MagicSpace
+   local expandPrevCmd2ndWord='!:1'$MagicSpace
+   local expandPrevCmd3rdWord='!:2'$MagicSpace
+   local expandPrevCmd4thWord='!:3'$MagicSpace
+   local expandPrevCmd5thWord='!:4'$MagicSpace
+   local expandPrevCmd6thWord='!:5'$MagicSpace
+   local expandPrevCmd7thWord='!:6'$MagicSpace
+   local expandPrevCmd8thWord='!:7'$MagicSpace
+   local expandPrevCmd9thWord='!:8'$MagicSpace
+   local expandPrevCmdLastWord='!$'$MagicSpace
+   local expandPrevCmdAllArgs='!:*'$MagicSpace
 
    ### custom key sequences bindings
 
    # Ctrl+Num not working
 
    # currently not used
-   bind-to-chars "" "${F1}" "${F2}" "${F3}" "${F4}" "${F5}" "${F6}" "${F7}" "${F8}" "${F9}" "${F10}" "${F11}" "${F12}"
+   bind-to-chars "" "$F1" "$F2" "$F3" "$F4" "$F5" "$F6" "$F7" "$F8" "$F9" "$F10" "$F11" "$F12"
 
-   bind-to-chars "${ClrLn}" "${AltCtrlDown}"
-   bind-to-chars "${nextWord}" "${CtrlRight}"
-   bind-to-chars "${help}" "${F1}"
-   bind-to-chars "${man}" "${F11}"
-   bind-to-chars "${ls1}" "${F12}"
-   bind-to-chars "${ls2}" "${AltF12}"
-   bind-to-chars "${pipeToGrep}" "${Alt}g"
-   bind-to-chars "${pipeToSed}" "${Alt}s"
-   bind-to-chars "${pipeToAwk}" "${Alt}a"
-   bind-to-chars "${echoize}" "${Alt}e"
-   bind-to-chars "${findByName}" "${Alt}f"
-   bind-to-chars "${findByText}" "${Alt}F"
-   bind-to-chars "${grepHistory}" "${AltCtrlUp}"
-   bind-to-chars "${expandHistoryEntry}" "${Alt} "
-   bind-to-chars "${grepDirHistory}" "${AltPgUp}" "${AltPgDown}"
-   bind-to-chars "${grepPs}" "${Alt}p"
-   bind-to-chars "${kill}" "${Alt}k"
-   bind-to-chars "${jps}" "${Alt}j"
-   bind-to-chars "${rm}" "${Alt}r"
-   bind-to-chars "${setExecutable}" "${Alt}x"
-   bind-to-chars "${executize}" "${Alt}."
-   bind-to-chars "${change1stWord}" "${AltIns}"
-   bind-to-chars "${insert2ndWord}" "${Ins}"
-   bind-to-chars "${makeVar}" "${Alt}$"
-   bind-to-chars "${initVar}" "${Alt}="
-   bind-to-chars "${arrayVar}" "${Alt}@"
-   bind-to-chars "${goToHome}" "${AltHome}"
-   bind-to-chars "${goToPrev}" "${AltEnd}"
-   bind-to-chars "${goDownDir}" "${PgDown}"
-   bind-to-chars "${goUpDir}" "${PgUp}"
-   bind-to-chars "${currAbsPath}" "${ShiftTab}"
-   bind-to-chars "${useLastCommentedLine}" "${Alt}!"
-   bind-to-chars "${envCommand}" "${F10}"
-#   bind-to-chars "${macro}" "${Alt}m"
-   bind-to-chars "${echoLastResultCode}" "${Alt}?"
-   bind-to-chars "${rerunLast2Commands}" "${Alt}%"
+   bind-to-chars "$ClrLn" "$AltCtrlDown"
+   bind-to-chars "$nextWord" "$CtrlRight"
+   bind-to-chars "$help" "$F1"
+   bind-to-chars "$man" "$F11"
+   bind-to-chars "$ls1" "$F12"
+   bind-to-chars "$ls2" "$AltF12"
+   bind-to-chars "$pipeToGrep" "$Alt"g
+   bind-to-chars "$pipeToSed" "$Alt"s
+   bind-to-chars "$pipeToAwk" "$Alt"a
+   bind-to-chars "$echoize" "$Alt"e
+   bind-to-chars "$findByName" "$Alt"f
+   bind-to-chars "$findByText" "$Alt"F
+   bind-to-chars "$grepHistory" "$AltCtrlUp"
+   bind-to-chars "$expandHistoryEntry" "$Alt"
+   bind-to-chars "$grepDirHistory" "$AltPgUp" "$AltPgDown"
+   bind-to-chars "$grepPs" "$Alt"p
+   bind-to-chars "$kill" "$Alt"k
+   bind-to-chars "$jps" "$Alt"j
+   bind-to-chars "$rm" "$Alt"r
+   bind-to-chars "$setExecutable" "$Alt"x
+   bind-to-chars "$executize" "$Alt."
+   bind-to-chars "$change1stWord" "$AltIns"
+   bind-to-chars "$insert2ndWord" "$Ins"
+   bind-to-chars "$makeVar" "$Alt"$
+   bind-to-chars "$initVar" "$Alt"=
+   bind-to-chars "$arrayVar" "$Alt"@
+   bind-to-chars "$goToHome" "$AltHome"
+   bind-to-chars "$goToPrev" "$AltEnd"
+   bind-to-chars "$goDownDir" "$PgDown"
+   bind-to-chars "$goUpDir" "$PgUp"
+   bind-to-chars "$currAbsPath" "$ShiftTab"
+   bind-to-chars "$useLastCommentedLine" "$Alt"!
+   bind-to-chars "$envCommand" "$F10"
+#   bind-to-chars "$macro" "$Alt"m
+   bind-to-chars "$echoLastResultCode" "$Alt"?
+   bind-to-chars "$rerunLast2Commands" "$Alt"%
 
-   bind-to-chars "${expandPrevCmd1stWord}" "${Alt}1"
-   bind-to-chars "${expandPrevCmd2ndWord}" "${Alt}2"
-   bind-to-chars "${expandPrevCmd3rdWord}" "${Alt}3"
-   bind-to-chars "${expandPrevCmd4thWord}" "${Alt}4"
-   bind-to-chars "${expandPrevCmd5thWord}" "${Alt}5"
-   bind-to-chars "${expandPrevCmd6thWord}" "${Alt}6"
-   bind-to-chars "${expandPrevCmd7thWord}" "${Alt}7"
-   bind-to-chars "${expandPrevCmd8thWord}" "${Alt}8"
-   bind-to-chars "${expandPrevCmd9thWord}" "${Alt}9"
-   bind-to-chars "${expandPrevCmdLastWord}" "${Alt}0" "${Alt}\`"
-   bind-to-chars "${expandPrevCmdAllArgs}" "${Alt}-"
+   bind-to-chars "$expandPrevCmd1stWord" "$Alt"1
+   bind-to-chars "$expandPrevCmd2ndWord" "$Alt"2
+   bind-to-chars "$expandPrevCmd3rdWord" "$Alt"3
+   bind-to-chars "$expandPrevCmd4thWord" "$Alt"4
+   bind-to-chars "$expandPrevCmd5thWord" "$Alt"5
+   bind-to-chars "$expandPrevCmd6thWord" "$Alt"6
+   bind-to-chars "$expandPrevCmd7thWord" "$Alt"7
+   bind-to-chars "$expandPrevCmd8thWord" "$Alt"8
+   bind-to-chars "$expandPrevCmd9thWord" "$Alt"9
+   bind-to-chars "$expandPrevCmdLastWord" "$Alt"0 "$Alt\`"
+   bind-to-chars "$expandPrevCmdAllArgs" "$Alt"-
 
    ### history setup
 
@@ -327,3 +327,5 @@ function env-bind() {
 
 env-bind
 unset -f env-bind
+
+#TODO minimize number of macros

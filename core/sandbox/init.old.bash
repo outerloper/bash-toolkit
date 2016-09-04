@@ -44,26 +44,26 @@ function testSourceOnce() {
 
 
 function set-new() {
-   no "${1}" && error "Missed set name" && return 1
+   no "${1}" && stderr "Missed set name" && return 1
    printf -v "${1}" "${IFS}"
 }
 
 function set-add() {
-   no "${1}" && error "Missed set name" && return 1
-   no "${2}" && error "Missed value" && return 1
+   no "${1}" && stderr "Missed set name" && return 1
+   no "${2}" && stderr "Missed value" && return 1
    printf -v "${1}" "${!1//${2}${IFS}}"
    printf -v "${1}" "${!1}${2}${IFS}"
 }
 
 function set-remove() {
-   no "${1}" && error "Missed set name" && return 1
-   no "${2}" && error "Missed value" && return 1
+   no "${1}" && stderr "Missed set name" && return 1
+   no "${2}" && stderr "Missed value" && return 1
    printf -v "${1}" "${!1//${2}${IFS}}"
 }
 
 function set-has() {
-   no "${1}" && error "Missed set name" && return 1
-   no "${2}" && error "Missed value" && return 1
+   no "${1}" && stderr "Missed set name" && return 1
+   no "${2}" && stderr "Missed value" && return 1
    ! [[ "${!1//${2}${IFS}}" == "${!1}" ]]
 }
 

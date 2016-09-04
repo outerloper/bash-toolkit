@@ -1,118 +1,118 @@
 #!/bin/bash
 
 source ../src/utils.sh
-source ../src/utils.tests.sh
+source ../src/testing.sh
 
 function testIsTrueFunctionReturnsTrue() {
-   is-true yes
+   -true yes
    assertResult 0
-   is-true YES
+   -true YES
    assertResult 0
-   is-true Yes
+   -true Yes
    assertResult 0
-   is-true 1
+   -true 1
    assertResult 0
-   is-true y
+   -true y
    assertResult 0
-   is-true Y
+   -true Y
    assertResult 0
-   is-true true
+   -true true
    assertResult 0
-   is-true TRUE
+   -true TRUE
    assertResult 0
-   is-true True
+   -true True
    assertResult 0
 }
 
 function testIsTrueFunctionReturnsFalse() {
-   is-true no
+   -true no
    assertResult 1
-   is-true NO
+   -true NO
    assertResult 1
-   is-true No
+   -true No
    assertResult 1
-   is-true 0
+   -true 0
    assertResult 1
-   is-true
+   -true
    assertResult 1
-   is-true n
+   -true n
    assertResult 1
-   is-true N
+   -true N
    assertResult 1
-   is-true false
+   -true false
    assertResult 1
-   is-true FALSE
+   -true FALSE
    assertResult 1
-   is-true False
+   -true False
    assertResult 1
 }
 
 function testIsTrueReturnsFalseButProducesWarningOnInvalidValue() {
-   is-true invalidValue 2>/dev/null
+   -true invalidValue 2>/dev/null
    assertResult 1
-   assertEquals "Warning: Invalid boolean value. False assumed." "$(is-true invalidValue 2>&1)"
+   assertEquals "Warning: Invalid boolean value. False assumed." "$(-true invalidValue 2>&1)"
 }
 
 function testIs() {
-   no ""
+   -z ""
    assertResult 0
-   no "x"
+   -z "x"
    assertResult 1
 }
 
 function testNo() {
-   is ""
+   -n ""
    assertResult 1
-   is "x"
+   -n "x"
    assertResult 0
 }
 
 function testIsUtfReturnsOk() {
    local LANG="pl_PL.UTF-8"
-   is-utf
+   -utf
    assertOk
 }
 
 function testIsUtfReturnsNotOk() {
    local LANG="en_US.ISO-8859-1"
-   is-utf
+   -utf
    assertNotOk
 }
 
 function testIsDirEmpty() {
    dir="/tmp/testIsDirEmpty"
-   rm -rf "${dir}"
-   mkdir "${dir}"
-   is-dir-empty "${dir}"
+   rm -rf "$dir"
+   mkdir "$dir"
+   -ed "$dir"
    assertOk 'New dir is empty'
 
-   touch "${dir}/f"
-   is-dir-empty "${dir}"
+   touch "$dir/f"
+   -ed "$dir"
    assertNotOk 'Dir with file is not empty'
 
-   rm "${dir}/f"
-   is-dir-empty "${dir}"
+   rm "$dir/f"
+   -ed "$dir"
    assertOk 'Dir with only file deleted is empty'
 
-   mkdir "${dir}/d"
-   is-dir-empty "${dir}"
+   mkdir "$dir/d"
+   -ed "$dir"
    assertNotOk 'Dir with subdir is not empty'
 
-   rm -rf "${dir}"
+   rm -rf "$dir"
 }
 
 function testDebugArray() {
    a=()
-   debug-array a > "${STDOUT}"
+   print-var a > "$STDOUT"
    assertStdOut "a=( )"
 
    a=(2 4 5 6 10)
-   debug-array a > "${STDOUT}"
+   print-var a > "$STDOUT"
    assertStdOut "a=( [0]=2 [1]=4 [2]=5 [3]=6 [4]=10 )"
 
    declare -A assoc
    assoc=( [bar]=qux [foo]=12 )
-   debug-array assoc > "${STDOUT}"
+   print-var assoc > "$STDOUT"
    assertStdOut "assoc=( [bar]=qux [foo]=12 )"
 }
 

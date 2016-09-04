@@ -51,9 +51,9 @@ function arglist-option() {
 }
 
 function arglist-register() {
-   debug-array ARGLISTS
+   print-var ARGLISTS
    A=( ${ARGLISTS[greet]} )
-   debug-array A
+   print-var A
 }
 
 function arglist-print-help() {

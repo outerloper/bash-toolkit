@@ -1,8 +1,8 @@
 #!/bin/bash
 
 source ../src/utils.sh
-source ../src/utils.dirs.sh
-source ../src/utils.tests.sh
+source ../src/dirs.sh
+source ../src/testing.sh
 
 function setUp() {
    rm -rf /tmp/test-chdir
@@ -10,11 +10,11 @@ function setUp() {
    DIRHISTFILE=/tmp/test-chdir/.dir_history
    chdir /tmp/
    dirs -c
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
 }
 
 function testChdirHelp() {
-   chdir --help | tail -n +2 >"${STDOUT}" # ignoring first line as it may vary between different systems
+   chdir --help | tail -n +2 >"$STDOUT" # ignoring first line as it may vary between different systems
    assertStdOut '       or: cd -c
 Options:
   -P   Do not follow symbolic links
@@ -32,7 +32,7 @@ function testChdirPrintStack() {
 
    chdir test-chdir
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp
     2	/tmp/test-chdir'
    assertPwd /tmp/test-chdir
@@ -41,14 +41,14 @@ function testChdirPrintStack() {
 function testChdirExisting() {
    chdir /
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp
     2	/'
    assertPwd /
 
    chdir /tmp
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/
     2	/tmp'
    assertPwd /tmp
@@ -57,7 +57,7 @@ function testChdirExisting() {
 function testChdirParent() {
    chdir ..
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp
     2	/'
    assertPwd /
@@ -66,25 +66,25 @@ function testChdirParent() {
 function testChdirSelf() {
    chdir .
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp'
    assertPwd /tmp
 }
 
 function testChdirPrevious() {
    chdir test-chdir
-   chdir - >"${STDOUT}"
+   chdir - >"$STDOUT"
    assertOk
    assertStdOut '/tmp'
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp/test-chdir
     2	/tmp'
    assertPwd /tmp
 
-   chdir - >"${STDOUT}"
+   chdir - >"$STDOUT"
    assertOk
    assertStdOut '/tmp/test-chdir'
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp
     2	/tmp/test-chdir'
    assertPwd /tmp/test-chdir
@@ -95,20 +95,20 @@ function testChdirHome() {
    mkdir $HOME
    chdir ~
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp
     2	~'
 }
 
 function testChdirNoParameters() {
    local HOME="/tmp/test-chdir/home"
-   mkdir ${HOME}
+   mkdir $HOME
    chdir
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp
     2	~'
-   assertPwd ${HOME}
+   assertPwd $HOME
 }
 
 function testChdirIndex() {
@@ -118,7 +118,7 @@ function testChdirIndex() {
    chdir ..
    chdir ..
    chdir ..
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	~
     2	/tmp/test-chdir
     3	/tmp
@@ -127,23 +127,23 @@ function testChdirIndex() {
 
    chdir -1
    assertOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp/test-chdir
     2	/tmp
     3	/
     4	~'
-   assertPwd ${HOME}
+   assertPwd $HOME
 
    chdir -4
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp/test-chdir
     2	/tmp
     3	/
     4	~'
-   assertPwd ${HOME}
+   assertPwd $HOME
 
    chdir -2
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp/test-chdir
     2	/
     3	~
@@ -153,31 +153,31 @@ function testChdirIndex() {
 
 function testChdirZeroIndex() {
    local pwd=$(pwd)
-   chdir -0 2>"${STDERR}"
+   chdir -0 2>"$STDERR"
    assertNotOk
    assertStdErr 'No dir with such index in history.'
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp'
-   assertPwd "${pwd}"
+   assertPwd "$pwd"
 }
 
 function testChdirNonExistingIndex() {
    local pwd=$(pwd)
-   chdir -5 2>"${STDERR}"
+   chdir -5 2>"$STDERR"
    assertNotOk
    assertStdErr 'No dir with such index in history.'
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp'
-   assertPwd "${pwd}"
+   assertPwd "$pwd"
 }
 
 function testChdirNonExistingDir() {
    local pwd=$(pwd)
    chdir "/tmp/test-chdir/non-existing" 2>/dev/null
    assertNotOk
-   chdir -- >"${STDOUT}"
+   chdir -- >"$STDOUT"
    assertStdOut '    1	/tmp'
-   assertPwd "${pwd}"
+   assertPwd "$pwd"
 }
 
 source ../../core/lib/shunit/src/shunit2

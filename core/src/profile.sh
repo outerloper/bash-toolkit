@@ -17,17 +17,6 @@ alias f="tail -F"
 alias vi=vim
 
 shopt -s expand_aliases
-for util in ${HOME}/.bash-toolkit/core/src/utils*.sh
-do
-   source "${util}"
-done
-source "${HOME}/.bash-toolkit/arglist/src/arglist.sh"
-source "${HOME}/.bash-toolkit/core/src/inputrc.sh"
-if [[ "$(uname)" =~ "CYGWIN" ]]; then
-    source "${HOME}/.bash-toolkit/av/src/af-cygwin.sh"
-else
-    source "${HOME}/.bash-toolkit/av/src/af-linux.sh"
-fi
 
 ssh() {
   [[ -z ${SSH_AUTH_SOCK} ]] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add

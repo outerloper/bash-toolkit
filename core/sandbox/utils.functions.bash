@@ -1,16 +1,10 @@
 #!/bin/bash
 
-function is-function() {
-   local functionName="${1:?Missing function name.}"
-   [[ $(type -t "${functionName}") == "function" ]]
-}
-export -f is-function
-
 function rename-function() {
    local oldFunctionName="${1:?Missing old function name.}"
-   if ! is-function "${oldFunctionName}"
+   if ! -fun "${oldFunctionName}"
    then
-      error "No such function: ${oldFunctionName}"
+      stderr "No such function: ${oldFunctionName}"
       return 1
    fi
    local oldFunction="$(declare -f "${oldFunctionName}")"

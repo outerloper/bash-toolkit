@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(dirname ${BASH_SOURCE})/../../core/src/utils.sh"
+require ${HOME}/.bash-toolkit/core/src/utils.sh
 
 ### SETTINGS ###
 
@@ -8,42 +8,22 @@ DISPLAY_INSTANT_HELP=yes # TODO some prefix
 
 ### UTILS ###
 
-function _setOptionList() {
-   local optionSpecDecl=$(declare -p $1)
-   optionSpecDecl=${optionSpecDecl#"declare -A $1='"}
-   optionSpecDecl=${optionSpecDecl%"'"}
-   eval "optionSpec=${optionSpecDecl}"
-   declare -A optionMap=()
-   local option
-   for key in ${!optionSpec[@]}
-   do
-      option=${key/.*/}
-      optionMap[$option]=1
-   done
-   unset optionMap[main]
-   unset optionMap[help]
-   for key in ${!optionMap[@]}
-   do
-      optionList+=" ${key}"
-   done
-}
-
 function _prepareProcessingArgs() {
    local currentOptionSwitch
-   for currentOption in ${optionList[@]}
+   for currentOption in ${ARGSPEC["$1.ARGS"]}
    do
       _setCurrentOptionSwitch
-      optionSwitches[$currentOptionSwitch]="${currentOption}"
-      unusedOptions[$currentOption]="${currentOptionSwitch}"
+      optionSwitches[$currentOptionSwitch]="$currentOption"
+      unusedOptions[$currentOption]="$currentOptionSwitch"
    done
 }
 
 function _setCurrentOptionSwitch() {
-   if is ${optionSpec["${currentOption}"]}
+   if -n ${ARGSPEC["$1.$currentOption"]}
    then
-      currentOptionSwitch="--${optionSpec["${currentOption}"]}"
+      currentOptionSwitch="--${ARGSPEC["$1.$currentOption.name"]}"
    else
-      currentOptionSwitch="--${currentOption}"
+      currentOptionSwitch="--$currentOption"
    fi
 }
 
@@ -53,56 +33,46 @@ function _extractArgs() {
 
 ### AUTOCOMPLETION ###
 
-function enableAutocompletion() { # TODO command with more than 1 prefix element
-   declare -A optionSpec=()
-   local optionList
-   _setOptionList $1
-   local scriptNameForHelp=${optionSpec["help"]}
-   if is "${scriptNameForHelp}"
-   then
-      local fn="__argComp_${scriptNameForHelp}"
-      complete -F "${fn}" "${scriptNameForHelp}"
-      eval ${fn}'() { _argsAutocompletion '$1' 1; }'
-   fi
+function _enableAutocompletion() {
+   local fn="__argComp_$1"
+   complete -F "$fn" "$1"
+   eval $fn'() { _argsAutocompletion '$1' 1; }'
 }
 
 function _argsAutocompletion() {
-   declare -A optionSpec=()
-   local optionList
-   _setOptionList $1
    local from=${2:-1}
    local completedArgsCount
    (( completedArgsCount = COMP_CWORD - from ))
    local currentWord="${COMP_WORDS[COMP_CWORD]}"
    local compReply=()
-   local currentOption=main
+   local currentOption=MAIN
    local currentOptionArgsCount=0
    local args=()
-   _extractArgs "${COMP_WORDS[@]:${from}:${completedArgsCount}}"
-   _getCompletion
-   COMPREPLY=( $(compgen -W "${compReply[*]}" -- ${currentWord}) )
-   is-true "${DISPLAY_INSTANT_HELP}" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp
+   _extractArgs "${COMP_WORDS[@]:$from:$completedArgsCount}"
+   _getCompletion $1
+   COMPREPLY=( $(compgen -W "${compReply[*]}" -- $currentWord) )
+   -true "$DISPLAY_INSTANT_HELP" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp $1
 }
 
 function _getCompletion() {
    declare -A unusedOptions=()
    declare -A optionSwitches=()
-   _prepareProcessingArgs
+   _prepareProcessingArgs $1
 
-   currentOption=main
+   currentOption=MAIN
    currentOptionArgsCount=0
    _processArgsForCompletion
 
-   _generateCompletions
+   _generateCompletions $1
 }
 
 function _processArgsForCompletion() {
    for arg in ${args[@]}
    do
-      if [[ "${arg}" =~ ^--.+ ]]
+      if -m "$arg" '^--.+'
       then
-         currentOption="${optionSwitches[${arg}]}"
-         is "${currentOption}" && unset "unusedOptions[${currentOption}]"
+         currentOption="${optionSwitches[$arg]}"
+         -n "$currentOption" && unset "unusedOptions[$currentOption]"
          currentOptionArgsCount=0
       else
          (( currentOptionArgsCount++ ))
@@ -111,66 +81,67 @@ function _processArgsForCompletion() {
 }
 
 function _generateCompletions() {
-   local currentOptionArity="${optionSpec["${currentOption}.arity"]}"
-   local currentOptionRequired="${optionSpec["${currentOption}.required"]}"
+   local currentOptionArity="${ARGSPEC["$1.$currentOption.arity"]}"
+   local currentOptionRequired="${ARGSPEC["$1.$currentOption.required"]}"
    local currentOptionCompletion
-   if [[ "${currentOption}" == main ]] && ! is-true "${currentOptionRequired}" || no "${currentOptionArity}" || (( currentOptionArgsCount > 0 ))
+   if -eq MAIN "$currentOption" && -false "$currentOptionRequired" || -z "$currentOptionArity" || -gt "$currentOptionArgsCount" 0
    then
       compReply=( "${compReply[@]}" ${unusedOptions[@]} )
    fi
-   if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount == 0 )) || [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
+   if -eq "$currentOptionArity" 1 && -eq "$currentOptionArgsCount" 0 || -ma "$currentOptionArity" '[Nn]'
    then
-      currentOptionCompletion="${optionSpec["${currentOption}.comp"]}"
+      currentOptionCompletion="${ARGSPEC["$1.$currentOption.comp"]}"
       compReply=( "${compReply[@]}" "$(_evaluateCompletion)" )
+   fi
+   if -z "${compReply[@]}"
+   then
+      compReply=( '–—' '—–' )
    fi
 }
 
 function _evaluateCompletion() {
-   if no "${currentOptionCompletion}"
+   if -z "$currentOptionCompletion"
    then
       :
-   elif [[ "${currentOptionCompletion}" =~ ^[a-Z_-][0-Z_-]*\(\)$ ]]
+   elif -ma "$currentOptionCompletion" '[a-Z_-][0-Z_-]*\(\)'
    then
-      compgen -F "${currentOptionCompletion//()}" 2>/dev/null # 2>/dev/null because stderr prints warning
-   elif [[ "${currentOptionCompletion}" =~ ^(-f|-d)$ ]]
+      compgen -F "${currentOptionCompletion//()}" 2>/dev/null
+   elif -ma "$currentOptionCompletion" '-f|-d'
    then
-      compgen "${currentOptionCompletion}"
+      compgen "$currentOptionCompletion"
    else
-      compgen -W "${currentOptionCompletion}"
+      compgen -W "$currentOptionCompletion"
    fi
 }
 
 function _displayInstantHelp() {
-   local currentOptionDesc="${optionSpec["${currentOption}.desc"]}"
-   if is "${currentOptionDesc}"
+   local currentOptionDesc="${ARGSPEC["$1.$currentOption.desc"]}"
+   if -n "$currentOptionDesc"
    then
       local descPrefix
-      if [[ "${currentOption}" == main ]]
+      if -eq MAIN "$currentOption"
       then
-         argName="${optionSpec["main"]}"
+         argName="${ARGSPEC["$1.MAIN"]}"
          descPrefix="${argName:-main parameter}: "
       else
-         _setCurrentOptionSwitch
-         descPrefix="${currentOptionSwitch}: "
+         _setCurrentOptionSwitch $1
+         descPrefix="$currentOptionSwitch: "
       fi
-      echo -en "\n\e[1;30m${descPrefix}${currentOptionDesc}\e[0m" >&2
+      echo -en "\n\e[1;30m$descPrefix""$currentOptionDesc\e[0m" >&2
    fi
 }
 
 ### GET ARGS ###
 
 function getArgs() {
-   declare -A optionSpec=()
-   local optionList
-   local optionListName=$1
-   _setOptionList ${optionListName}
+   local argListName=$1
    shift
    local args=( "$@" )
-   _isHelpRequest ${optionListName} && return 127
+   _isHelpRequest $argListName && return 127
 
    declare -A unusedOptions
    declare -A optionSwitches
-   _prepareProcessingArgs
+   _prepareProcessingArgs $argListName
 
    local currentOptionArgsCount=0
    local currentOptionArity
@@ -180,10 +151,10 @@ function getArgs() {
    local discardOption=''
    local resultCode=0
    declare -A usedOptions=()
-   _initOption main
+   _initOption MAIN
    for arg in "${args[@]}"
    do
-      if [[ "${arg}" =~ ^--.+ ]]
+      if -m "$arg" '^--.+'
       then
          _handleOptionSwitch
       else
@@ -191,15 +162,15 @@ function getArgs() {
       fi
       first=''
    done
-   _handleOptionWithoutParams
-   _handleUnusedOptions
-   return ${resultCode}
+   _handleOptionWithoutParams $argListName
+   _handleUnusedOptions $argListName
+   return $resultCode
 }
 
 function _isHelpRequest() {
    for arg in ${args[@]}
    do
-      if [[ "${arg}" == "--help" ]]
+      if -eq --help "$arg"
       then
          printHelp $1
          return 0
@@ -209,13 +180,13 @@ function _isHelpRequest() {
 }
 
 function _handleOptionSwitch() {
-   _handleOptionWithoutParams
-   optionSwitch="${arg}"
+   _handleOptionWithoutParams $argListName
+   optionSwitch="$arg"
    _initOption ${optionSwitches[$optionSwitch]}
-   is ${currentOption} && unset "unusedOptions[${currentOption}]"
-   if is "${usedOptions[$optionSwitch]}"
+   -n $currentOption && unset "unusedOptions[$currentOption]"
+   if -n "${usedOptions[$optionSwitch]}"
    then
-      error "Duplicate usage of option ${optionSwitch}."
+      stderr "Duplicate usage of option $optionSwitch" # TODO
       discardOption=1
       resultCode=1
    fi
@@ -223,21 +194,21 @@ function _handleOptionSwitch() {
 }
 
 function _handleOptionParam() {
-   if is ${discardOption}
+   if -n $discardOption
    then
       return 1;
    fi
-   if no "${currentOptionArity}"
+   if -z "$currentOptionArity"
    then
-      error "Unexpected value: ${arg}."
+      stderr "Unexpected value: $arg"
       resultCode=1
    else
-      if [[ "${currentOptionArity}" == "1" ]] && (( currentOptionArgsCount > 0 ))
+      if -eq 1 "$currentOptionArity" && -gt $currentOptionArgsCount 0
       then
-         error "Unexpected value: ${arg}."
+         stderr "Unexpected value: $arg"
          resultCode=1
       else
-         printf -v "${currentOption}[${currentOptionArgsCount}]" -- "${arg}"
+         set-var "$currentOption[$currentOptionArgsCount]" "$arg"
       fi
    fi
    (( ++currentOptionArgsCount ))
@@ -246,14 +217,14 @@ function _handleOptionParam() {
 function _initOption() {
    currentOption="$1"
    currentOptionArgsCount=0
-   currentOptionArity="${optionSpec["${currentOption}.arity"]}"
-   if is "${currentOption}"
+   currentOptionArity="${ARGSPEC["$argListName.$currentOption.arity"]}"
+   if -n "$currentOption"
    then
-      unset "${currentOption}"
-      eval ${currentOption}'=()'
+      unset "$currentOption"
+      eval $currentOption'=()'
       discardOption=''
    else
-      error "Unknown option: ${optionSwitch}."
+      stderr "Unknown option: $optionSwitch"
       discardOption=1
       resultCode=1
    fi
@@ -262,37 +233,37 @@ function _initOption() {
 function _handleOptionWithoutParams() {
    if (( currentOptionArgsCount == 0 ))
    then
-      if is "${currentOptionArity}" # if not flag, error
+      if -n "$currentOptionArity" # if not flag, error
       then
-         if is ${first}
+         if -n $first
          then
-            _handleMissingMainParameter
+            _handleMissingMainParameter $1
          else
-            no ${discardOption} && error "Missing required parameter for ${optionSwitch}."
+            -z $discardOption && stderr "Missing required parameter for $optionSwitch"
             resultCode=1
          fi
-      elif [[ "${currentOption}" != main ]] # if flag, assign 1 to value
+      elif -neq MAIN "$currentOption" # if flag, assign 1 to value
       then
-         unset ${currentOption}
-         no ${discardOption} && printf -v ${currentOption} "1"
+         unset $currentOption
+         -z $discardOption && printf -v $currentOption "1"
       fi
    fi
 }
 
 function _handleMissingMainParameter() {
-   unset ${currentOption}
-   local currentOptionRequired="${optionSpec["${currentOption}.required"]}"
-   if is-true "${currentOptionRequired}"
+   unset $currentOption
+   local currentOptionRequired="${ARGSPEC["$1.$currentOption.required"]}"
+   if -true "$currentOptionRequired"
    then
-      local currentOptionName="${optionSpec["${currentOption}"]}"
-      local currentOptionName="${currentOptionName:-main parameter}"
-      error "Missing ${currentOptionName}."
+      local currentOptionName="${ARGSPEC["$1.$currentOption"]}"
+      currentOptionName="${currentOptionName:-main parameter}"
+      stderr "Missing $currentOptionName."
       resultCode=1
    else
-      local currentOptionDefault="${optionSpec["${currentOption}.default"]}"
-      if is "${currentOptionDefault}"
+      local currentOptionDefault="${ARGSPEC["$1.$currentOption.default"]}"
+      if -n "$currentOptionDefault"
       then
-         printf -v ${currentOption} "${currentOptionDefault}"
+         printf -v $currentOption "$currentOptionDefault"
       fi
    fi
 }
@@ -300,17 +271,17 @@ function _handleMissingMainParameter() {
 function _handleUnusedOptions() {
    for currentOption in ${!unusedOptions[@]}
    do
-      optionRequired="${optionSpec["${currentOption}.required"]}"
-      if is-true "${optionRequired}"
+      optionRequired="${ARGSPEC["$1.$currentOption.required"]}"
+      if -true "$optionRequired"
       then
-         error "Missing mandatory option: ${unusedOptions[${currentOption}]}."
+         stderr "Missing mandatory option: ${unusedOptions[$currentOption]}"
          resultCode=1
       else
-         printf -v ${currentOption} -- ''
-         currentOptionDefault="${optionSpec["${currentOption}.default"]}"
-         if is "${currentOptionDefault}"
+         set-var $currentOption ''
+         currentOptionDefault="${ARGSPEC["$1.$currentOption.default"]}"
+         if -n "$currentOptionDefault"
          then
-            printf -v ${currentOption} -- ${currentOptionDefault}
+            printf -v $currentOption -- $currentOptionDefault
          fi
       fi
    done
@@ -319,68 +290,64 @@ function _handleUnusedOptions() {
 ### PRINT HELP ###
 
 function printHelp() {
-   if no ${optionList}
-   then
-      declare -A optionSpec=()
-      local optionList
-      _setOptionList $1
-   fi
-
    local optionUsageText
 
-   local currentOption=main
-   local currentOptionName="${optionSpec["${currentOption}"]}"
-   local currentOptionName="${currentOptionName:-main parameter}"
-   local currentOptionDescription="${optionSpec["${currentOption}.desc"]}"
-   local currentOptionArity="${optionSpec["${currentOption}.arity"]}"
-   local currentOptionRequired="${optionSpec["${currentOption}.required"]}"
+   local currentOption=MAIN
+   local currentOptionName="${ARGSPEC["$1.$currentOption.name"]}"
+   currentOptionName="${currentOptionName:-main parameter}"
+   local currentOptionDescription="${ARGSPEC["$1.$currentOption.desc"]}"
+   local currentOptionArity="${ARGSPEC["$1.$currentOption.arity"]}"
+   local currentOptionRequired="${ARGSPEC["$1.$currentOption.required"]}"
 
-   local scriptNameForHelp="${optionSpec["help"]}"
-   local scriptNameForHelp="${scriptNameForHelp:-<this-command>}"
-   local helpDescription="${optionSpec["help.desc"]}"
-   if is "${helpDescription}"
+   local scriptNameForHelp="${ARGSPEC["$1"]}"
+   local scriptNameForHelp="${scriptNameForHelp:-$1}"
+   local helpDescription="${ARGSPEC["$1.DESC"]}"
+   if -n "$helpDescription"
    then
-      echo "${helpDescription}"
+      echo "$helpDescription"
    fi
 
    echo "Usage:"
-   _printCommandHelp
-   if is "${currentOptionArity}" && is "${currentOptionDescription}"
+   _printCommandHelp $1
+   if -n "$currentOptionArity" && -n "$currentOptionDescription"
    then
       echo "Parameters:"
-      _modifyCurrentOptionDescription
-      printf "  %-30s   %s\n" "<${currentOptionName}>" "${currentOptionDescription}"
+      _modifyCurrentOptionDescription $1
+      printf "  %-30s   %s\n" "<$currentOptionName>" "$currentOptionDescription"
    fi
 
-   if is "${optionList}"
+   if -n "${ARGSPEC["$1.ARGS"]}"
    then
       echo "Options:"
-      for currentOption in ${optionList}
+      for currentOption in ${ARGSPEC["$1.ARGS"]}
       do
-         _printOptionHelp
+          if -neq "$currentOption" MAIN
+          then
+            _printOptionHelp $1
+          fi
       done
    fi
 }
 
 function _printCommandHelp() {
-   printf "  ${scriptNameForHelp}"
-   if is "${currentOptionArity}"
+   printf "  $scriptNameForHelp"
+   if -n "$currentOptionArity"
    then
       local optionUsageText=""
-      if [[ "${currentOptionArity}" == "1" ]]
+      if -eq "$currentOptionArity" 1
       then
-         optionUsageText="<${currentOptionName}>"
-      elif [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
+         optionUsageText="<$currentOptionName>"
+      elif -ma "$currentOptionArity" '[Nn]'
       then
-         optionUsageText="<${currentOptionName}> [...]"
+         optionUsageText="<$currentOptionName> [...]"
       fi
-      if ! is-true "${currentOptionRequired}"
+      if -false "$currentOptionRequired"
       then
-         optionUsageText="[${optionUsageText}]"
+         optionUsageText="[$optionUsageText]"
       fi
-      printf " ${optionUsageText}"
+      printf " $optionUsageText"
    fi
-   if is "${optionList}"
+   if -n "${ARGSPEC["$1.ARGS"]}"
    then
       printf " <options>..."
    fi
@@ -389,99 +356,140 @@ function _printCommandHelp() {
 
 function _printOptionHelp() {
    local currentOptionSwitch
-   _setCurrentOptionSwitch
-   currentOptionArity="${optionSpec["${currentOption}.arity"]}"
-   currentOptionRequired="${optionSpec["${currentOption}.required"]}"
-   if no "${currentOptionArity}"
+   _setCurrentOptionSwitch $1
+   currentOptionArity="${ARGSPEC["$1.$currentOption.arity"]}"
+   currentOptionRequired="${ARGSPEC["$1.$currentOption.required"]}"
+   if -z "$currentOptionArity"
    then
-      optionUsageText="${currentOptionSwitch}"
-   elif [[ "${currentOptionArity}" == "1" ]]
+      optionUsageText="$currentOptionSwitch"
+   elif -eq "$currentOptionArity" 1
    then
-      optionUsageText="${currentOptionSwitch} <value>"
-   elif [[ "${currentOptionArity}" =~ ^(n|N)$ ]]
+      optionUsageText="$currentOptionSwitch <value>"
+   elif -ma "$currentOptionArity" '[Nn]'
    then
-      optionUsageText="${currentOptionSwitch} <value> [...]"
+      optionUsageText="$currentOptionSwitch <value> [...]"
    fi
 
-   currentOptionDescription="${optionSpec["${currentOption}.desc"]}"
-   if is-true "${currentOptionRequired}"
+   currentOptionDescription="${ARGSPEC["$1.$currentOption.desc"]}"
+   if -true "$currentOptionRequired"
    then
-      currentOptionDescription="REQUIRED. ${currentOptionDescription}"
+      currentOptionDescription="REQUIRED. $currentOptionDescription"
    fi
-   _modifyCurrentOptionDescription
+   _modifyCurrentOptionDescription $1
 
-   printf "  %-30s   %s\n" "${optionUsageText}" "${currentOptionDescription}"
+   printf "  %-30s   %s\n" "$optionUsageText" "$currentOptionDescription"
 }
 
 function _modifyCurrentOptionDescription() {
-   local currentOptionDefault="${optionSpec["${currentOption}.default"]}"
-   if is "${currentOptionDefault}"
+   local currentOptionDefault="${ARGSPEC["$1.$currentOption.default"]}"
+   if -n "$currentOptionDefault"
    then
-      currentOptionDescription="${currentOptionDescription%.}. Default is '${currentOptionDefault}'."
+      currentOptionDescription="${currentOptionDescription%.}. Default is: '$currentOptionDefault'"
    fi
 }
 
 ### PRINT PARAMS ###
 
 function printArgs() {
-   declare -A optionSpec=()
-   local optionList
-   _setOptionList $1
    local value
 
-   optionList=( main ${optionList} )
-   for currentOption in ${optionList[@]}
+   for currentOption in MAIN ${ARGSPEC["$1.ARGS"]}
    do
-      eval 'value=( "${'"${currentOption}"'[*]}" )'
-      if is "${value[@]}"
+      eval 'value=( "${'"$currentOption"'[*]}" )'
+      if -n "${value[@]}"
       then
-         printf "%16s: %s\n" "${currentOption}" "'${value[@]}'"
+         printf "%16s: %s\n" "$currentOption" "'${value[@]}'"
       fi
    done
 }
 
+ARGSPEC=( # @global-assoc
+    [argspec.DESC]='Adds a parameter definition for an executable. Run once for each parameter.'
+    [argspec.ARGS]='for name required default arity desc comp'
+    [argspec.MAIN.name]='id'
+    [argspec.MAIN.desc]='Parameter ID. getArgs() creates variable with this name so it should be valid bash var id.'
+    [argspec.MAIN.required]='yes'
+    [argspec.MAIN.arity]='1'
+    [argspec.for.desc]='Name of executable for which the parameter is added.'
+    [argspec.for.required]='yes'
+    [argspec.for.arity]='1'
+    [argspec.name.desc]='Use this option if you want --parameter-name to be different from its ID.'
+    [argspec.name.arity]='1'
+    [argspec.required.desc]='Specify this flag when parameter is mandatory.'
+    [argspec.default.desc]='Default value to use for the parameter when user does not provide one.'
+    [argspec.default.arity]='1'
+    [argspec.arity.desc]='No value means that the parameter is a flag. "1" means parameter has a value. "n" means multiple values.'
+    [argspec.arity.arity]='1'
+    [argspec.arity.comp]='1 n'
+    [argspec.desc.desc]='Description displayed in --help mode.'
+    [argspec.desc.arity]='1'
+    [argspec.comp.desc]='Values for autocompletion or "fun()" - name of function printing such space-separated values.'
+    [argspec.comp.arity]='n'
+    [argspec-init.ARGS]='desc'
+    [argspec-init.MAIN.desc]='Name of executable to initialize.'
+    [argspec-init.MAIN.arity]='1'
+    [argspec-init.MAIN.required]='yes'
+    [argspec-init.desc.desc]='General description displayed in --help mode.'
+    [argspec-init.desc.arity]='1'
+)
 
-### EXAMPLE/DEMO ###
-# run:
-#    ARGLIST_DEMO=1
-#    ./arglist.sh
-#    greet --help
+function argspec() {
+    local MAIN 'for' name required default arity desc comp
+    if getArgs ${FUNCNAME[0]} "$@"
+    then
+       -n "$required" && ARGSPEC["$for.$MAIN.required"]="$required"
+       -n "$default" && ARGSPEC["$for.$MAIN.default"]="$default"
+       -n "$arity" && ARGSPEC["$for.$MAIN.arity"]="$arity"
+       -n "$desc" && ARGSPEC["$for.$MAIN.desc"]="$desc"
+       -n "$comp" && ARGSPEC["$for.$MAIN.comp"]="${comp[@]}"
+       -n "$name" && ARGSPEC["$for.$MAIN.name"]="$name"
+       [ "$MAIN" != MAIN ] && ! [[ " ${ARGSPEC["$for.ARGS"]} " =~ " $MAIN " ]] && ARGSPEC["$for.ARGS"]+="$MAIN "
+    else
+        return 1
+    fi
+}
 
-if is "${ARGLIST_DEMO}"
-then
-   declare -A options=( # note associative array should be visible inside the executable that it supports
-      ["help"]='greet'
-      ["help.desc"]='This is arglist.sh demo.'
-      ["main"]='phrase'
-      ["main.required"]=no
-      ["main.arity"]=1
-      ["main.comp"]='hello salut privet ciao serwus ahoj'
-      ["main.desc"]='Greeting phrase.'
-      ["main.default"]='Hello'
-      ["times"]=times
-      ["times.arity"]=1
-      ["times.required"]=yes
-      ["times.desc"]='How many times to greet.'
-      ["loud"]=loud
-      ["loud.desc"]='Whether to greet loudly.'
-      ["persons.arity"]=n
-      ["persons.required"]=yes
-      ["persons.desc"]='Persons to greet.'
-      ["persons.comp"]='john bob alice world'
-   )
-   enableAutocompletion options
+function argspec-init() {
+    local MAIN desc
+    if getArgs ${FUNCNAME[0]} "$@"
+    then
+       -n "$desc" && ARGSPEC["$MAIN.DESC"]="$desc"
+    else
+        return 1
+    fi
+   _enableAutocompletion $MAIN
+}
+
+argspec-init argspec
+argspec-init argspec-init --desc 'Initializes autocompletion and getArgs() function for executable of given name.'
+
+# TODO --arity -> --type: 0 - flag, ? - opt-value, 1 - value, * - opt-list, + - list
+# TODO add --value-type: int dir file...
+
+function argspec-demo() {
+   argspec MAIN --for greet --name phrase --arity 1 --comp hello salut privet ciao czesc ahoj --desc 'Greeting phrase.' --default Hello
+   argspec times --for greet --arity 1 --desc 'How many times to greet.' --required
+   argspec loud --for greet --desc 'Whether to greet with exclamation mark.'
+   argspec persons --for greet --arity n --comp 'getNames()' --desc 'Who to greet.' --required
+   argspec-init greet
+
+   function getNames() { # example function for autocompletion
+      echo john bob alice world
+   }
 
    function greet() {
-      local main persons loud times # declare used variables for clarity or IDE support
-      if getArgs options "$@" # remember to quote $@, otherwise quoted arguments with spaces inside will not work properly
+      local MAIN persons loud times
+      if getArgs greet "$@" # quote $@ to properly handle arguments with spaces
       then
-         printArgs options # for development purpose or verbose mode
+         printArgs greet # for debugging
 
-         for (( i = 0; i < times; i++)) {
-            echo "${main} ${persons[@]}${loud:+!!}"
-         }
+         for (( i = 0; i < times; i++ )) { # custom logic start
+            echo "$MAIN ${persons[@]}${loud:+!!}"
+         } # custom logic end
       else
-         return 1 # parameters misusage should return with error code
+         return 1
       fi
    }
-fi
+
+   echo -e "Execute:\n  declare -f argspec-demo\n  greet --help\nPlay with autocompletion by pressing <tab> while providing parameters for 'greet' command."
+}
