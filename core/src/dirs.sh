@@ -1,32 +1,34 @@
 #!/bin/bash
 
-: ${DIRHISTFILE:=$HOME/.dir_history}
+require macros.sh
+
+: ${DIRHISTFILE:=$HOME/.dir_history} # TODO change this dir
 : ${DIRHISTSIZE:=40}
 
-function _dirs-ensure-history-exists() {
+function _dirs_ensureHistoryExists() {
    if -nf "$DIRHISTFILE"
    then
-      _dirs-init-empty-history #TODO test when missing file, cd - returns no completion results (with no empty line)
+      _dirs_initEmptyHistory
    fi
 }
 
-function _dirs-history-print() {
-   _dirs-ensure-history-exists
+function _dirs_historyPrint() {
+   _dirs_ensureHistoryExists
    nl -w 5 "$DIRHISTFILE"
 }
 
-function _dirs-init-empty-history() {
+function _dirs_initEmptyHistory() {
    echo -n > "$DIRHISTFILE"
 }
 
-function _dirs-history-fetch() {
-   _dirs-ensure-history-exists
+function _dirs_historyFetch() {
+   _dirs_ensureHistoryExists
    local nr=${1:-'$'}
    [[ "$nr" != "0" ]] && sed -n "$nr p" < "$DIRHISTFILE"
 }
 
-function _dirs-history-add-pwd() {
-   _dirs-ensure-history-exists
+function _dirs_historyAddPwd() {
+   _dirs_ensureHistoryExists
    local dir="$(dirs +0)"
    grep -v "^$dir\$" <"$DIRHISTFILE" | tail "-$((DIRHISTSIZE - 1))" | sponge "$DIRHISTFILE"
    echo "$dir" >>"$DIRHISTFILE"
@@ -50,12 +52,12 @@ Special values for dir:
    }
 
    [ "$1" == "--" ] && {
-      _dirs-history-print
+      _dirs_historyPrint
       return 0
    }
 
    [ "$1" == "-c" ] && {
-      _dirs-init-empty-history
+      _dirs_initEmptyHistory
       return 0
    }
 
@@ -63,7 +65,7 @@ Special values for dir:
    local dir="${1-"~"}"
    if [[ "$dir" =~ ^-[0-9]+$ ]]
    then
-      dir="$(_dirs-history-fetch "${dir:1}")"
+      dir="$(_dirs_historyFetch "${dir:1}")"
       -n "$dir" || {
          stderr 'No dir with such index in history.'
          return 1
@@ -74,10 +76,10 @@ Special values for dir:
    fi
    local tildeExpandedDir="${dir/\~/$HOME}"
    \cd $option "$tildeExpandedDir" || return $?
-   _dirs-history-add-pwd
+   _dirs_historyAddPwd
    return 0
 }
-export -f chdir
+alias cd=chdir
 
 
 complete -o nospace -o dirnames -F _histdir-tab-completion cd
@@ -86,7 +88,7 @@ function _histdir-tab-completion() {
    local arg=${COMP_WORDS[1]}
    if (( COMP_CWORD == 1 )) && (( cword == 2 )) && [[ "$arg" =~ ^- ]]
    then
-      COMPREPLY=( '-NR<tab>' '-REGEX<tab>' '--REGEX<tab>' )
+      COMPREPLY=( '-NR<tab>' '-REGEX<tab>' )
       if -num "${arg:1}"
       then
          local pattern="^\s*${arg:1}\s*\s"
@@ -99,18 +101,21 @@ function _histdir-tab-completion() {
             phrase="${arg:2}"
          else
             phrase="${arg:1}"
-            completeIfOne=1 # TODO test this
+            completeIfOne=1
          fi
-         local lines=$(chdir -- | grep "$phrase" | wc -l)
+         local lines=$(chdir -- | grep -i "$phrase" | wc -l)
          if [ "$lines" = "1" ] && [ "$completeIfOne" ]
          then
             COMPREPLY=( "$(chdir -- | grep "$phrase" | sed "s/^\s*\w*\s*//")" )
          else
             for line in "$(chdir -- | g -i "$phrase")"
             do
-               echo -ne "\n$line"
+                echo -ne "\n$line"
             done
          fi
       fi
    fi
 }
+
+def-macro filter-dir-history @backward-word @unix-line-discard 'cd -' @end-of-line '\t'
+bind-macro filter-dir-history Alt-PgUp Alt-PgDown Ctrl-PgUp Ctrl-PgDown

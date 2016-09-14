@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export EDITOR=${EDITOR:-vim}
-PS1='\[\033[1;33m\]\u@\h:\w\$\[\033[0m\] '
+PS1='\[\e[1;33m\]\u@\h:\w\$\[\e[0m\] '
 
 alias bpe="${EDITOR} ~/.bash_profile" # Bash Profile Edit
 alias bpr="source ~/.bash_profile" # Bash Profile Reload

@@ -2,7 +2,7 @@
 
 # Prints fragment of the file between lines "#begin [region-name]" and "#end [region-name]"
 # 1st parameter is [region-name], 2nd parameter is file name
-function echo-region() {
+function get-region() {
    local regionName="${1:?Missing region name}"
    local fileName="${2:?Missing input file name}"
 
@@ -11,9 +11,23 @@ function echo-region() {
 
    sed -n -e "/$beginTag/,/$endTag/ {/$beginTag/ d; /$endTag/ d; p}" <"$fileName"
 }
-export -f echo-region
 
-# Deletes from the file its fragment between lines "#begin [region-name]" and "#end [region-name]"
+# Prints file content appended with STDIN surrounded with lines "#begin [region-name]" and "#end [region-name]"
+# 1st parameter is [region-name], 2nd parameter is file name
+function set-region() {
+   local regionName="${1:?Missing region name}"
+   local fileName="${2:?Missing input file name}"
+
+   local beginTag="#begin $regionName"
+   local endTag="#end $regionName"
+
+   sed -e "/$beginTag/,/$endTag/ d" <"$fileName"
+   echo "$beginTag"
+   cat <&0
+   echo "$endTag"
+}
+
+# Prints file content without lines "#begin [region-name]" and "#end [region-name]" and content between them
 # 1st parameter is [region-name], 2nd parameter is file name
 function delete-region() {
    local regionName="${1:?Missing region name}"
@@ -24,26 +38,6 @@ function delete-region() {
 
    sed -e "/$beginTag/,/$endTag/ d" <"$fileName"
 }
-export -f delete-region
-
-# Appends to the file content from STDIN surrounded with lines "#begin [region-name]" and "#end [region-name]"
-# 1st parameter is [region-name], 2nd parameter is file name
-function set-region() {
-   local regionName="${1:?Missing region name}"
-   local fileName="${2:?Missing input file name}"
-
-   local beginTag="#begin $regionName"
-   local endTag="#end $regionName"
-
-   tmp="$(mktemp)"
-   sed -e "/$beginTag/,/$endTag/ d" <"$fileName" >"$tmp"
-   cat "$tmp"
-   echo "$beginTag"
-   cat <&0
-   echo "$endTag"
-   rm "$tmp"
-}
-export -f set-region
 
 # Replaces occurrences of $var placeholders with their values in the file provided as a first argument, called template. The result file is returned on STDOUT.
 # If 2nd argument is provided, a file with this path is executed as a bash script and variable assignments in this file will be used for the template.
@@ -72,7 +66,7 @@ function render-template() {
       do
          read -r line
          neof=$?
-         while -m "$line" '\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}'
+         while -rhas "$line" '\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}'
          do
             placeholder="${BASH_REMATCH[0]}"
             var="${BASH_REMATCH[1]}"
@@ -88,4 +82,3 @@ function render-template() {
       done <"$templateFile"
    )
 }
-export -f render-template
