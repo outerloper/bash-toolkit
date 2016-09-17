@@ -4,16 +4,14 @@ require utils.sh
 
 ### SETTINGS ###
 
-PARAMS_DISPLAY_INSTANT_HELP=yes
-PARAMS_CURRENT_DEF=
-
-PARAMS_HELP_FORMAT="  %-22s   %s\n"
+PARAM_DEF_CURRENT=
+PARAM_DEFS_DISPLAY_INSTANT_HELP=yes
 
 ### UTILS ###
 
 function _prepareProcessingArgs() {
    local currentParamSwitch
-   for currentParam in ${PARAMS["$1.LIST"]}
+   for currentParam in ${PARAM_DEFS["$1.LIST"]}
    do
       _setCurrentParamSwitch $1
       paramSwitches[$currentParamSwitch]="$currentParam"
@@ -22,9 +20,9 @@ function _prepareProcessingArgs() {
 }
 
 function _setCurrentParamSwitch() {
-   if -n ${PARAMS["$1.$currentParam.name"]}
+   if -n ${PARAM_DEFS["$1.$currentParam.name"]}
    then
-      currentParamSwitch="--${PARAMS["$1.$currentParam.name"]}"
+      currentParamSwitch="--${PARAM_DEFS["$1.$currentParam.name"]}"
    else
       currentParamSwitch="--$currentParam"
    fi
@@ -37,24 +35,23 @@ function _extractArgs() {
 ### AUTOCOMPLETION ###
 
 function _enableAutocompletion() {
-   local fn="__argComp_$1"
+   local fn="__paramsComp_$1"
    complete -F "$fn" "$1"
    eval $fn'() { _argsAutocompletion '$1' 1; }'
 }
 
 function _argsAutocompletion() {
-   local from=${2:-1}
    local completedArgsCount
-   (( completedArgsCount = COMP_CWORD - from ))
+   (( completedArgsCount = COMP_CWORD - 1 ))
    local currentWord="${COMP_WORDS[COMP_CWORD]}"
    local compReply=()
    local currentParam=MAIN
    local currentParamArgsCount=0
    local args=()
-   _extractArgs "${COMP_WORDS[@]:$from:$completedArgsCount}"
+   _extractArgs "${COMP_WORDS[@]:1:$completedArgsCount}"
    _getCompletion $1
    COMPREPLY=( $(compgen -W "${compReply[*]}" -- $currentWord) )
-   -true "$PARAMS_DISPLAY_INSTANT_HELP" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp $1
+   -true "$PARAM_DEFS_DISPLAY_INSTANT_HELP" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp $1 "$currentWord"
 }
 
 function _getCompletion() {
@@ -84,18 +81,18 @@ function _processArgsForCompletion() {
 }
 
 function _generateCompletions() {
-   local currentParamType="${PARAMS["$1.$currentParam.type"]}"
-   local currentParamRequired="${PARAMS["$1.$currentParam.required"]}"
-   local currentParamIsValue="${PARAMS["$1.$currentParam.isValue"]}"
+   local currentParamType="${PARAM_DEFS["$1.$currentParam.type"]}"
+   local currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
+   local currentParamIsValue="${PARAM_DEFS["$1.$currentParam.isValue"]}"
    local currentParamCompletion
    compReply=( '–—' '—–' )
    if -eq MAIN "$currentParam" && -false "$currentParamRequired" || -eq flag "$currentParamType" || -gt "$currentParamArgsCount" 0 || -n "$currentParamIsValue"
    then
       compReply=( "${compReply[@]}" ${unusedParams[@]} )
    fi
-   if -eq value "$currentParamType" && -eq "$currentParamArgsCount" 0 || -eq list "$currentParamType"
+   if -neq flag "$currentParamType" && -eq "$currentParamArgsCount" 0 || -eq list "$currentParamType"
    then
-      currentParamCompletion="${PARAMS["$1.$currentParam.comp"]}"
+      currentParamCompletion="${PARAM_DEFS["$1.$currentParam.comp"]}"
       compReply=( "${compReply[@]}" "$(_evaluateCompletion)" )
    fi
 }
@@ -116,20 +113,10 @@ function _evaluateCompletion() {
 }
 
 function _displayInstantHelp() {
-   local currentParamDesc="${PARAMS["$1.$currentParam.desc"]}"
-   if -n "$currentParamDesc"
-   then
-      local descPrefix
-      if -eq MAIN "$currentParam"
-      then
-         argName="${PARAMS["$1.MAIN"]}"
-         descPrefix="${argName:-main parameter}: "
-      else
-         _setCurrentParamSwitch $1
-         descPrefix="$currentParamSwitch: "
-      fi
-      echo -en "\n\e[1;30m$descPrefix""$currentParamDesc\e[0m" >&2
-   fi
+    local param="$currentParam"
+    -eq "$2" -- && param="$2"
+    local help="$(printHelp "$1" "$param")"
+    -n "$help" && echo -en "\n$help\n" >&2
 }
 ### GET ARGS ###
 
@@ -186,7 +173,7 @@ function _handleParamSwitch() {
    -n $currentParam && unset "unusedParams[$currentParam]"
    if -n "${usedParams[$paramSwitch]}"
    then
-      stderr "Duplicate usage of param $paramSwitch"
+      stderr "Duplicate usage of $paramSwitch"
       discardParam=1
       resultCode=1
    fi
@@ -203,7 +190,7 @@ function _handleParamParam() { # TODO ParamValue
       stderr "Unexpected value: $arg"
       resultCode=1
    else
-      if -eq value "$currentParamType" && -gz $currentParamArgsCount
+      if -neq list "$currentParamType" && -gz $currentParamArgsCount
       then
          stderr "Unexpected value: $arg"
          resultCode=1
@@ -217,9 +204,9 @@ function _handleParamParam() { # TODO ParamValue
 function _initParamForGetArgs() {
    currentParam="$1"
    currentParamArgsCount=0
-   currentParamType="${PARAMS["$paramsName.$currentParam.type"]}"
-   currentParamIsValue="${PARAMS["$paramsName.$currentParam.isValue"]}"
-   currentParamDefault="${PARAMS["$paramsName.$currentParam.default"]}"
+   currentParamType="${PARAM_DEFS["$paramsName.$currentParam.type"]}"
+   currentParamIsValue="${PARAM_DEFS["$paramsName.$currentParam.isValue"]}"
+   currentParamDefault="${PARAM_DEFS["$paramsName.$currentParam.default"]}"
    if -n "$currentParam"
    then
       unset "$currentParam"
@@ -247,7 +234,7 @@ function _handleParamWithoutArgs() {
          elif -n $currentParamIsValue ;then
             -n "$currentParamDefault" && set-var $currentParam "$currentParamDefault"
          else
-            -z $discardParam && stderr "Missing required parameter for $paramSwitch"
+            -z $discardParam && stderr "Missing required value for $paramSwitch"
             resultCode=1
          fi
       elif -neq MAIN "$currentParam" # if flag, assign 1 to value
@@ -260,15 +247,15 @@ function _handleParamWithoutArgs() {
 
 function _handleMissingMainArg() {
    unset $currentParam
-   local currentParamRequired="${PARAMS["$1.$currentParam.required"]}"
+   local currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
    if -true "$currentParamRequired"
    then
-      local currentParamName="${PARAMS["$1.$currentParam"]}"
+      local currentParamName="${PARAM_DEFS["$1.$currentParam"]}"
       currentParamName="${currentParamName:-MAIN parameter}"
       stderr "Missing $currentParamName."
       resultCode=1
    else
-      local currentParamDefault="${PARAMS["$1.$currentParam.default"]}"
+      local currentParamDefault="${PARAM_DEFS["$1.$currentParam.default"]}"
       if -n "$currentParamDefault"
       then
          set-var $currentParam "$currentParamDefault"
@@ -279,14 +266,14 @@ function _handleMissingMainArg() {
 function _handleUnusedParams() {
    for currentParam in ${!unusedParams[@]}
    do
-      paramRequired="${PARAMS["$1.$currentParam.required"]}"
+      paramRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
       if -true "$paramRequired"
       then
-         stderr "Missing mandatory param: ${unusedParams[$currentParam]}"
+         stderr "Missing mandatory ${unusedParams[$currentParam]}"
          resultCode=1
       else
          set-var $currentParam ''
-         currentParamDefault="${PARAMS["$1.$currentParam.default"]}"
+         currentParamDefault="${PARAM_DEFS["$1.$currentParam.default"]}"
          -n "$currentParamDefault" && set-var $currentParam $currentParamDefault
       fi
    done
@@ -298,28 +285,32 @@ function printHelp() {
     local paramUsageText
 
     local currentParam=MAIN
-    local currentParamName="${PARAMS["$1.$currentParam.name"]}"
+    local currentParamName="${PARAM_DEFS["$1.$currentParam.name"]}"
     currentParamName="${currentParamName:-MAIN}"
-    local currentParamDescription="${PARAMS["$1.$currentParam.desc"]}"
-    local currentParamType="${PARAMS["$1.$currentParam.type"]}"
-    local currentParamRequired="${PARAMS["$1.$currentParam.required"]}"
-    local scriptNameForHelp="${PARAMS["$1"]}"
+    local currentParamDescription="${PARAM_DEFS["$1.$currentParam.desc"]}"
+    local currentParamType="${PARAM_DEFS["$1.$currentParam.type"]}"
+    local currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
+    local scriptNameForHelp="${PARAM_DEFS["$1"]}"
     local scriptNameForHelp="${scriptNameForHelp:-$1}"
-    local helpDescription="${PARAMS["$1.DESC"]}"
+    local helpDescription="${PARAM_DEFS["$1.DESC"]}"
+    local printOnly="$2"
+    local helpFormat="  %-22s   %s\n"
 
     _printUsage $1
     -n "$helpDescription" && {
         echo "$helpDescription"
     }
-    -neq flag "$currentParamType" && {
+    -n "$printOnly" && echo
+    -z "$printOnly" || -eq "$printOnly" MAIN && -neq flag "$currentParamType" && {
         _modifyParamDescription $1
-        -n "$currentParamDescription" && printf "$PARAMS_HELP_FORMAT" "$currentParamName" "$currentParamDescription"
+        -n "$currentParamDescription" && printf "$helpFormat" "${currentParamName^^}" "$currentParamDescription"
     }
-    -n "${PARAMS["$1.LIST"]}" && {
-        echo "Options:"
-        for currentParam in ${PARAMS["$1.LIST"]}
+    -n "${PARAM_DEFS["$1.LIST"]}" && {
+        -z "$printOnly" && echo "Options:"
+        -eq "$printOnly" -- && printOnly=
+        for currentParam in ${PARAM_DEFS["$1.LIST"]}
         do
-            if -neq "$currentParam" MAIN
+            if -neq "$currentParam" MAIN && { -z "$printOnly" || -eq "$printOnly" "$currentParam" ;}
             then
                 _printParamHelp $1
             fi
@@ -344,7 +335,7 @@ function _printUsage() {
       fi
       printf " $paramUsageText"
    fi
-   if -n "${PARAMS["$1.LIST"]}"
+   if -n "${PARAM_DEFS["$1.LIST"]}"
    then
       printf " OPTIONS..."
    fi
@@ -354,8 +345,8 @@ function _printUsage() {
 function _printParamHelp() {
    local currentParamSwitch
    _setCurrentParamSwitch $1
-   currentParamType="${PARAMS["$1.$currentParam.type"]}"
-   currentParamRequired="${PARAMS["$1.$currentParam.required"]}"
+   currentParamType="${PARAM_DEFS["$1.$currentParam.type"]}"
+   currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
    if -eq flag "$currentParamType"
    then
       paramUsageText="$currentParamSwitch"
@@ -366,18 +357,18 @@ function _printParamHelp() {
       paramUsageText="$currentParamSwitch ${currentParam^^}"
    fi
 
-   currentParamDescription="${PARAMS["$1.$currentParam.desc"]}"
+   currentParamDescription="${PARAM_DEFS["$1.$currentParam.desc"]}"
    if -true "$currentParamRequired"
    then
       currentParamDescription="REQUIRED. $currentParamDescription"
    fi
    _modifyParamDescription $1
 
-   printf "$PARAMS_HELP_FORMAT" "$paramUsageText" "$currentParamDescription"
+   printf "$helpFormat" "$paramUsageText" "$currentParamDescription"
 }
 
 function _modifyParamDescription() {
-    local currentParamDefault="${PARAMS["$1.$currentParam.default"]}"
+    local currentParamDefault="${PARAM_DEFS["$1.$currentParam.default"]}"
     if -n "$currentParamDefault"
     then
         -n "$currentParamDescription" && currentParamDescription="${currentParamDescription%.}. "
@@ -390,7 +381,7 @@ function _modifyParamDescription() {
 function printArgs() {
    local value
 
-   for currentParam in MAIN ${PARAMS["$1.LIST"]}
+   for currentParam in MAIN ${PARAM_DEFS["$1.LIST"]}
    do
       eval 'value=( "${'"$currentParam"'[*]}" )'
       if -n "${value[@]}"
@@ -400,7 +391,7 @@ function printArgs() {
    done
 }
 
-PARAMS=(
+PARAM_DEFS=(
     [param.DESC]='Adds a PARAMETER definition for an executable.'
     [param.LIST]='name required default type desc comp isValue'
     [param.MAIN.name]='parameter'
@@ -425,20 +416,20 @@ PARAMS=(
 )
 
 function param() {
-    : "${PARAMS_CURRENT_DEF?'Invoke params-for first to add parameter definition'}"
+    : "${PARAM_DEF_CURRENT?'Invoke params-for first to add parameter definition'}"
     local MAIN param name required default type desc comp isValue
     if getArgs ${FUNCNAME[0]} "$@"
     then
         param="$MAIN"
-       -n "$required" && PARAMS["$PARAMS_CURRENT_DEF.$param.required"]="$required"
-       -n "$default" && PARAMS["$PARAMS_CURRENT_DEF.$param.default"]="$default"
-       -n "$desc" && PARAMS["$PARAMS_CURRENT_DEF.$param.desc"]="$desc"
-       -n "$comp" && PARAMS["$PARAMS_CURRENT_DEF.$param.comp"]="${comp[@]}"
+       -n "$required" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.required"]="$required"
+       -n "$default" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.default"]="$default"
+       -n "$desc" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.desc"]="$desc"
+       -n "$comp" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.comp"]="${comp[@]}"
        -z "$name" && -eq "$param" MAIN && stderr 'MAIN parameter must have name specified.' && return 1
-       -n "$name" && PARAMS["$PARAMS_CURRENT_DEF.$param.name"]="$name"
-       -n "$isValue" && PARAMS["$PARAMS_CURRENT_DEF.$param.isValue"]="$isValue"
-       -n "$type" && PARAMS["$PARAMS_CURRENT_DEF.$param.type"]="$type"
-       -neq "$param" MAIN && ! -has " ${PARAMS["$PARAMS_CURRENT_DEF.LIST"]} " " MAIN " && PARAMS["$PARAMS_CURRENT_DEF.LIST"]+="$param "
+       -n "$name" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.name"]="$name"
+       -n "$isValue" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.isValue"]="$isValue"
+       -n "$type" && PARAM_DEFS["$PARAM_DEF_CURRENT.$param.type"]="$type"
+       -neq "$param" MAIN && ! -has " ${PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]} " " MAIN " && PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]+="$param "
     else
         return 1
     fi
@@ -447,17 +438,17 @@ function param() {
 function params-for() {
     local MAIN desc
     getArgs ${FUNCNAME[0]} "$@" && {
-        PARAMS_CURRENT_DEF="$MAIN"
-        -n "$desc" && PARAMS["$PARAMS_CURRENT_DEF.DESC"]="$desc"
+        PARAM_DEF_CURRENT="$MAIN"
+        -n "$desc" && PARAM_DEFS["$PARAM_DEF_CURRENT.DESC"]="$desc"
     }
 }
 
 function params-end() {
-    -z "${PARAMS["$PARAMS_CURRENT_DEF.MAIN.name"]}" && {
-        PARAMS["$PARAMS_CURRENT_DEF.MAIN.type"]=flag
+    -z "${PARAM_DEFS["$PARAM_DEF_CURRENT.MAIN.name"]}" && {
+        PARAM_DEFS["$PARAM_DEF_CURRENT.MAIN.type"]=flag
     }
-    _enableAutocompletion $PARAMS_CURRENT_DEF
-    PARAMS_CURRENT_DEF=
+    _enableAutocompletion $PARAM_DEF_CURRENT
+    PARAM_DEF_CURRENT=
 }
 
 params-for param
@@ -501,4 +492,4 @@ function params-demo() {
 }
 params-demo
 
-$BUSH_ASSOC PARAMS
+$BUSH_ASSOC PARAM_DEFS
