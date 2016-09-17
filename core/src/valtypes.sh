@@ -63,7 +63,7 @@ Parameters:
 
 Custom functions:
   If function is accepted as option value, the following rules apply in most cases:
-  * If string result is expected from function, do not echo it but assign to RESULT non-local variable.
+  * If string result is expected from function, do not echo it but assign to RESULT global variable.
   * There is access to type definition by options from Custom functions. There is a statement: 'type-get <option> <var>' which assigns value of --<option>
     to <var>. If <var> is not specified, <option> is used as a variable name. E.g. 'type-get desc' assigns value of type's --desc to \$desc.
     If --desc value means a function which sets RESULT var, its value will be assigned to \$desc variable. It is recommended to declare such

@@ -104,7 +104,7 @@ function -bool() { [[ "$1" =~ ^(1|[tT]|[tT][rR][uU][eE]|[yY]|[yY][eE][sS]|0|[fF]
 # means true
 function -true() { [[ "$1" =~ ^(1|[tT]|[tT][rR][uU][eE]|[yY]|[yY][eE][sS])$ ]]; }
 # means false (negation of -true function)
-function -false() { ! -true; }
+function -false() { ! -true "$1"; }
 # is UTF encoding
 function -utf() { [[ "${LANG}" == *UTF-8 ]]; }
 # is $1 a function name
