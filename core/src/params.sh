@@ -4,13 +4,14 @@ require utils.sh
 
 ### SETTINGS ###
 
-ARGLIST_DISPLAY_INSTANT_HELP=yes
+PARAMS_DISPLAY_INSTANT_HELP=yes
+PARAMS_CURRENT_DEF=
 
 ### UTILS ###
 
 function _prepareProcessingArgs() {
    local currentOptionSwitch
-   for currentOption in ${ARGLIST["$1.ARGS"]}
+   for currentOption in ${PARAMS["$1.ARGS"]}
    do
       _setCurrentOptionSwitch $1
       optionSwitches[$currentOptionSwitch]="$currentOption"
@@ -19,9 +20,9 @@ function _prepareProcessingArgs() {
 }
 
 function _setCurrentOptionSwitch() {
-   if -n ${ARGLIST["$1.$currentOption.name"]}
+   if -n ${PARAMS["$1.$currentOption.name"]}
    then
-      currentOptionSwitch="--${ARGLIST["$1.$currentOption.name"]}"
+      currentOptionSwitch="--${PARAMS["$1.$currentOption.name"]}"
    else
       currentOptionSwitch="--$currentOption"
    fi
@@ -51,7 +52,7 @@ function _argsAutocompletion() {
    _extractArgs "${COMP_WORDS[@]:$from:$completedArgsCount}"
    _getCompletion $1
    COMPREPLY=( $(compgen -W "${compReply[*]}" -- $currentWord) )
-   -true "$ARGLIST_DISPLAY_INSTANT_HELP" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp $1
+   -true "$PARAMS_DISPLAY_INSTANT_HELP" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp $1
 }
 
 function _getCompletion() {
@@ -81,9 +82,9 @@ function _processArgsForCompletion() {
 }
 
 function _generateCompletions() {
-   local currentOptionType="${ARGLIST["$1.$currentOption.type"]}"
-   local currentOptionRequired="${ARGLIST["$1.$currentOption.required"]}"
-   local currentOptionIsValue="${ARGLIST["$1.$currentOption.isValue"]}"
+   local currentOptionType="${PARAMS["$1.$currentOption.type"]}"
+   local currentOptionRequired="${PARAMS["$1.$currentOption.required"]}"
+   local currentOptionIsValue="${PARAMS["$1.$currentOption.isValue"]}"
    local currentOptionCompletion
    compReply=( '–—' '—–' )
    if -eq MAIN "$currentOption" && -false "$currentOptionRequired" || -eq flag "$currentOptionType" || -gt "$currentOptionArgsCount" 0 || -n "$currentOptionIsValue"
@@ -92,7 +93,7 @@ function _generateCompletions() {
    fi
    if -eq value "$currentOptionType" && -eq "$currentOptionArgsCount" 0 || -eq list "$currentOptionType"
    then
-      currentOptionCompletion="${ARGLIST["$1.$currentOption.comp"]}"
+      currentOptionCompletion="${PARAMS["$1.$currentOption.comp"]}"
       compReply=( "${compReply[@]}" "$(_evaluateCompletion)" )
    fi
 }
@@ -113,13 +114,13 @@ function _evaluateCompletion() {
 }
 
 function _displayInstantHelp() {
-   local currentOptionDesc="${ARGLIST["$1.$currentOption.desc"]}"
+   local currentOptionDesc="${PARAMS["$1.$currentOption.desc"]}"
    if -n "$currentOptionDesc"
    then
       local descPrefix
       if -eq MAIN "$currentOption"
       then
-         argName="${ARGLIST["$1.MAIN"]}"
+         argName="${PARAMS["$1.MAIN"]}"
          descPrefix="${argName:-main parameter}: "
       else
          _setCurrentOptionSwitch $1
@@ -132,14 +133,14 @@ function _displayInstantHelp() {
 ### GET ARGS ###
 
 function getArgs() {
-   local argListName=$1
+   local paramsName=$1
    shift
    local args=( "$@" )
-   _isHelpRequest $argListName && return 127
+   _isHelpRequest $paramsName && return 127
 
    declare -A unusedOptions
    declare -A optionSwitches
-   _prepareProcessingArgs $argListName
+   _prepareProcessingArgs $paramsName
 
    local currentOptionArgsCount=0
    local currentOptionType
@@ -160,8 +161,8 @@ function getArgs() {
       fi
       first=''
    done
-   _handleOptionWithoutArgs $argListName
-   _handleUnusedOptions $argListName
+   _handleOptionWithoutArgs $paramsName
+   _handleUnusedOptions $paramsName
    return $resultCode
 }
 
@@ -178,7 +179,7 @@ function _isHelpRequest() {
 }
 
 function _handleOptionSwitch() {
-   _handleOptionWithoutArgs $argListName
+   _handleOptionWithoutArgs $paramsName
    optionSwitch="$arg"
    _initOptionForGetArgs ${optionSwitches[$optionSwitch]}
    -n $currentOption && unset "unusedOptions[$currentOption]"
@@ -215,9 +216,9 @@ function _handleOptionParam() {
 function _initOptionForGetArgs() {
    currentOption="$1"
    currentOptionArgsCount=0
-   currentOptionType="${ARGLIST["$argListName.$currentOption.type"]}"
-   currentOptionIsValue="${ARGLIST["$argListName.$currentOption.isValue"]}"
-   currentOptionDefault="${ARGLIST["$argListName.$currentOption.default"]}"
+   currentOptionType="${PARAMS["$paramsName.$currentOption.type"]}"
+   currentOptionIsValue="${PARAMS["$paramsName.$currentOption.isValue"]}"
+   currentOptionDefault="${PARAMS["$paramsName.$currentOption.default"]}"
    if -n "$currentOption"
    then
       unset "$currentOption"
@@ -258,15 +259,15 @@ function _handleOptionWithoutArgs() {
 
 function _handleMissingMainArg() {
    unset $currentOption
-   local currentOptionRequired="${ARGLIST["$1.$currentOption.required"]}"
+   local currentOptionRequired="${PARAMS["$1.$currentOption.required"]}"
    if -true "$currentOptionRequired"
    then
-      local currentOptionName="${ARGLIST["$1.$currentOption"]}"
+      local currentOptionName="${PARAMS["$1.$currentOption"]}"
       currentOptionName="${currentOptionName:-main parameter}"
       stderr "Missing $currentOptionName."
       resultCode=1
    else
-      local currentOptionDefault="${ARGLIST["$1.$currentOption.default"]}"
+      local currentOptionDefault="${PARAMS["$1.$currentOption.default"]}"
       if -n "$currentOptionDefault"
       then
          set-var $currentOption "$currentOptionDefault"
@@ -277,14 +278,14 @@ function _handleMissingMainArg() {
 function _handleUnusedOptions() {
    for currentOption in ${!unusedOptions[@]}
    do
-      optionRequired="${ARGLIST["$1.$currentOption.required"]}"
+      optionRequired="${PARAMS["$1.$currentOption.required"]}"
       if -true "$optionRequired"
       then
          stderr "Missing mandatory option: ${unusedOptions[$currentOption]}"
          resultCode=1
       else
          set-var $currentOption ''
-         currentOptionDefault="${ARGLIST["$1.$currentOption.default"]}"
+         currentOptionDefault="${PARAMS["$1.$currentOption.default"]}"
          -n "$currentOptionDefault" && set-var $currentOption $currentOptionDefault
       fi
    done
@@ -296,15 +297,15 @@ function printHelp() {
    local optionUsageText
 
    local currentOption=MAIN
-   local currentOptionName="${ARGLIST["$1.$currentOption.name"]}"
-   currentOptionName="${currentOptionName:-main parameter}"
-   local currentOptionDescription="${ARGLIST["$1.$currentOption.desc"]}"
-   local currentOptionType="${ARGLIST["$1.$currentOption.type"]}"
-   local currentOptionRequired="${ARGLIST["$1.$currentOption.required"]}"
+   local currentOptionName="${PARAMS["$1.$currentOption.name"]}"
+   currentOptionName="${currentOptionName:-MAIN}"
+   local currentOptionDescription="${PARAMS["$1.$currentOption.desc"]}"
+   local currentOptionType="${PARAMS["$1.$currentOption.type"]}"
+   local currentOptionRequired="${PARAMS["$1.$currentOption.required"]}"
 
-   local scriptNameForHelp="${ARGLIST["$1"]}"
+   local scriptNameForHelp="${PARAMS["$1"]}"
    local scriptNameForHelp="${scriptNameForHelp:-$1}"
-   local helpDescription="${ARGLIST["$1.DESC"]}"
+   local helpDescription="${PARAMS["$1.DESC"]}"
    if -n "$helpDescription"
    then
       echo "$helpDescription"
@@ -319,10 +320,10 @@ function printHelp() {
       printf "  %-30s   %s\n" "<$currentOptionName>" "$currentOptionDescription"
    fi
 
-   if -n "${ARGLIST["$1.ARGS"]}"
+   if -n "${PARAMS["$1.ARGS"]}"
    then
       echo "Options:"
-      for currentOption in ${ARGLIST["$1.ARGS"]}
+      for currentOption in ${PARAMS["$1.ARGS"]}
       do
           if -neq "$currentOption" MAIN
           then
@@ -350,7 +351,7 @@ function _printCommandHelp() {
       fi
       printf " $optionUsageText"
    fi
-   if -n "${ARGLIST["$1.ARGS"]}"
+   if -n "${PARAMS["$1.ARGS"]}"
    then
       printf " <options>..."
    fi
@@ -360,8 +361,8 @@ function _printCommandHelp() {
 function _printOptionHelp() {
    local currentOptionSwitch
    _setCurrentOptionSwitch $1
-   currentOptionType="${ARGLIST["$1.$currentOption.type"]}"
-   currentOptionRequired="${ARGLIST["$1.$currentOption.required"]}"
+   currentOptionType="${PARAMS["$1.$currentOption.type"]}"
+   currentOptionRequired="${PARAMS["$1.$currentOption.required"]}"
    if -eq flag "$currentOptionType"
    then
       optionUsageText="$currentOptionSwitch"
@@ -373,7 +374,7 @@ function _printOptionHelp() {
       optionUsageText="$currentOptionSwitch <value> [...]"
    fi
 
-   currentOptionDescription="${ARGLIST["$1.$currentOption.desc"]}"
+   currentOptionDescription="${PARAMS["$1.$currentOption.desc"]}"
    if -true "$currentOptionRequired"
    then
       currentOptionDescription="REQUIRED. $currentOptionDescription"
@@ -384,7 +385,7 @@ function _printOptionHelp() {
 }
 
 function _modifyCurrentOptionDescription() {
-   local currentOptionDefault="${ARGLIST["$1.$currentOption.default"]}"
+   local currentOptionDefault="${PARAMS["$1.$currentOption.default"]}"
    if -n "$currentOptionDefault"
    then
       currentOptionDescription="${currentOptionDescription%.}. Default is: '$currentOptionDefault'"
@@ -396,7 +397,7 @@ function _modifyCurrentOptionDescription() {
 function printArgs() {
    local value
 
-   for currentOption in MAIN ${ARGLIST["$1.ARGS"]}
+   for currentOption in MAIN ${PARAMS["$1.ARGS"]}
    do
       eval 'value=( "${'"$currentOption"'[*]}" )'
       if -n "${value[@]}"
@@ -406,70 +407,72 @@ function printArgs() {
    done
 }
 
-ARGLIST=(
-    [arglist.DESC]='Adds a parameter definition for an executable.'
-    [arglist.ARGS]='param name required default type desc comp isValue'
-    [arglist.MAIN.desc]='Name of executable for which the parameter is added.'
-    [arglist.MAIN.required]='yes'
-    [arglist.param.desc]='Parameter ID. getArgs() creates variable with this name so it should be valid bash var id.'
-    [arglist.param.required]='yes'
-    [arglist.isValue.desc]='If specified, allows providing option without value but when value is provided, var with this name is set to 1.'
-    [arglist.isValue.name]='is-value'
-    [arglist.name.desc]='Use this option if you want --parameter-name to be different from its ID.'
-    [arglist.required.desc]='Specify this flag when parameter is mandatory.'
-    [arglist.required.type]='flag'
-    [arglist.default.desc]='Default value to use for the parameter when user does not provide one.'
-    [arglist.type.desc]='No value means that the parameter is a flag. "1" means parameter has a value. "n" means multiple values.'
-    [arglist.type.default]='value'
-    [arglist.type.comp]='flag value list'
-    [arglist.desc.desc]='Description displayed in --help mode.'
-    [arglist.comp.desc]='Values for autocompletion or "fun()" - name of function printing such space-separated values or -f file or -d dir completion.'
-    [arglist.comp.type]='list'
-    [arglist-init.ARGS]='desc'
-    [arglist-init.MAIN.desc]='Name of executable to initialize.'
-    [arglist-init.MAIN.required]='yes'
-    [arglist-init.desc.desc]='General description displayed in --help mode.'
+PARAMS=(
+    [param.DESC]='Adds a parameter definition for an executable.'
+    [param.ARGS]='param name required default type desc comp isValue'
+    [param.MAIN.desc]='Parameter ID. getArgs() creates variable with this name so it should be valid bash var id.'
+    [param.MAIN.required]='yes'
+    [param.isValue.desc]='If specified, allows providing option without value but when value is provided, var with this name is set to 1.'
+    [param.isValue.name]='is-value'
+    [param.name.desc]='Use this option if you want --parameter-name to be different from its ID.'
+    [param.required.desc]='Specify this flag when parameter is mandatory.'
+    [param.required.type]='flag'
+    [param.default.desc]='Default value to use for the parameter when user does not provide one.'
+    [param.type.desc]='No value means that the parameter is a flag. "1" means parameter has a value. "n" means multiple values.'
+    [param.type.default]='value'
+    [param.type.comp]='flag value list'
+    [param.desc.desc]='Description displayed in --help mode.'
+    [param.comp.desc]='Values for autocompletion or "fun()" - name of function printing such space-separated values or -f file or -d dir completion.'
+    [param.comp.type]='list'
+    [params-for.DESC]='Initializes autocompletion for executable of given name.'
+    [params-for.ARGS]='desc'
+    [params-for.MAIN.desc]='Name of executable to initialize.'
+    [params-for.MAIN.required]='yes'
+    [params-for.desc.desc]='General description displayed in --help mode.'
 )
 
-function arglist() {
-    local MAIN param name required default type desc comp isValue
+function param() {
+    : "${PARAMS_CURRENT_DEF?'Invoke params-for first to add parameter definition'}"
+    local MAIN name required default type desc comp isValue
     if getArgs ${FUNCNAME[0]} "$@"
     then
-       -n "$required" && ARGLIST["$MAIN.$param.required"]="$required"
-       -n "$default" && ARGLIST["$MAIN.$param.default"]="$default"
-       -n "$type" && ARGLIST["$MAIN.$param.type"]="$type"
-       -n "$desc" && ARGLIST["$MAIN.$param.desc"]="$desc"
-       -n "$comp" && ARGLIST["$MAIN.$param.comp"]="${comp[@]}"
-       -n "$name" && ARGLIST["$MAIN.$param.name"]="$name"
-       -n "$isValue" && ARGLIST["$MAIN.$param.isValue"]="$isValue"
-       [ "$param" != MAIN ] && ! [[ " ${ARGLIST["$MAIN.ARGS"]} " =~ " $param " ]] && ARGLIST["$MAIN.ARGS"]+="$param "
+       -n "$required" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.required"]="$required"
+       -n "$default" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.default"]="$default"
+       -n "$type" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.type"]="$type"
+       -n "$desc" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.desc"]="$desc"
+       -n "$comp" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.comp"]="${comp[@]}"
+       -n "$name" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.name"]="$name"
+       -n "$isValue" && PARAMS["$PARAMS_CURRENT_DEF.$MAIN.isValue"]="$isValue"
+       [ "$MAIN" != MAIN ] && ! [[ " ${PARAMS["$PARAMS_CURRENT_DEF.ARGS"]} " =~ " MAIN " ]] && PARAMS["$PARAMS_CURRENT_DEF.ARGS"]+="$MAIN "
     else
         return 1
     fi
 }
 
-function arglist-init() {
+function params-for() {
     local MAIN desc
-    if getArgs ${FUNCNAME[0]} "$@"
-    then
-       -n "$desc" && ARGLIST["$MAIN.DESC"]="$desc"
-    else
-        return 1
-    fi
-   _enableAutocompletion $MAIN
+    getArgs ${FUNCNAME[0]} "$@" && {
+        PARAMS_CURRENT_DEF="$MAIN"
+        -n "$desc" && PARAMS["$PARAMS_CURRENT_DEF.DESC"]="$desc"
+    }
 }
 
-arglist-init arglist
-arglist-init arglist-init --desc 'Initializes autocompletion and getArgs() function for executable of given name.'
+function params-end() {
+    _enableAutocompletion $PARAMS_CURRENT_DEF
+    PARAMS_CURRENT_DEF=
+}
 
-# TODO add --value-type: int dir file... validate & completion
+params-for params-end --desc 'Initializes autocompletion for executable of given name.'
 
-function arglist-demo() {
-   arglist greet --param MAIN --name phrase --comp hello salut privet ciao czesc ahoj --desc 'Greeting phrase.' --default Hello
-   arglist greet --param times --desc 'How many times to greet.' --is-value isTimes --default 10
-   arglist greet --param loud --type flag --desc 'Whether to put exclamation mark.'
-   arglist greet --param persons --type list --comp 'getNames()' --desc 'Who to greet.' --required
-   arglist-init greet
+# TODO add --value: int dir file... validate & completion --validator function
+
+function params-demo() {
+   params-for greet --desc 'Demo for params.sh'
+   param MAIN --desc 'Greeting phrase.' --name phrase --comp hello salut privet ciao czesc ahoj --default Hello
+   param times --desc 'How many times to greet.' --is-value isTimes --default 10
+   param loud --desc 'Whether to put exclamation mark.' --type flag
+   param persons --desc 'Who to greet.' --type list --comp 'getNames()' --required
+   params-end
 
    function getNames() { # example function for autocompletion
       echo john bob alice world
@@ -491,7 +494,7 @@ function arglist-demo() {
       fi
    }
 
-   echo -e "Execute:\n  declare -f arglist-demo\n  greet --help\nPlay with autocompletion by pressing <tab> while providing parameters for 'greet' command."
+   echo -e "Execute:\n  declare -f params-demo\n  greet --help\nPlay with autocompletion by pressing <tab> while providing parameters for 'greet' command."
 }
 
-$BUSH_ASSOC ARGLIST
+$BUSH_ASSOC PARAMS

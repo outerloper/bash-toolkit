@@ -26,6 +26,25 @@ When <id> is not specified, <instruction> is just added. Otherwise instruction a
 
 on-exit "rm -rf '$TMPDIR'"
 
+
+declare -A BUSH_ON_PROMPT=()
+BUSH_ON_PROMPT_INDEX=0
+
+function on-prompt() {
+    [ "$1" == '--help' ] && echo -en "Adds code to be executed when displaying the prompt.
+  Usage: $BASHFUNC <instruction> [<id>]
+When <id> is not specified, <instruction> is just added. Otherwise instruction added previously with given <id> will be overwritten.
+" && return
+    local index="$BUSH_ON_PROMPT_INDEX" command="${1?}"
+    [ -n "$2" ] && index="$2" || (( BUSH_ON_PROMPT_INDEX++ ))
+    [ -n "$3" ] && echo "$BASHFUNC: [WARNING] Unexpected parameter: $3 (ignored)"
+    BUSH_ON_PROMPT["$index"]="$command"
+    PROMPT_COMMAND=
+    for command in "${BUSH_ON_PROMPT[@]}" ;do
+        PROMPT_COMMAND+="$command;"
+    done
+}
+
 # TODO minimal version for bash 3.2
 # TODO autocomplete for try and require, if try autocompleted, require extension
 # TODO facilitate autocompletion

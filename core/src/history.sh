@@ -14,7 +14,7 @@ HISTCONTROL=ignorespace:ignoredups # :erasedups # no erasedups - make history nu
 HISTFILESIZE=1000
 HISTSIZE=1000
 HISTTIMEFORMAT=""
-PROMPT_COMMAND='history -a;history -c;history -r' # having common history for concurrent sessions
+on-prompt 'history -a;history -c;history -r' # having common history for concurrent sessions
 shopt -s histappend
 
 def-macro filter-history @beginning-of-line ' filter-history "' @end-of-line '"' @accept-line
