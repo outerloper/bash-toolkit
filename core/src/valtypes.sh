@@ -38,28 +38,25 @@ function type-get() { # rename _getCurrent
 
 function type-def() {
    -eq "$1" '--help' &&
-   echo -ne "Defines value type which can be used in ask-for command.
+   echo -ne "Usage: $FUNCNAME TYPE_NAME BASE_TYPE OPTIONS...
+Defines value type which can be used in ask-for command.
+  TYPE_NAME           Name of defined type
+  BASE_TYPE           Name of type from which settings will be derived
 
-Usage:
-  $FUNCNAME <type> <base-type> [options...]
-
-Parameters:
-  <type>        Name of defined type
-  <base-type>   Name of type from which settings will be derived
-  options       In the form of: --option1 value1 --option2 --value2
-    --verify        Name of a function verifying correctness of type definition. If not correct, error message should be assigned to variable RESULT.
-    --desc          Text to display in user prompt. Can be a function - 'funName()' then assign help text to RESULT var.
-    --help          Additional text to display in user prompt in parentheses. Can be a function - 'funName()' then assign help text to RESULT var.
-    --validate      Name of validation function which takes user input as argument. See 'Validation functions' below for more information.
-    --pattern       A value should match the regexp provided to be accepted.
-    --process       Name of a function executed if validation has been successful. Takes user input as argument. RESULT var value from this function will
-                    be taken instead of raw user input.
-    --maskInput     If value is true/yes/1, user input won't be printed to screen.
-    --optional      If value is true/yes/1, empty input is acceptable.
-    --default       This value to use when --optional is set and user input is empty. Can be a function - 'funName()' then assign help text to RESULT var.
-    --reuse         If value is true/yes/1, previous variable value is the initial text and after providing invalid value, it is reused in next prompt.
-    Custom options:
-      Any other option names are allowed as their values can be used in Custom functions described below to implement types behaviour and constraints.
+Options:
+  --verify FUN        Name of a function verifying correctness of type definition. If not correct, error message should be assigned to variable RESULT.
+  --desc DESC         Text to display in user prompt. Can be a function - 'funName()' then assign help text to RESULT var.
+  --help HELP         Additional text to display in user prompt in parentheses. Can be a function - 'funName()' then assign help text to RESULT var.
+  --validate FUN      Name of validation function which takes user input as argument. See 'Validation functions' below for more information.
+  --pattern REGEXP    A value should match the regexp provided to be accepted.
+  --process FUN       Name of a function executed if validation has been successful. Takes user input as argument. RESULT var value from this function will
+                      be taken instead of raw user input.
+  --maskInput YES_NO  If value is true/yes/1, user input won't be printed to screen.
+  --optional YES_NO   If value is true/yes/1, empty input is acceptable.
+  --default YES_NO    This value to use when --optional is set and user input is empty. Can be a function - 'funName()' then assign help text to RESULT var.
+  --reuse YES_NO      If value is true/yes/1, previous variable value is the initial text and after providing invalid value, it is reused in next prompt.
+  Custom options:
+    Any other option names are allowed as their values can be used in Custom functions described below to implement types behaviour and constraints.
 
 Custom functions:
   If function is accepted as option value, the following rules apply in most cases:
@@ -70,13 +67,10 @@ Custom functions:
     variables as local in custom functions.
 
 Validation functions:
-  To raise validation error inside --validator function, invoke 'validationMessage' function.
-  Usage:
-    validationMessage <msg-key> <default-msg> [<values>]
-  Parameters:
-    <msg-key>       Can be used in type-def/ask-for as option --<msg-key> with the value being message template which may contain printf % placeholders
-    <default-msg>   Default message template which will be used when no --<msg-key> defined.
-    <values>        Values for printf % placeholders
+  To raise validation error inside validation function, invoke 'validationMessage' function. Usage: validationMessage MSG_KEY DEFAULT_MSG [VALUES]
+    MSG_KEY    Can be used in type-def/ask-for as option --<msg-key> with the value being message template which may contain printf % placeholders
+    DEFAULT    Default message template which will be used when no --<msg-key> defined.
+    VALUES     Values for printf % placeholders
   Example:
     local min; type-get min
     validationMessage lessThanMinMessage 'Value must not be less than %s' '\$min'
@@ -335,13 +329,12 @@ function processPath() {
 
 function ask-for() {
    -eq "$1" '--help' &&
-   echo -ne "Asks user to provide a value of specified type.
-Usage:
-  $FUNCNAME <type> [<var-name>] [options...]
+   echo -ne "Usage: $FUNCNAME TYPE VAR OPTIONS...
+Asks user to provide a value of TYPE and assigns it to VAR.
 Parameters:
-  <type>      Value type, defined by type-def. May not exist.
-  <var-name>  User value will be assigned to the variable with this name. If not specified, <type> will be used as a variable name.
-  options     See 'options' parameter of type-def command.
+  TYPE      Value type, defined by type-def. May not exist.
+  VAR_NAME  User value will be assigned to the variable with this name. If not specified, <type> will be used as a variable name.
+  OPTIONS     See 'options' parameter of type-def command.
 Examples:
   $FUNCNAME n
   $FUNCNAME int n
@@ -361,7 +354,7 @@ Examples:
    VALUE_ASK=()
    type-def VALUE_ASK.$name $type "$@"
 
-   local verify desc help reuse maskInput silent suggest default optional validate process prompt value
+   local verify desc help reuse maskInput silent suggest default optional validate process batch prompt value
 
    TYPE_TABLE=VALUE_ASK
    TYPE_CURRENT=$name
@@ -383,6 +376,8 @@ Examples:
    type-get optional
    type-get validate
    type-get process
+   ! -t 0
+   batch=$?
 
    : ${optional:=no}
 
@@ -393,25 +388,41 @@ Examples:
       -true $maskInput && silent="-s"
       read $silent -e -p "$prompt" -i "$suggest" value
       -true "$reuse" && suggest="$value"
-      -n $silent && echo
+      -n $silent && -nez $batch && echo
       if -n "$value" && -n "$validate"
       then
          local validationMessage="$($validate "$value")"
          if -n "$validationMessage"
          then
-            prompt="$validationMessage. Try again$PS2"
+            prompt="$validationMessage."
             value=''
-            continue
+            if -ez "$batch"
+            then
+                eval "$name="
+                echo $prompt
+                return 1
+            else
+                prompt+=" Try again$PS2"
+                continue
+            fi
          fi
       fi
       if -z "$value"
       then
          if -false "$optional"
          then
-            prompt="Non empty value is required. Try again$PS2"
+            prompt="Non empty value is required."
+            if -ez "$batch"
+            then
+                eval "$name="
+                echo $prompt
+                return 1
+            else
+                prompt+=" Try again$PS2"
+            fi
          elif -n "$default"
          then
-            value="$default" "$value"
+            value="$default"
          else
             eval "$name="
             return

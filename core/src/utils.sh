@@ -55,6 +55,10 @@ function -ns() { ! -s "$1"; }
 function -d() { [ -d "$1" ]; }
 # is not directory
 function -nd() { ! -d "$1"; }
+# file descriptor fd is open and refers to a terminal
+function -t() { [ -t "$1" ]; }
+# file descriptor fd is not open or does not refer to a terminal
+function -nt() { ! -t "$1"; }
 # empty dir
 function -ed() { local dir="${1:-.}"; [ "${dir}" = "$(find "${dir}")" ]; }
 # not empty dir
