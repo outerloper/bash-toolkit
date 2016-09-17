@@ -8,6 +8,7 @@ ${BUSH_ASSOC} VALUE_ASK
 TYPE_CURRENT=
 TYPE_TABLE=
 RESULT=
+VALUE_ERROR=
 
 # Get property $1 of current type. Type is determined by vars TYPE_TABLE and TYPE_CURRENT
 function type-get() { # rename _getCurrent
@@ -330,11 +331,11 @@ function processPath() {
 function ask-for() {
    -eq "$1" '--help' &&
    echo -ne "Usage: $FUNCNAME TYPE VAR OPTIONS...
-Asks user to provide a value of TYPE and assigns it to VAR.
+Asks user to provide a value of TYPE and assigns it to VAR. When input from STDIN, validation errors are stored in VALUE_ERROR var.
 Parameters:
   TYPE      Value type, defined by type-def. May not exist.
   VAR_NAME  User value will be assigned to the variable with this name. If not specified, <type> will be used as a variable name.
-  OPTIONS     See 'options' parameter of type-def command.
+  OPTIONS   See 'options' parameter of type-def command.
 Examples:
   $FUNCNAME n
   $FUNCNAME int n
@@ -351,6 +352,7 @@ Examples:
       shift
    fi
 
+   VALUE_ERROR=
    VALUE_ASK=()
    type-def VALUE_ASK.$name $type "$@"
 
@@ -399,7 +401,8 @@ Examples:
             if -ez "$batch"
             then
                 eval "$name="
-                echo $prompt
+                VALUE_ERROR="$prompt"
+                echo "$prompt"
                 return 1
             else
                 prompt+=" Try again$PS2"
@@ -415,7 +418,8 @@ Examples:
             if -ez "$batch"
             then
                 eval "$name="
-                echo $prompt
+                VALUE_ERROR="$prompt"
+                echo "$prompt"
                 return 1
             else
                 prompt+=" Try again$PS2"

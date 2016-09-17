@@ -74,10 +74,10 @@ function _processArgsForCompletion() {
 function _generateCompletions() {
    local currentParamType="${PARAM_DEFS["$1.$currentParam.type"]}"
    local currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
-   local currentParamIsValue="${PARAM_DEFS["$1.$currentParam.is-value"]}"
+   local currentParamValueOptional="${PARAM_DEFS["$1.$currentParam.val-optional"]}"
    local currentParamCompletion
    compReply=( '–—' '—–' )
-   if -eq MAIN "$currentParam" && -false "$currentParamRequired" || -eq flag "$currentParamType" || -gz "$currentParamArgsCount" || -n "$currentParamIsValue"
+   if -eq MAIN "$currentParam" && -false "$currentParamRequired" || -eq flag "$currentParamType" || -gz "$currentParamArgsCount" || -n "$currentParamValueOptional"
    then
       compReply=( "${compReply[@]}" ${unusedParams[@]} )
    fi
@@ -173,31 +173,38 @@ function _handleParamSwitch() {
 }
 
 function _handleParamValue() {
-   if -n $discardParam
-   then
-      return 1;
-   fi
-   if -eq flag "$currentParamType"
-   then
-      stderr "Unexpected value: $arg"
-      resultCode=1
-   else
-      if -neq list "$currentParamType" && -gz $currentParamArgsCount
-      then
-         stderr "Unexpected value: $arg"
-         resultCode=1
-      else
-         set-var "$currentParamVar[$currentParamArgsCount]" "$arg"
-      fi
-   fi
-   (( ++currentParamArgsCount ))
+    if -n $discardParam
+    then
+       return 1;
+    fi
+    if -eq flag "$currentParamType"
+    then
+        stderr "$paramSwitch: Unexpected value: $arg"
+        resultCode=1
+    else
+        if -neq list "$currentParamType" && -gz $currentParamArgsCount
+        then
+            stderr "$paramSwitch: Unexpected value: $arg"
+            resultCode=1
+        else
+            local currentParamValType="${PARAM_DEFS["$paramsName.$currentParam.val-type"]}"
+            -n "$currentParamValType" && {
+                ask-for "$currentParamValType" arg <<<"$arg" >/dev/null || {
+                    stderr "$paramSwitch: $VALUE_ERROR"
+                    resultCode=1
+                }
+            }
+            set-var "$currentParamVar[$currentParamArgsCount]" "$arg"
+        fi
+    fi
+    (( ++currentParamArgsCount ))
 }
 
 function _initParamForGetArgs() {
    currentParam="$1"
    currentParamArgsCount=0
    currentParamType="${PARAM_DEFS["$paramsName.$currentParam.type"]}"
-   currentParamIsValue="${PARAM_DEFS["$paramsName.$currentParam.is-value"]}"
+   currentParamValueOptional="${PARAM_DEFS["$paramsName.$currentParam.val-optional"]}"
    currentParamDefault="${PARAM_DEFS["$paramsName.$currentParam.default"]}"
    currentParamVar="${PARAM_DEFS["$paramsName.$currentParam.name"]}"
    -z "$currentParamVar" && currentParamVar="$currentParam"
@@ -207,9 +214,9 @@ function _initParamForGetArgs() {
       unset "$currentParamVar"
       eval $currentParamVar'=()'
       discardParam=''
-      -true "$currentParamIsValue" && {
-          unset "$currentParamIsValue"
-          set-var $currentParamIsValue 1
+      -true "$currentParamValueOptional" && {
+          unset "$currentParamValueOptional"
+          set-var $currentParamValueOptional 1
       }
    else
       stderr "Unknown param: $paramSwitch"
@@ -226,7 +233,7 @@ function _handleParamWithoutArgs() {
          if -n $first
          then
             _handleMissingMainArg "$1"
-         elif -n $currentParamIsValue ;then
+         elif -n $currentParamValueOptional ;then
             -n "$currentParamDefault" && set-var $currentParamVar "$currentParamDefault"
          else
             -z $discardParam && stderr "Missing required value for $paramSwitch"
@@ -389,11 +396,11 @@ function printArgs() {
 
 PARAM_DEFS=(
     [param.DESC]='Adds a PARAMETER definition for an executable.'
-    [param.LIST]='name required default type desc comp is-value'
+    [param.LIST]='name required default type desc comp val-optional val-type'
     [param.MAIN.name]='parameter'
     [param.MAIN.required]='yes'
-    [param.is-value.desc]='If specified, allows providing param without value but when value is provided, var with this name is set to 1.'
-    [param.is-value.name]='isValue'
+    [param.val-optional.desc]='If specified, allows providing param without value but when value is provided, var with this name is set to 1.'
+    [param.val-optional.name]='valueOptional'
     [param.name.desc]='Use this param if you want parameter switch name to be different from its ID.'
     [param.required.desc]='Specify this flag when parameter is mandatory.'
     [param.required.type]='flag'
@@ -404,6 +411,8 @@ PARAM_DEFS=(
     [param.desc.desc]='Description for --help mode.'
     [param.comp.desc]='Values for autocompletion or "fun()": name of function printing such space-separated values or "-f": file or "-d": dir completion.'
     [param.comp.type]='list'
+    [param.val-type.desc]='Type of parameter value.'
+    [param.val-type.name]='valType'
     [params-for.DESC]='Starts parameter definitions for FUNCTION.'
     [params-for.LIST]='desc'
     [params-for.MAIN.name]='function'
@@ -413,7 +422,7 @@ PARAM_DEFS=(
 
 function param() {
     : "${PARAM_DEF_CURRENT?'Invoke params-for first to add parameter definition'}"
-    local parameter name required default type desc comp isValue
+    local parameter name required default type valType desc comp valueOptional
     if getArgs ${FUNCNAME[0]} "$@"
     then
        -n "$required" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.required"]="$required"
@@ -422,8 +431,9 @@ function param() {
        -n "$comp" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.comp"]="${comp[@]}"
        -z "$name" && -eq "$parameter" MAIN && stderr 'MAIN parameter must have name specified.' && return 1
        -n "$name" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.name"]="$name"
-       -n "$isValue" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.is-value"]="$isValue"
+       -n "$valueOptional" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.val-optional"]="$valueOptional"
        -n "$type" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.type"]="$type"
+       -n "$valType" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.val-type"]="$valType"
        -neq "$parameter" MAIN && ! -has " ${PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]} " " MAIN " && PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]+="$parameter "
     else
         return 1
@@ -464,7 +474,7 @@ function params-demo() {
    params-for greet --desc 'Prints PHRASE in the way specified with OPTIONS.'
    param MAIN --name phrase --comp hello salut privet ciao czesc ahoj --default Hello
    param persons --desc 'Who to greet.' --type list --comp 'getNames()' --required
-   param times --desc 'How many times to greet.' --is-value isTimes --default 3
+   param times --desc 'How many times to greet.' --val-optional isTimes --default 3 --val-type int
    param loud --desc 'Whether to put exclamation mark.' --type flag
    params-end
    function greet() {

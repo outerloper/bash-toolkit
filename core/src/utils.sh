@@ -171,6 +171,15 @@ function trail-slash() {
    -n "$val" && set-var "$1" "${val%/}/"
 }
 
+# ensures first letter of variable named $1 is upper-case
+function capitalize() {
+   : "${1:?Missing var name}"
+   local val="${!1}"
+   first="${val:0:1}"
+   val="${first^^}${val:1}"
+   -n "$val" && set-var "$1" "${val}"
+}
+
 # prints message informing about exit status of last command. $1 - custom success command, $2 - custom failure command
 function ok() {
     OK=$?
