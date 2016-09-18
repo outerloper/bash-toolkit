@@ -111,9 +111,8 @@ function _displayInstantHelp() {
 }
 ### GET ARGS ###
 
-function getArgs() {
-   local paramsName=$1
-   shift
+function get-args() {
+   local paramsName="${FUNCNAME[1]}"
    local args=( "$@" )
    _isHelpRequest $paramsName && return 127
 
@@ -382,10 +381,10 @@ function _modifyParamDescription() {
 
 ### PRINT PARAMS ###
 
-function printArgs() {
+function print-args() {
    local value
 
-   for currentParam in MAIN ${PARAM_DEFS["$1.LIST"]}
+   for currentParam in MAIN ${PARAM_DEFS["${FUNCNAME[1]}.LIST"]}
    do
       eval 'value=( "${'"$currentParam"'[*]}" )'
       if -n "${value[@]}"
@@ -412,7 +411,7 @@ PARAM_DEFS=(
     [param.desc.desc]='Description for --help mode.'
     [param.comp.desc]='Values for autocompletion or "fun()": name of function printing such space-separated values or "-f": file or "-d": dir completion.'
     [param.comp.type]='list'
-    [param.val-type.desc]='Type of parameter value. Can contain own options e.g. "int --min 4 --max 10"'
+    [param.val-type.desc]='Type of parameter value. Can contain own options when quoted e.g. "int --min 4 --max 10"'
     [param.val-type.name]='valType'
     [params-for.DESC]='Starts parameter definitions for FUNCTION.'
     [params-for.LIST]='desc'
@@ -424,18 +423,18 @@ PARAM_DEFS=(
 function param() {
     : "${PARAM_DEF_CURRENT?'Invoke params-for first to add parameter definition'}"
     local parameter name required default type valType desc comp valOptional
-    if getArgs ${FUNCNAME[0]} "$@"
+    if get-args "$@"
     then
-       -n "$required" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.required"]="$required"
-       -n "$default" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.default"]="$default"
-       -n "$desc" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.desc"]="$desc"
-       -n "$comp" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.comp"]="${comp[@]}"
-       -z "$name" && -eq "$parameter" MAIN && stderr 'MAIN parameter must have name specified.' && return 1
-       -n "$name" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.name"]="$name"
-       -n "$valOptional" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.val-optional"]="$valOptional"
-       -n "$type" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.type"]="$type"
-       -n "$valType" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.val-type"]="$valType"
-       -neq "$parameter" MAIN && ! -has " ${PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]} " " MAIN " && PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]+="$parameter "
+        -n "$required" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.required"]="$required"
+        -n "$default" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.default"]="$default"
+        -n "$desc" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.desc"]="$desc"
+        -n "$comp" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.comp"]="${comp[@]}"
+        -z "$name" && -eq "$parameter" MAIN && stderr 'MAIN parameter must have name specified.' && return 1
+        -n "$name" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.name"]="$name"
+        -n "$valOptional" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.val-optional"]="$valOptional"
+        -n "$type" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.type"]="$type"
+        -n "$valType" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.val-type"]="$valType"
+        -neq "$parameter" MAIN && ! -has " ${PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]} " " MAIN " && PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]+="$parameter "
     else
         return 1
     fi
@@ -443,8 +442,9 @@ function param() {
 
 function params-for() {
     local 'function' desc
-    getArgs ${FUNCNAME[0]} "$@" && {
+    get-args "$@" && {
         PARAM_DEF_CURRENT="$function"
+        PARAM_DEFS["$PARAM_DEF_CURRENT.LIST"]=
         -n "$desc" && PARAM_DEFS["$PARAM_DEF_CURRENT.DESC"]="$desc"
     }
 }
@@ -457,10 +457,8 @@ function params-end() {
     PARAM_DEF_CURRENT=
 }
 
-params-for param
-params-end
-params-for params-for
-params-end
+_enableAutocompletion param
+_enableAutocompletion params-for
 params-for params-end --desc 'Initializes autocompletion for executable of given name.'
 params-end
 
@@ -479,17 +477,13 @@ function params-demo() {
    param loud --desc 'Whether to put exclamation mark.' --type flag
    params-end
    function greet() {
-      local phrase persons loud times isTimes
-      if getArgs greet "$@" # quote $@ to properly handle arguments with spaces
-      then
-         printArgs greet # for debugging
+        local phrase persons loud times isTimes
+        get-args "$@" || return 1
 
-         for (( i = 0; i < times; i++ )) { # custom logic start
+        print-args
+        for (( i = 0; i < times; i++ )) { # custom logic start
             echo "$phrase ${persons[@]}${loud:+!!}"
-         } # custom logic end
-      else
-         return 1
-      fi
+        }
    }
 
    echo -e "Execute:\n  declare -f params-demo\n  greet --help\nPlay with autocompletion by pressing <tab> while providing parameters for 'greet' command."

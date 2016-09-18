@@ -140,7 +140,7 @@ function _doBind() {
 }
 
 function def-macro() {
-    -eq "$1" --help && echo -e "Usage: ${FUNCNAME[0]} <name> <definition>...\nExample:\n  ${FUNCNAME[0]} display-help @end-of-line ' --help' @accept-line" && return
+    -eq "$1" --help && echo -e "Usage: ${FUNCNAME[0]} NAME DEFINITION...\nExample:${FUNCNAME[0]} display-help @end-of-line ' --help' @accept-line" && return
     local name="${1:?'Missing macro'}"
     local executable
     -eq "$2" '-x' && executable=1 && shift
@@ -170,7 +170,7 @@ function def-macro() {
 }
 
 function bind-macro() {
-    -eq "$1" --help && echo -e "Usage: ${FUNCNAME[0]} <macro> <keys>...\nExample:\n  ${FUNCNAME[0]} display-help F1 Alt+H" && return
+    -eq "$1" --help && echo -e "Usage: ${FUNCNAME[0]} NAME KEYSTROKE...\nExample:${FUNCNAME[0]} display-help F1 Alt-H" && return
     local macroName="${1:?'Missing macro'}"
     : "${2:?'Missing hotkeys'}"
     _getMacro "$macroName" || return 1
@@ -186,8 +186,7 @@ function bindings() {
     done | sort -k 2
 }
 
-
-
+def-macro do-nothing            ''
 def-macro test                  '<ok>'
 def-macro help                  @end-of-line ' --help' @accept-line
 def-macro clear-line            @kill-line @unix-line-discard

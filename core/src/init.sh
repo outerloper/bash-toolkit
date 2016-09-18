@@ -57,6 +57,25 @@ BUSH_PATH=()
 
 source "$BUSH_HOME/config/config.sh"
 
+function print-stack-trace() {
+    local exitCode=$? routine params="$*"
+    echo "Shell command finished with code $exitCode${params:+" (params: $@)"}"
+    for (( i = 1 ; i < ${#FUNCNAME[@]}; i++ )) ;do
+        routine="${FUNCNAME[$i]}"
+        if [ source = "$routine" ] ;then
+            routine=
+        else
+            routine=" $routine()"
+        fi
+        echo " at ${BASH_SOURCE[$i]}:${BASH_LINENO[$i-1]}$routine"
+    done
+}
+if [ "$BUSH_DEBUG" ] ;then
+    trap 'print-stack-trace "$@"' ERR
+else
+    trap '' ERR
+fi
+
 BUSH_ASSOC=":"
 BUSH_DEPENDENCIES=' '
 BUSH_INCLUDES=" $BASH_SOURCE "
