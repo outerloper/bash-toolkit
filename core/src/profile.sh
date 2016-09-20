@@ -1,10 +1,17 @@
 #!/bin/bash
 
-export EDITOR=${EDITOR:-vim}
-PS1='\[\e[1;33m\]\u@\h:\w\$\[\e[0m\] '
+require utils.sh
+require macros.sh
 
-alias bpe="${EDITOR} ~/.bash_profile" # Bash Profile Edit
-alias bpr="source ~/.bash_profile" # Bash Profile Reload
+export EDITOR=${EDITOR:-vim}
+
+PS1_TPL="\[$colorYellow\]\u@\h:\w$plainText\c\$\[$plainText\] " # TODO utilityp for prompt
+# TODO clear PS2
+# TODO try with color as PS4
+def-macro reload-bash-profile @clear-line " source ~/.bash_profile" @accept-line
+bind-macro reload-bash-profile F6
+def-macro edit-bash-profile @clear-line " ${EDITOR} ~/.bash_profile" @accept-line
+bind-macro edit-bash-profile F7
 
 alias l="ls --color"
 alias la="ls --color -al"

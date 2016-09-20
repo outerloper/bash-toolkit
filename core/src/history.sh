@@ -10,7 +10,7 @@ function filter-history() {
    say 'Type instruction number and press Ctrl-Space.'
 }
 
-HISTCONTROL=ignorespace:ignoredups # :erasedups # no erasedups - make history numbers change as rarely as possible
+HISTCONTROL=ignorespace:ignoredups:erasedups # no erasedups - make history numbers change as rarely as possible
 HISTFILESIZE=1000
 HISTSIZE=1000
 HISTTIMEFORMAT=""

@@ -94,11 +94,11 @@ function -like() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" = $2 ]]; }
 # '-mr' like 'matches regexp' $1 matches $2: [[ $1 =~ $2 ]] ; $2 can be interpreted as regexp but must be quoted
 function -rhas() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ $2 ]]; }
 # '-amr' like 'all matches regexp' all $1 matches $2: [[ $1 =~ ^($2)$ ]] ; $2 can be interpreted as regexp but must be quoted
-function -rlike() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ ^($2)$ ]]; }
+function -rlike() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ ^$2$ ]]; }
 # last exit code is 0
 function -ok() { return $?; }
 # last exit code is not 0
-function -nok() { return ! -ok; }
+function -nok() { ! -ok; }
 # is unsigned integer
 function -num() { : "${1?-num: Missing parameter}"; [[ "$1" =~ ^[0-9]+$ ]]; }
 # is signed integer
@@ -127,12 +127,40 @@ function say-fail() { echo -e "$colorRed${@:-FAILED}$plainText"; }
 stack_destroy SIGINT_TRAPS
 stack_new SIGINT_TRAPS
 
+# pushd without printing on stdout
 function push-dir() {
     pushd "$1" >/dev/null
 }
 
+# popd without printing on stdout
 function pop-dir() {
     popd >/dev/null
+}
+
+# faster than mkdir -p when dir exists
+function ensure-dir() {
+    : "${1?'Missing directory name'}"
+    -d "$1" || mkdir -p "$1"
+}
+
+# deletes files if necessary
+function ensure-empty-dir() {
+    : "${1?'Missing directory name'}"
+    if -d "$1" ;then
+        rm -rf "$1"/*
+    else
+        -e "$1" && rm "$1"
+        mkdir -p "$1"
+    fi
+}
+
+function replace-dir() {
+    local from="${1:?Missing source dir}"
+    local to="${2:?Missing target dir}"
+    -nd "$from" && stderr "$FUNCNAME: $from is not a directory" && return 1
+    -f "$to" && stderr "$FUNCNAME: $to is a file" && return 1
+    -d "$to" && { rm -rf "$to" || return 1; }
+    mv "$from" "$to"; return $?;
 }
 
 function finally() {
@@ -155,13 +183,18 @@ function finalize() {
     }
 }
 
-function replace-dir() {
-    local from="${1:?Missing source dir}"
-    local to="${2:?Missing target dir}"
-    -nd "$from" && stderr "${FUNCNAME[0]}: $from is not a directory" && return 1
-    -f "$to" && stderr "${FUNCNAME[0]}: $to is a file" && return 1
-    -d "$to" && { rm -rf "$to" || return 1; }
-    mv "$from" "$to"; return $?;
+# increment value named $1 by 1, returns changed value, prefix equivalent to (( ++$1 ))
+function inc() {
+    (( ++ ${1?Missing var name} ))
+    (( $1 != 0 ))
+    return $?
+}
+
+# decrement value named $1 by 1, returns changed value, prefix equivalent to (( --$1 ))
+function dec() {
+    (( -- ${1?Missing var name} ))
+    (( $1 != 0 ))
+    return $?
 }
 
 # ensures there will be "/" at the end of variable named $1
@@ -243,8 +276,8 @@ function proceed() {
         }
     else
         local timerText="$text. Will $proceed in %s secs"
-        (( timeout++ ))
-        while (( --timeout )) ; do
+        inc timeout
+        while dec timeout ; do
             printf "$timerText " "$timeout"
             read -t 1 -n 1 -s key
             -ok && {
@@ -272,7 +305,7 @@ _proceed_handleKey() {
 function set-var() { printf -v "$1" -- "$2"; }
 
 # if variable with name $1 contains ${..} or $(..) placeholders, they are expanded to variable values and script outputs respectively
-function eval-var() { [[ "${!1}" =~ \$\{.+\} ]] || [[ "${!1}" =~ \$\(.+\) ]] && eval "$1=\"${!1}\""; }
+function eval-var() { -has "${!1}" '\$\{.+\}' || -has "${!1}" '\$\(.+\)' && eval "$1=\"${!1}\""; }
 
 
 # sponge emulator. Provide file name as a parameter.

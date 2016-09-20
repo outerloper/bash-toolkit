@@ -1,5 +1,7 @@
 #!/bin/bash
 
+shopt -s nullglob
+
 declare -A BUSH_ON_EXIT=()
 BUSH_ON_EXIT_INDEX=0
 
@@ -14,13 +16,13 @@ function _doExit() {
 }
 
 function on-exit() {
-    [ "$1" == '--help' ] && echo -en "Adds code to be executed when closing shell.
-  Usage: $BASHFUNC <instruction> [<id>]
-When <id> is not specified, <instruction> is just added. Otherwise instruction added previously with given <id> will be overwritten.
+    [ "$1" == '--help' ] && echo -en "Usage: $FUNCNAME COMMAND [ID]
+Adds code to be executed when closing shell.
+When ID is not specified, COMMAND is just added. Otherwise instruction added previously with given ID will be overwritten.
 " && return
     local index="$BUSH_ON_EXIT_INDEX" command="${1?}"
     [ -n "$2" ] && index="$2" || (( BUSH_ON_EXIT_INDEX++ ))
-    [ -n "$3" ] && echo "$BASHFUNC: [WARNING] Unexpected parameter: $3 (ignored)"
+    [ -n "$3" ] && echo "$FUNCNAME: [WARNING] Unexpected parameter: $3 (ignored)"
     BUSH_ON_EXIT["$index"]="$command"
 }
 
@@ -31,20 +33,30 @@ declare -A BUSH_ON_PROMPT=()
 BUSH_ON_PROMPT_INDEX=0
 
 function on-prompt() {
-    [ "$1" == '--help' ] && echo -en "Adds code to be executed when displaying the prompt.
-  Usage: $BASHFUNC <instruction> [<id>]
-When <id> is not specified, <instruction> is just added. Otherwise instruction added previously with given <id> will be overwritten.
+    [ "$1" == '--help' ] && echo -en "Usage: $FUNCNAME COMMAND [ID]
+Adds code to be executed when displaying the prompt.
+When ID is not specified, COMMAND is just added. Otherwise instruction added previously with given ID will be overwritten.
 " && return
     local index="$BUSH_ON_PROMPT_INDEX" command="${1?}"
     [ -n "$2" ] && index="$2" || (( BUSH_ON_PROMPT_INDEX++ ))
-    [ -n "$3" ] && echo "$BASHFUNC: [WARNING] Unexpected parameter: $3 (ignored)"
+    [ -n "$3" ] && echo "$FUNCNAME: [WARNING] Unexpected parameter: $3 (ignored)"
     BUSH_ON_PROMPT["$index"]="$command"
-    PROMPT_COMMAND=
+    PROMPT_COMMAND='_bush_promptCommand;'
     for command in "${BUSH_ON_PROMPT[@]}" ;do
         PROMPT_COMMAND+="$command;"
     done
 }
 
+function _bush_promptCommand() {
+    local lastExitCode=$? lastExitCodeColor=$colorDarkGreen
+    -nez $lastExitCode && lastExitCodeColor=$colorDarkRed
+    PS1="${PS1_TPL//\\c/\[$lastExitCodeColor\]}"
+}
+
+# standard error codes: ok, negative check, error, user cancelled...
+# TODO for scripts run by./ - non-interactive entry for sourcing inside of such script -> function for this: bush-init - checking bash version, sourcing required files
+# TODO naming conventions public-function _namespace_privateFunction $_result variable, context variables
+# TODO prompt symbol: >/! depending on result of last command
 # TODO minimal version for bash 3.2
 # TODO autocomplete for try and require, if try autocompleted, require extension
 # TODO facilitate autocompletion
@@ -55,11 +67,9 @@ When <id> is not specified, <instruction> is just added. Otherwise instruction a
 BUSH_HOME="$(dirname "$BASH_SOURCE")"
 BUSH_PATH=()
 
-source "$BUSH_HOME/config/config.sh"
-
 function print-stack-trace() {
     local exitCode=$? routine params="$*"
-    echo "Shell command finished with code $exitCode${params:+" (params: $@)"}"
+    echo "Shell command finished with code $exitCode. Params: ${params:-"(no params)"}" >&2
     for (( i = 1 ; i < ${#FUNCNAME[@]}; i++ )) ;do
         routine="${FUNCNAME[$i]}"
         if [ source = "$routine" ] ;then
@@ -67,14 +77,20 @@ function print-stack-trace() {
         else
             routine=" $routine()"
         fi
-        echo " at ${BASH_SOURCE[$i]}:${BASH_LINENO[$i-1]}$routine"
+        echo " at ${BASH_SOURCE[$i]}:${BASH_LINENO[$i-1]}$routine" >&2
     done
 }
-if [ "$BUSH_DEBUG" ] ;then
+function bush-set-trace-errors() {
+    set -o errtrace
     trap 'print-stack-trace "$@"' ERR
-else
+}
+
+function bush-unset-trace-errors() {
+    set +o errtrace
     trap '' ERR
-fi
+}
+
+source "$BUSH_HOME/config/config.sh"
 
 BUSH_ASSOC=":"
 BUSH_DEPENDENCIES=' '
