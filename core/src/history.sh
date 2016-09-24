@@ -7,7 +7,7 @@ function filter-history() {
    history -c
    history -r
    history | g -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -30
-   say 'Type instruction number and press Ctrl-Space.'
+   message 'Type instruction number and press Ctrl-Space.'
 }
 
 HISTCONTROL=ignorespace:ignoredups:erasedups # no erasedups - make history numbers change as rarely as possible

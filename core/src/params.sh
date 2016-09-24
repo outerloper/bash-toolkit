@@ -164,7 +164,7 @@ function _handleParamSwitch() {
    -n $currentParam && unset "unusedParams[$currentParam]"
    if -n "${usedParams[$paramSwitch]}"
    then
-      stderr "Duplicate usage of $paramSwitch"
+      err "Duplicate usage of $paramSwitch"
       discardParam=1
       resultCode=1
    fi
@@ -178,19 +178,19 @@ function _handleParamValue() {
     fi
     if -eq flag "$currentParamType"
     then
-        stderr "Unexpected value: $arg"
+        err "Unexpected value: $arg"
         resultCode=1
     else
         if -neq list "$currentParamType" && -gz $currentParamArgsCount
         then
-            stderr "Unexpected value: $arg"
+            err "Unexpected value: $arg"
             resultCode=1
         else
             local currentParamValType="${PARAM_DEFS["$paramsName.$currentParam.val-type"]}"
             -n "$currentParamValType" && {
                 local valSpec="$(sed 's/ / arg /' <<<"$currentParamValType"" ")"
                 eval "ask-for $valSpec <<<'$arg' >/dev/null" || {
-                    stderr "$paramSwitch: $VALUE_ERROR"
+                    err "$paramSwitch: $VALUE_ERROR"
                     resultCode=1
                 }
             }
@@ -219,7 +219,7 @@ function _initParamForGetArgs() {
           set-var $currentParamIsVal 1
       }
    else
-      stderr "No such option: $paramSwitch"
+      err "No such option: $paramSwitch"
       discardParam=1
       resultCode=1
    fi
@@ -236,7 +236,7 @@ function _handleParamWithoutArgs() {
          elif -n $currentParamIsVal ;then
             -n "$currentParamDefault" && set-var $currentParamVar "$currentParamDefault"
          else
-            -z $discardParam && stderr "Missing required value for $paramSwitch"
+            -z $discardParam && err "Missing required value for $paramSwitch"
             resultCode=1
          fi
       elif -neq MAIN "$currentParam" # if flag, assign 1 to value
@@ -255,7 +255,7 @@ function _handleMissingMainArg() {
       local currentParamName="${PARAM_DEFS["$1.$currentParam.name"]}"
       currentParamName="${currentParamName:-MAIN}"
       currentParamName="${currentParamName^^}"
-      stderr "Missing $currentParamName parameter."
+      err "Missing $currentParamName parameter."
       resultCode=1
    else
       local currentParamDefault="${PARAM_DEFS["$1.$currentParam.default"]}"
@@ -272,7 +272,7 @@ function _handleUnusedParams() {
         local paramRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
         if -true "$paramRequired"
         then
-            stderr "Missing mandatory option: ${unusedParams[$currentParam]}"
+            err "Missing mandatory option: ${unusedParams[$currentParam]}"
             resultCode=1
         else
             local currentParamVar="${PARAM_DEFS["$1.$currentParam.name"]}"
@@ -444,7 +444,7 @@ function param() {
         -n "$default" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.default"]="$default"
         -n "$desc" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.desc"]="$desc"
         -n "$comp" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.comp"]="${comp[@]}"
-        -z "$name" && -eq "$parameter" MAIN && stderr 'MAIN parameter must have name specified.' && return 1
+        -z "$name" && -eq "$parameter" MAIN && err 'MAIN parameter must have name specified.' && return 1
         -n "$name" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.name"]="$name"
         -n "$isVal" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.is-val"]="$isVal"
         -n "$type" && PARAM_DEFS["$PARAM_DEF_CURRENT.$parameter.type"]="$type"

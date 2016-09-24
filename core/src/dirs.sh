@@ -67,7 +67,7 @@ Special values for dir:
    then
       dir="$(_dirs_historyFetch "${dir:1}")"
       -n "$dir" || {
-         stderr 'No dir with such index in history.'
+         err 'No dir with such index in history.'
          return 1
       }
       option=''

@@ -47,7 +47,7 @@ function render-template() {
    local templateFile="$1"
    local varDefsFile="$2"
 
-   -nf "$templateFile" && stderr "Missing template file: $templateFile"
+   -nf "$templateFile" && err "Missing template file: $templateFile"
 
    local varDecl="^ *\([a-zA-Z_][a-zA-Z0-9_]*\)=.*"
    (
@@ -82,3 +82,6 @@ function render-template() {
       done <"$templateFile"
    )
 }
+
+# TODO use fmt in formatting parameters output
+# TODO utility based on fmt to format text for given screen width and indentation, with option

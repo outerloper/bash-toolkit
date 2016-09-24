@@ -2,33 +2,6 @@
 
 require stack.sh
 
-export plainText="\e[0m"
-export underscore="\e[4m"
-export colorBlack="\e[30m"
-export colorGray="\e[37m"
-export colorRed="\e[1;31m"
-export colorGreen="\e[1;32m"
-export colorYellow="\e[1;33m"
-export colorBlue="\e[1;34m"
-export colorMagenta="\e[1;35m"
-export colorCyan="\e[1;36m"
-export colorWhite="\e[1;37m"
-export colorDarkRed="\e[31m"
-export colorDarkGreen="\e[32m"
-export colorDarkYellow="\e[33m"
-export colorDarkBlue="\e[34m"
-export colorDarkMagenta="\e[35m"
-export colorDarkCyan="\e[36m"
-export colorDarkGray="\e[1;30m"
-export backgroundBlack="\e[40m"
-export backgroundRed="\e[41m"
-export backgroundGreen="\e[42m"
-export backgroundYellow="\e[43m"
-export backgroundBlue="\e[44m"
-export backgroundMagenta="\e[45m"
-export backgroundCyan="\e[46m"
-export backgroundWhite="\e[47m"
-
 # syntactic sugar to avoid "[", "]" and keep notation more compact
 
 # is not empty
@@ -66,7 +39,7 @@ function -ned() { ! -ed "$1"; }
 # file exists
 function -e() { [ -e "$1" ]; }
 # file does not exist
-function -ne() { [ "$2" ] && stderr "-ne: [WARNING] redundant 2nd parameter: $2 (did you mean -neq?)"; ! -e "$1"; }
+function -ne() { [ "$2" ] && err "-ne: [WARNING] redundant 2nd parameter: $2 (did you mean -neq?)"; ! -e "$1"; }
 # equal
 function -eq() { [ "$1" == "$2" ]; }
 # equal to zero
@@ -95,9 +68,9 @@ function -like() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" = $2 ]]; }
 function -rhas() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ $2 ]]; }
 # '-amr' like 'all matches regexp' all $1 matches $2: [[ $1 =~ ^($2)$ ]] ; $2 can be interpreted as regexp but must be quoted
 function -rlike() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ ^$2$ ]]; }
-# last exit code is 0
+# returns last exit code
 function -ok() { return $?; }
-# last exit code is not 0
+# tests if last command exited with non-zero status
 function -nok() { ! -ok; }
 # is unsigned integer
 function -num() { : "${1?-num: Missing parameter}"; [[ "$1" =~ ^[0-9]+$ ]]; }
@@ -113,16 +86,25 @@ function -false() { ! -true "$1"; }
 function -utf() { [[ "${LANG}" == *UTF-8 ]]; }
 # is $1 a function name
 function -fun() { : "${1:?-fun: Missing function name.}"; [[ "$(type -t "$1")" == "function" ]]; }
+# is $1 a command line option switch (not empty and starting from '-')
+function -opt() { -n "$1" && -like "$1" '-*'; }
 # is $1 a command line option value (not empty and not starting from '-')
 function -optval() { -n "$1" && ! -like "$1" '-*'; }
+# when $@ or $1 provided within function definition or script, the function tests if there was help request (--help of -h as first parameter)
+function -help() { [[ "$1" == '--help' ]] || [[ "$1" == '-h' ]]; }
+# tests if $1 is valid variable name
+function -varname() { [[ "$1" =~ ^[_a-zA-Z][_a-zA-Z0-9]*$ ]]; }
 
 # echo to stdout
-function stderr() { echo $@ >&2; }
-function put() { echo -e -n "${@} "; }
-function say() { echo -e "$colorWhite${@}$plainText"; }
-function say-warn() { echo -e "$colorYellow${@:-WARNING}$plainText"; }
-function say-ok() { echo -e "$colorGreen${@:-OK}$plainText"; }
-function say-fail() { echo -e "$colorRed${@:-FAILED}$plainText"; }
+function err() {
+    if -t 2 ;then
+        echo -en "$styleError"
+        echo -e $@ >&2
+        echo -en "$styleOff"
+    else
+        echo -e $@ >&2
+    fi
+}
 
 stack_destroy SIGINT_TRAPS
 stack_new SIGINT_TRAPS
@@ -157,8 +139,8 @@ function ensure-empty-dir() {
 function replace-dir() {
     local from="${1:?Missing source dir}"
     local to="${2:?Missing target dir}"
-    -nd "$from" && stderr "$FUNCNAME: $from is not a directory" && return 1
-    -f "$to" && stderr "$FUNCNAME: $to is a file" && return 1
+    -nd "$from" && err "$FUNCNAME: $from is not a directory" && return 1
+    -f "$to" && err "$FUNCNAME: $to is a file" && return 1
     -d "$to" && { rm -rf "$to" || return 1; }
     mv "$from" "$to"; return $?;
 }
@@ -187,14 +169,12 @@ function finalize() {
 function inc() {
     (( ++ ${1?Missing var name} ))
     (( $1 != 0 ))
-    return $?
 }
 
 # decrement value named $1 by 1, returns changed value, prefix equivalent to (( --$1 ))
 function dec() {
     (( -- ${1?Missing var name} ))
     (( $1 != 0 ))
-    return $?
 }
 
 # ensures there will be "/" at the end of variable named $1
@@ -217,9 +197,9 @@ function capitalize() {
 function ok() {
     OK=$?
     if [ "$OK" -eq 0 ] ; then
-        say-ok "$1"
+        success "$1"
     else
-        say-fail "$2"
+        failure "$2"
     fi
     return "$OK"
 }
@@ -227,7 +207,7 @@ function ok() {
 function proceed() {
     -eq "$1" '--help' && echo "Asks user if to proceed with <action> or to <cancel>. Can proceed automatically after <timeout> seconds.\nUsage: $FUNCNAME [<action>] [-c <cancel>] [-t [<timeout>]]" && return
     local arg message proceed='proceed' cancel='cancel' confirmed canceled timeout
-    -optval "$1" && {
+    -opt "$1" || {
         if -rhas "$1" '^[[:lower:]]' ;then
             proceed="$1"
             confirmed="$1"
@@ -242,7 +222,7 @@ function proceed() {
         -t)
             if -optval "$2" ;then
                 -num "$2" || {
-                    stderr "-t: Number expected. Was: $2" && return 1
+                    err "-t: Number expected. Was: $2" && return 1
                 }
                 timeout="$2"
                 shift
@@ -256,16 +236,16 @@ function proceed() {
                 canceled="$2"
                 shift 1
             else
-                stderr '-c: Value expected' && return 1
+                err '-c: Value expected' && return 1
             fi
             ;;
         *)
-            stderr "proceed: unexpected argument: $arg" && return 1
+            err "proceed: unexpected argument: $arg" && return 1
         esac
         shift
     done
     local key
-    -n "$message" && message="$message.$plainText "
+    -n "$message" && message="$message.$plain "
     local text="\r$message""Press ENTER to $proceed, other key to $cancel"
     if -z "$timeout" ; then
         printf "$text.. "
@@ -341,7 +321,7 @@ function print-array() {
     elif -has "$options" A ;then
         indexes=( $(echo ${!array[@]} | tr ' ' "\n" | sort -n) )
     else
-        stderr "$1 is not an array"
+        err "$1 is not an array"
         return 1
     fi
     for i in ${indexes[@]} ;do

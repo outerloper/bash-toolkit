@@ -3,9 +3,9 @@
 require utils.sh
 require macros.sh
 
-export EDITOR=${EDITOR:-vim}
+EDITOR=${EDITOR:-vim}
 
-PS1_TPL="\[$colorYellow\]\u@\h:\w$plainText\c\$\[$plainText\] " # TODO utilityp for prompt
+PS1_TPL="\[$yellow\]\u@\h:\w$plain\c\$\[$plain\] " # TODO utility for prompt
 # TODO clear PS2
 # TODO try with color as PS4
 def-macro reload-bash-profile @clear-line " source ~/.bash_profile" @accept-line
@@ -27,10 +27,10 @@ shopt -s expand_aliases
 
 ssh() {
   [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
-  eval $(which ssh) $@
+  eval "$(which ssh)" $@
 }
 
 scp() {
   [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9 &&  eval "$(ssh-agent -s)" && ssh-add
-  eval $(which scp) $@
+  eval "$(which scp)" $@
 }

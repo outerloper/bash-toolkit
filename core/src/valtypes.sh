@@ -299,7 +299,7 @@ function validatePath() {
          fi
       ;;
       *)
-         stderr "Unsupported file type: '$pathType'"
+         err "Unsupported file type: '$pathType'"
       ;;
       esac
    fi
@@ -366,7 +366,7 @@ Examples:
       $verify
       if -n "$RESULT"
       then
-         stderr "$RESULT"
+         err "$RESULT"
          return 1
       fi
    fi

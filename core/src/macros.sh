@@ -116,7 +116,7 @@ function _getKey() {
         _key='\e'"${BASH_REMATCH[1]^^}"
         return
     }
-    -z KEY_DEFS["$keyName"] && stderr "Unknown key: $keyName"
+    -z KEY_DEFS["$keyName"] && err "Unknown key: $keyName"
     return 1
 }
 
@@ -132,7 +132,7 @@ function _getMacro() {
         _bindOption='-x'
         return
     }
-    stderr "Unknown macro: $macroName"
+    err "Unknown macro: $macroName"
     return 1
 }
 
@@ -184,7 +184,7 @@ function bind-macro() {
 
 function bindings() {
     for keyName in "${!KEY_BINDINGS[@]}" ;do
-        printf "%30s  $colorWhite%s$plainText\n" "${KEY_BINDINGS["$keyName"]}" "$keyName"
+        printf "%30s  $white%s$plain\n" "${KEY_BINDINGS["$keyName"]}" "$keyName"
     done | sort -k 2
 }
 
@@ -232,8 +232,8 @@ bind-macro previous-word            Alt-Left
 bind-macro next-word                Ctrl-Right
 bind-macro backward-delete-char     Bsp
 bind-macro delete-char              Del
-bind-macro backward-kill-word       Alt-Ctrl-Left
-bind-macro kill-word                Alt-Ctrl-Right
+bind-macro backward-kill-word       Alt-Ctrl-Left    Ctrl-Shift-Left
+bind-macro kill-word                Alt-Ctrl-Right   Ctrl-Shift-Right
 bind-macro beginning-of-line        Home
 bind-macro end-of-line              End
 bind-macro unix-line-discard        Alt-Bsp

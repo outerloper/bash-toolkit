@@ -48,9 +48,9 @@ When ID is not specified, COMMAND is just added. Otherwise instruction added pre
 }
 
 function _bush_promptCommand() {
-    local lastExitCode=$? lastExitCodeColor=$colorDarkGreen
-    -nez $lastExitCode && lastExitCodeColor=$colorDarkRed
-    PS1="${PS1_TPL//\\c/\[$lastExitCodeColor\]}"
+    local lastExitCode=$? lastExitCodeColor=$green
+    -nez $lastExitCode && lastExitCodeColor=$red
+    PS1="${PS1_TPL//\\c/\\[$lastExitCodeColor\\]}"
 }
 
 # standard error codes: ok, negative check, error, user cancelled...
