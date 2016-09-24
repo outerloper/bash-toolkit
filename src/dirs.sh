@@ -3,7 +3,7 @@
 require macros.sh
 
 : ${DIRHISTFILE:=$HOME/.dir_history} # TODO change this dir
-: ${DIRHISTSIZE:=40}
+: ${DIRHISTSIZE:=50}
 
 function _dirs_ensureHistoryExists() {
    if -nf "$DIRHISTFILE"
@@ -108,7 +108,7 @@ function _histdir-tab-completion() {
          then
             COMPREPLY=( "$(chdir -- | grep "$phrase" | sed "s/^\s*\w*\s*//")" )
          else
-            for line in "$(chdir -- | g -i "$phrase")"
+            for line in "$(chdir -- | egrep --color=always -i "$phrase")"
             do
                 echo -ne "\n$line"
             done
