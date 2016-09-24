@@ -62,5 +62,5 @@ Options:
   --dir <value>                    " ''
 }
 
-source ../../core/lib/shunit/src/shunit2
+source ../lib/shunit/src/shunit2
 

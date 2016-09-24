@@ -6,3 +6,11 @@ NOTE don't hide executable code between functions
 
 NOTE consider using main() functions
 NOTE consider using namespaces: _colors.print() _colors::print()
+
+TODO conventions
+- GLOBAL_SETTING_VARIABLE
+- GLOBAL_ASSOC
+- globalVariableToUseByUser
+- module-public-function-name
+- alias function-name module-function-name
+- _module_privateFunctionName

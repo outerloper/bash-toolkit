@@ -20,7 +20,7 @@ testAdding()
 oneTimeSetUp()
 {
   # load include to test
-  . ./math.inc
+  . math.inc
 }
 
 # load and run shUnit2

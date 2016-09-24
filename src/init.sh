@@ -96,7 +96,9 @@ BUSH_ASSOC=":"
 BUSH_DEPENDENCIES=' '
 BUSH_INCLUDES=" $BASH_SOURCE "
 BUSH_PATH+=( "$BUSH_HOME" )
-eval "$(sed -n 's/^\s*\${*BUSH_ASSOC\(:-"declare -A"\)*}*\s*\(\w*\)/declare -A \2/p' ${HOME}/.bash-toolkit/*/src/*.sh)"
+
+[ -z "$(echo "${BUSH_HOME}"/*.sh)" ] && echo "Warning: no scripts found in ${BUSH_HOME}"
+eval "$(sed -n 's/^\s*\${*BUSH_ASSOC\(:-"declare -A"\)*}*\s*\(\w*\)/declare -A \2/p' ${BUSH_HOME}/*.sh)"
 function require() {
     local path script found
     if [ "${1}" != "${1#/}" ] ;then # if path is absolute
@@ -124,7 +126,7 @@ function require() {
 
 for path in ${BUSH_PATH[@]} ;do
     for script in "$path"/*.sh ;do
-        require "$script"
+        require "$script" # TODO option allowing include more than once
     done
 done
 

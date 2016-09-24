@@ -10,7 +10,7 @@
 # shUnit2 unit tests of miscellaneous things
 
 # load test helpers
-. ./shunit2_test_helpers
+. shunit2_test_helpers
 
 #------------------------------------------------------------------------------
 # suite tests

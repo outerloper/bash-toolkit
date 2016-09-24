@@ -351,6 +351,5 @@
     <entry_points version="2.0" />
   </component>
   <component name="IdProvider" IDEtalkID="B80A0A1B59842157DFFE2F336F0F7653" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8.92" project-jdk-type="JavaSDK" />
 </project>
-

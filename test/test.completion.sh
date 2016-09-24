@@ -88,5 +88,5 @@ then
    getCompletion options
 fi
 
-source ../../core/lib/shunit/src/shunit2
+source ../lib/shunit/src/shunit2
 

@@ -74,5 +74,5 @@ function testMissingNAryMainParameter() {
    assertOutput '' 'Missing operation-and-first-arg.'
 }
 
-source ../../core/lib/shunit/src/shunit2
+source ../lib/shunit/src/shunit2
 

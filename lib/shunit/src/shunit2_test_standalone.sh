@@ -15,7 +15,7 @@
 ARGV0=`basename "$0"`
 
 # load test helpers
-. ./shunit2_test_helpers
+. shunit2_test_helpers
 
 #------------------------------------------------------------------------------
 # suite tests

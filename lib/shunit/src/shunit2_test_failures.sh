@@ -10,7 +10,7 @@
 # shUnit2 unit test for failure functions
 
 # load common unit-test functions
-. ./shunit2_test_helpers
+. shunit2_test_helpers
 
 #-----------------------------------------------------------------------------
 # suite tests

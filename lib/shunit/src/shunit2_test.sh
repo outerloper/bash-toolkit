@@ -23,7 +23,7 @@ done
 
 # load common unit test functions
 . ../lib/versions
-. ./shunit2_test_helpers
+. shunit2_test_helpers
 
 usage()
 {

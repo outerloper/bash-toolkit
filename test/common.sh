@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../src/arglist.sh # TODO fix tests
+source ../../core/src/arglist.sh
 
 declare -A options=(
    ["help"]='greet'
@@ -28,7 +28,7 @@ function greet() {
    local main persons loud times
    if getArgs options "$@"
    then
-      printArgs options
+      print-args options
 
       for (( i = 0; i < times; i++)) {
          echo "${main} ${persons[@]}${loud:+!!}"
@@ -58,10 +58,10 @@ function calculator() {
    local main to
    if getArgs calculatorOptions "$@"
    then
-      printArgs calculatorOptions
+      print-args calculatorOptions
       if (( ${#main[@]} < 2 ))
       then
-         stderr 'Missing first argument and/or operation name'
+         err 'Missing first argument and/or operation name'
          return 1
       fi
       operation=${main}
@@ -99,7 +99,7 @@ function list-dir() {
    local hidden
    if getArgs listDirOptions "$@"
    then
-      printArgs listDirOptions
+      print-args listDirOptions
 
       if -n ${hidden}
       then

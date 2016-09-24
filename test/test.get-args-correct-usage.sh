@@ -80,4 +80,4 @@ file1 file2 .file3" ''
 
 }
 
-source ../../core/lib/shunit/src/shunit2
+source ../lib/shunit/src/shunit2

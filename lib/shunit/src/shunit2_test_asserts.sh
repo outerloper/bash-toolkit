@@ -10,7 +10,7 @@
 # shUnit2 unit test for assert functions
 
 # load test helpers
-. ./shunit2_test_helpers
+. shunit2_test_helpers
 
 #------------------------------------------------------------------------------
 # suite tests
