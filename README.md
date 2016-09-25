@@ -17,7 +17,7 @@ To have it active any time you log in, include the following line into your `.ba
 To enable bundled Vim tweaks, include `source ~/.bush/src/resources/vimrc.sh` command into your `.vimrc`:
 
     touch ~/.vimrc
-    echo -e '\nsource ~/.bush/src/config/vimrc.sh' >> ~/.vimrc
+    echo -e '\nsource ~/.bush/src/resources/vimrc.sh' >> ~/.vimrc
 
 To pull the latest version from GitHub, execute this:
 

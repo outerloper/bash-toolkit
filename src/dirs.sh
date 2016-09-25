@@ -3,34 +3,22 @@
 require macros.sh
 
 
-DIRS_HISTORY_FILE="$BUSH_CONFIG/dirs.history" # TODO change this dir
+DIRS_HISTORY_FILE="$BUSH_CONFIG/dirs.history"
 DIRS_HISTORY_SIZE=50
 
-
-function _dirs_ensureHistoryExists() { # TODO ensure-file
-   if -nf "$DIRS_HISTORY_FILE"
-   then
-      _dirs_initEmptyHistory
-   fi
-}
-
 function _dirs_historyPrint() {
-   _dirs_ensureHistoryExists
+   ensure-file "$DIRS_HISTORY_FILE"
    nl -w 5 "$DIRS_HISTORY_FILE"
 }
 
-function _dirs_initEmptyHistory() {
-   echo -n > "$DIRS_HISTORY_FILE"
-}
-
 function _dirs_historyFetch() {
-   _dirs_ensureHistoryExists
+   ensure-file "$DIRS_HISTORY_FILE"
    local nr=${1:-'$'}
-   [[ "$nr" != "0" ]] && sed -n "$nr p" < "$DIRS_HISTORY_FILE"
+   -nez "$nr" && sed -n "$nr p" < "$DIRS_HISTORY_FILE"
 }
 
 function _dirs_historyAddPwd() {
-   _dirs_ensureHistoryExists
+   ensure-file "$DIRS_HISTORY_FILE"
    local dir="$(dirs +0)"
    grep -v "^$dir\$" <"$DIRS_HISTORY_FILE" | tail "-$((DIRS_HISTORY_SIZE - 1))" | sponge "$DIRS_HISTORY_FILE"
    echo "$dir" >>"$DIRS_HISTORY_FILE"

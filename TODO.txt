@@ -7,7 +7,7 @@ NOTE don't hide executable code between functions
 NOTE consider using main() functions
 NOTE consider using namespaces: _colors.print() _colors::print()
 
--- conventions --
+Conventions
 TODO GLOBAL_SETTING_VARIABLE
 TODO GLOBAL_ASSOC
 TODO globalVariableToUseByUser
@@ -19,3 +19,10 @@ TODO all user data in one directory, src/profile? src/user?
 TODO -eq -neq prefer putting constant values to compare as second parameter - less error-prone when changing later -eq to -has or -like
 TODO directories w/o trail slash? - better look, easier variable placing, compatible with dirname, readlink, dis: only not aesthetic when dir=root but this almost does not happen
 TODO do not export functions - if need to use a function inside executed script, use 'require' in that script (therefore require must be exported)
+
+Nice to haves
+TODO standard error codes: ok, negative check, error, user cancelled...
+
+Notes
+command generating .inputrc for legacy systems -> bind -p > $BUSH_CONFIG/.inputrc.custom  on machine in .bash_profile: INPUTRC=~/.inputrc.custom
+err should add function name automatically -> it is not always desired

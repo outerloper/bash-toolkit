@@ -3,13 +3,13 @@
 require utils.sh
 
 
-$DECLARE_ASSOC VALUE_TYPES
-$DECLARE_ASSOC VALUE_ASK
+$GLOBAL_ASSOC VALUE_TYPES
+$GLOBAL_ASSOC VALUE_ASK
 
-declare TYPE_CURRENT=
-declare TYPE_TABLE=
-declare RESULT=
-declare VALUE_ERROR=
+TYPE_CURRENT=
+TYPE_TABLE=
+RESULT=
+VALUE_ERROR=
 
 
 # Get property $1 of current type. Type is determined by vars TYPE_TABLE and TYPE_CURRENT

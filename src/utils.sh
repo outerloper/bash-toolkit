@@ -98,12 +98,11 @@ function -varname() { [[ "$1" =~ ^[_a-zA-Z][_a-zA-Z0-9]*$ ]]; }
 # echo to stdout
 function err() {
     if -t 2 ;then
-        echo -en "$styleFailure"
-        echo -e $@ >&2
-        echo -en "$styleOff"
+        echo -e "$styleFailure$1$styleOff" >&2
     else
-        echo -e $@ >&2
+        echo -e "$1" >&2
     fi
+    [ "$BUSH_VERBOSE" ] && print-stack-trace
 }
 
 # pushd without printing on stdout
@@ -133,13 +132,25 @@ function ensure-empty-dir() {
     fi
 }
 
+# ensures $2 will be now under name of $1. $1 is removed if required. Does nothing if $1 is a file or $2 does not exist.
 function replace-dir() {
     local from="${1:?Missing source dir}"
     local to="${2:?Missing target dir}"
-    -nd "$from" && err "$FUNCNAME: $from is not a directory" && return 1
-    -f "$to" && err "$FUNCNAME: $to is a file" && return 1
+    -nd "$from" && { err "$FUNCNAME: $from is not a directory"; return 1; }
+    -f "$to" && { err "$FUNCNAME: $to is a file"; return 1; }
     -d "$to" && { rm -rf "$to" || return 1; }
-    mv "$from" "$to"; return $?;
+    mv "$from" "$to"
+}
+
+# creates a file $1 if it does not exist. If $1 does not exist and $2 provided then $2 must be a file and its content is copied to $1.
+function ensure-file() {
+    local file="${1?'Missing file name'}"
+    local pattern="$2"
+    -f "$file" && { return 0; }
+    -d "$file" && { err "$file is a directory"; return 1; }
+    -z "$pattern" && { touch "$file"; return 0; }
+    -nf "$pattern" && { err "$pattern - no such file"; return 1; }
+    cat "$pattern" > "$file"
 }
 
 # increment value named $1 by 1, returns changed value, prefix equivalent to (( ++$1 ))

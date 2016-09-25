@@ -227,7 +227,3 @@ Prints available color samples.
         echo
     done
 }
-
-# TODO when output redirected do not print em and q formatting, be consistent with err
-
-

@@ -4,10 +4,12 @@ require utils.sh
 
 ### SETTINGS ###
 
-declare PARAM_DEF_CURRENT=
-declare PARAM_DEFS_DISPLAY_INSTANT_HELP=yes
+PARAM_DEF_CURRENT=
+PARAM_DEFS_DISPLAY_INSTANT_HELP=yes
+PARAMS_OPTION_DECL_COLUMNS=24
+PARAMS_OPTION_DESC_INDENT="$(printf "%${PARAMS_OPTION_DECL_COLUMNS}s" ' ')"
 
-$DECLARE_ASSOC PARAM_DEFS
+$GLOBAL_ASSOC PARAM_DEFS
 
 ### UTILS ###
 
@@ -301,7 +303,6 @@ function printHelp() {
     local scriptNameForHelp="${scriptNameForHelp:-$1}"
     local helpDescription="${PARAM_DEFS["$1.DESC"]}"
     local printOnly="$2"
-    local helpFormat="  %-22s   %s\n"
 
     _printUsage $1
     -n "$helpDescription" && {
@@ -310,7 +311,7 @@ function printHelp() {
     -n "$printOnly" && echo
     -z "$printOnly" || -eq "$printOnly" MAIN && -neq flag "$currentParamType" && {
         _modifyParamDescription $1
-        -n "$currentParamDescription" || -eq MAIN "$printOnly" && printf "$helpFormat" "${currentParamName^^}" "$currentParamDescription"
+        -n "$currentParamDescription" || -eq MAIN "$printOnly" && _printParamDesc "${currentParamName^^}" "$currentParamDescription"
     }
     -n "${PARAM_DEFS["$1.LIST"]}" && {
         -z "$printOnly" && echo "Options:"
@@ -372,7 +373,22 @@ function _printParamHelp() {
    fi
    _modifyParamDescription $1
 
-   printf "$helpFormat" "$paramUsageText" "$currentParamDescription"
+   _printParamDesc "$paramUsageText" "$currentParamDescription"
+}
+
+function _printParamDesc() {
+    local optionDecl="  $1  " optionDesc="$2" optionDeclOverflow
+    if (( ${#optionDecl} > PARAMS_OPTION_DECL_COLUMNS)) ;then
+        local tmp="$optionDecl"
+        optionDecl="${tmp:0:$((PARAMS_OPTION_DECL_COLUMNS))}"
+        optionDeclOverflow="${tmp:$((PARAMS_OPTION_DECL_COLUMNS))}"
+    fi
+    if (( PARAMS_OPTION_DECL_COLUMNS + ${#optionDeclOverflow} + ${#optionDesc} >= COLUMNS )) && (( PARAMS_OPTION_DECL_COLUMNS + 36 < COLUMNS )) ;then
+        printf "%-$((PARAMS_OPTION_DECL_COLUMNS))s" "$optionDecl"
+        fmt -s -w "$(( COLUMNS - PARAMS_OPTION_DECL_COLUMNS ))" <<<"$optionDeclOverflow$optionDesc" | sed "2,$ s/^/$PARAMS_OPTION_DESC_INDENT/"
+    else
+        printf "%-$((PARAMS_OPTION_DECL_COLUMNS))s%s\n" "$optionDecl" "$optionDeclOverflow$optionDesc"
+    fi
 }
 
 function _modifyParamDescription() {

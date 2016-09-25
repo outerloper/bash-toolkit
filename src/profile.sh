@@ -6,8 +6,9 @@ require macros.sh
 EDITOR=${EDITOR:-vim}
 
 PS1_TPL="\[$yellow\]\u@\h:\w$plain\c\$\[$plain\] " # TODO utility for prompt
-# TODO clear PS2
-# TODO try with color as PS4
+PS2='  '
+PS4="\[$lightGrayBackground\]  \[$plain\] "
+
 def-macro reload-bash-profile @clear-line " source ~/.bash_profile" @accept-line
 bind-macro reload-bash-profile F6
 def-macro edit-bash-profile @clear-line " ${EDITOR} ~/.bash_profile" @accept-line

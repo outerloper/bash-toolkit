@@ -3,11 +3,11 @@
 require utils.sh
 
 
-$DECLARE_ASSOC KEY_BINDINGS
-$DECLARE_ASSOC KEY_EXECUTABLES
-$DECLARE_ASSOC KEY_PLACEHOLDERS
-$DECLARE_ASSOC KEY_DEFS
-$DECLARE_ASSOC KEY_MACROS
+$GLOBAL_ASSOC KEY_BINDINGS
+$GLOBAL_ASSOC KEY_EXECUTABLES
+$GLOBAL_ASSOC KEY_PLACEHOLDERS
+$GLOBAL_ASSOC KEY_DEFS
+$GLOBAL_ASSOC KEY_MACROS
 
 declare _key=
 declare _bindOption=
@@ -216,6 +216,8 @@ def-macro parent-dir            @clear-line 'cd ..' @accept-line
 #def-macro home-dir-cmd          -x 'cd'+
 def-macro home-dir              @clear-line 'cd' @accept-line
 def-macro child-dir             'cd \t'
+def-macro echo                  'echo -e '
+def-macro run-previous-command  @previous-history @accept-line
 
 bind-macro do-nothing               F1            F2            F3            F4            F5            F6            F7            F8            F9            F10            F11            F12
 bind-macro do-nothing           Alt-F1        Alt-F2        Alt-F3        Alt-F4        Alt-F5        Alt-F6        Alt-F7        Alt-F8        Alt-F9        Alt-F10        Alt-F11        Alt-F12
@@ -273,9 +275,10 @@ bind-macro parent-dir               PgUp
 bind-macro child-dir                PgDown
 bind-macro home-dir                 Alt-Home   Ctrl-Home
 
+bind-macro echo                     Alt-E
+bind-macro run-previous-command     F4
+
 bind "set completion-ignore-case on"
 bind "set completion-map-case on"
 bind "set show-all-if-ambiguous on"
 bind "set completion-query-items 1000"
-
-# TODO command generating .inputrc for legacy systems

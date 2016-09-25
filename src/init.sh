@@ -1,17 +1,23 @@
 #!/bin/bash
 
-declare BUSH_HOME="$(dirname "$BASH_SOURCE")"
-declare BUSH_CONFIG="$(readlink -f "$BUSH_HOME/../config/")"
-declare BUSH_PATH=( $BUSH_HOME )
 
-declare BUSH_DEPENDENCIES=' '
-declare BUSH_INCLUDES=" $BASH_SOURCE "
-declare DECLARE_ASSOC=":"
+! [ "${BASH_VERSION}" ] && echo "Bush requires Bash shell to run." && return 1
+[[ "${BASH_VERSION}" = 2.* ]] || [[ "${BASH_VERSION}" = 3.* ]] || [[ "${BASH_VERSION}" = 4.0.* ]] &&
+    echo "Bush requires Bash v4.1 or higher to run. ${BASH_VERSION} found." && return 1
+
+
+BUSH_HOME="$(dirname "$BASH_SOURCE")"
+BUSH_CONFIG="$(readlink -f "$BUSH_HOME/../config/")"
+BUSH_PATH=( $BUSH_HOME )
+
+BUSH_DEPENDENCIES=' '
+BUSH_INCLUDES=" $BASH_SOURCE "
+GLOBAL_ASSOC=":"
 
 declare -A BUSH_ON_EXIT
-declare BUSH_ON_EXIT_INDEX=0
+BUSH_ON_EXIT_INDEX=0
 declare -A BUSH_ON_PROMPT
-declare BUSH_ON_PROMPT_INDEX=0
+BUSH_ON_PROMPT_INDEX=0
 
 
 function _bush_exit() {
@@ -53,18 +59,14 @@ function _bush_promptCommand() {
     PS1="${PS1_TPL//\\c/\\[$lastExitCodeColor\\]}"
 }
 
-# TODO standard error codes: ok, negative check, error, user cancelled...
+
 # TODO for scripts run by./ - non-interactive entry for sourcing inside of such script -> function for this: bush-init - checking bash version, sourcing required files
-# TODO naming conventions public-function _namespace_privateFunction $_result variable, context variables
-# TODO prompt symbol: >/! depending on result of last command
-# TODO minimal version for bash 3.2
 # TODO autocomplete for try and require, if try autocompleted, require extension
 # TODO facilitate autocompletion
-# TODO hist browse
 
 function print-stack-trace() {
     local exitCode=$? routine params="$*"
-    echo "Shell command finished with code $exitCode. Params: ${params:-"(no params)"}" >&2
+    -nez "$exitCode" && echo "Shell command finished with code $exitCode. Params: ${params:-"(no params)"}" >&2
     for (( i = 1 ; i < ${#FUNCNAME[@]}; i++ )) ;do
         routine="${FUNCNAME[$i]}"
         if [ source = "$routine" ] ;then
@@ -126,10 +128,10 @@ TMPDIR=$(mktemp -d -p "$TMP")
 
 on-exit "rm -rf '$TMPDIR'"
 
-# if you want to reuse associative array in other scripts you have to declare it with the line exactly like: $DECLARE_ASSOC arrayName
-# or, for portability of your script: ${DECLARE_ASSOC:-"declare -A"} arrayName
+# if you want to reuse associative array in other scripts you have to declare it with the line exactly like: $GLOBAL_ASSOC arrayName
+# or, for portability of your script: ${GLOBAL_ASSOC:-"declare -A"} arrayName
 [ -z "$(echo "${BUSH_HOME}"/*.sh)" ] && echo "Warning: no scripts found in $BUSH_HOME"
-eval "$(sed -n 's/^\s*\${*DECLARE_ASSOC\(:-"declare -A"\)*}*\s*\(\w*\)/declare -A \2/p' $BUSH_HOME/*.sh)"
+eval "$(sed -n 's/^\s*\${*GLOBAL_ASSOC\(:-"declare -A"\)*}*\s*\(\w*\)/declare -A \2/p' $BUSH_HOME/*.sh)"
 
 for path in ${BUSH_PATH[@]} ;do
     for script in "$path"/*.sh ;do
