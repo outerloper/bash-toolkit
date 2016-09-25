@@ -5,7 +5,7 @@ require utils.sh
 ### SETTINGS ###
 
 PARAM_DEF_CURRENT=
-PARAM_DEFS_DISPLAY_INSTANT_HELP=yes
+PARAM_HELP_IN_AUTOCOMPLETION=yes
 PARAMS_OPTION_DECL_COLUMNS=24
 PARAMS_OPTION_DESC_INDENT="$(printf "%${PARAMS_OPTION_DECL_COLUMNS}s" ' ')"
 
@@ -13,7 +13,7 @@ $GLOBAL_ASSOC PARAM_DEFS
 
 ### UTILS ###
 
-function _prepareProcessingArgs() {
+function _params_loadDefinition() {
    local currentParamSwitch
    for currentParam in ${PARAM_DEFS["$1.LIST"]}
    do
@@ -23,45 +23,38 @@ function _prepareProcessingArgs() {
    done
 }
 
-function _extractArgs() {
-    args=( "$@" )
-}
-
 ### AUTOCOMPLETION ###
 
-function _enableAutocompletion() {
+function _params_enableAutocompletion() {
    local fn="__paramsComp_$1"
    complete -F "$fn" "$1"
-   eval $fn'() { _argsAutocompletion '$1' 1; }'
+   eval $fn'() { _params_autocompletion '$1' 1; }'
 }
 
-function _argsAutocompletion() {
+function _params_autocompletion() {
    local completedArgsCount
    (( completedArgsCount = COMP_CWORD - 1 ))
    local currentWord="${COMP_WORDS[COMP_CWORD]}"
-   local compReply=()
+   local suggestions=()
    local currentParam=MAIN
    local currentParamArgsCount=0
    local args=()
-   _extractArgs "${COMP_WORDS[@]:1:$completedArgsCount}"
-   _getCompletion $1
-   COMPREPLY=( $(compgen -W "${compReply[*]}" -- $currentWord) )
-   -true "$PARAM_DEFS_DISPLAY_INSTANT_HELP" && (( ${#COMPREPLY[@]} > 1 )) && _displayInstantHelp $1 "$currentWord"
-}
 
-function _getCompletion() {
+   args=( ${COMP_WORDS[@]:1:$completedArgsCount} )
    declare -A unusedParams=()
    declare -A paramSwitches=()
-   _prepareProcessingArgs $1
+   _params_loadDefinition $1
 
    currentParam=MAIN
    currentParamArgsCount=0
-   _processArgsForCompletion
+   _params_prepareForAutocompletion
 
-   _generateCompletions $1
+   _params_getSuggestions $1
+   COMPREPLY=( $(compgen -W "${suggestions[*]}" -- $currentWord) )
+   -true "$PARAM_HELP_IN_AUTOCOMPLETION" && (( ${#COMPREPLY[@]} > 1 )) && _params_displayHelpInAutocompletion $1 "$currentWord"
 }
 
-function _processArgsForCompletion() {
+function _params_prepareForAutocompletion() {
    for arg in ${args[@]}
    do
       if -like "$arg" '--*'
@@ -75,24 +68,24 @@ function _processArgsForCompletion() {
    done
 }
 
-function _generateCompletions() {
+function _params_getSuggestions() {
    local currentParamType="${PARAM_DEFS["$1.$currentParam.type"]}"
    local currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
    local currentParamIsVal="${PARAM_DEFS["$1.$currentParam.is-val"]}"
    local currentParamCompletion
-   compReply=( '–—' '—–' )
+   suggestions=( '–—' '—–' )
    if -eq MAIN "$currentParam" && -false "$currentParamRequired" || -eq flag "$currentParamType" || -gz "$currentParamArgsCount" || -n "$currentParamIsVal"
    then
-      compReply=( "${compReply[@]}" ${unusedParams[@]} )
+      suggestions=( "${suggestions[@]}" ${unusedParams[@]} )
    fi
    if -neq flag "$currentParamType" && -ez "$currentParamArgsCount" || -eq list "$currentParamType"
    then
       currentParamCompletion="${PARAM_DEFS["$1.$currentParam.comp"]}"
-      compReply=( "${compReply[@]}" "$(_evaluateCompletion)" )
+      suggestions=( "${suggestions[@]}" "$(_params_generateSuggestions)" )
    fi
 }
 
-function _evaluateCompletion() {
+function _params_generateSuggestions() {
    if -z "$currentParamCompletion"
    then
       :
@@ -107,64 +100,31 @@ function _evaluateCompletion() {
    fi
 }
 
-function _displayInstantHelp() {
+function _params_displayHelpInAutocompletion() {
     local param="$currentParam"
     -eq "$2" -- && param="$2"
-    local help="$(printHelp "$1" "$param")"
+    local help="$(_params_printHelp "$1" "$param")"
     -n "$help" && echo -en "\n$help\n" >&2
 }
-### GET ARGS ###
 
-function get-args() {
-   local paramsName="${FUNCNAME[1]}"
-   local args=( "$@" )
-   _isHelpRequest $paramsName && return 127
+### FOR get-args ###
 
-   declare -A unusedParams
-   declare -A paramSwitches
-   _prepareProcessingArgs $paramsName
-
-   local currentParamArgsCount=0
-   local currentParamType
-   local paramSwitch
-   local first=1
-   local currentParam
-   local currentParamVar
-   local discardParam=''
-   local resultCode=0
-   declare -A usedParams=()
-   _initParamForGetArgs MAIN
-   for arg in "${args[@]}"
-   do
-      if -like "$arg" '--*'
-      then
-         _handleParamSwitch
-      else
-         _handleParamValue
-      fi
-      first=''
-   done
-   _handleParamWithoutArgs $paramsName
-   _handleUnusedParams $paramsName
-   return $resultCode
-}
-
-function _isHelpRequest() {
+function _params_isHelpRequest() {
    for arg in ${args[@]}
    do
       if -eq --help "$arg"
       then
-         printHelp $1
+         _params_printHelp $1
          return 0
       fi
    done
    return 1
 }
 
-function _handleParamSwitch() {
-   _handleParamWithoutArgs $paramsName
+function _params_handleSwitch() {
+   _params_handleSwitchWithoutValues $paramsName
    paramSwitch="$arg"
-   _initParamForGetArgs ${paramSwitches[$paramSwitch]}
+   _params_prepareForGetArgs ${paramSwitches[$paramSwitch]}
    -n $currentParam && unset "unusedParams[$currentParam]"
    if -n "${usedParams[$paramSwitch]}"
    then
@@ -175,7 +135,7 @@ function _handleParamSwitch() {
    usedParams[$paramSwitch]=1
 }
 
-function _handleParamValue() {
+function _params_handleValue() {
     if -n $discardParam
     then
        return 1;
@@ -204,7 +164,7 @@ function _handleParamValue() {
     inc currentParamArgsCount
 }
 
-function _initParamForGetArgs() {
+function _params_prepareForGetArgs() {
    currentParam="$1"
    currentParamArgsCount=0
    currentParamType="${PARAM_DEFS["$paramsName.$currentParam.type"]}"
@@ -229,14 +189,14 @@ function _initParamForGetArgs() {
    fi
 }
 
-function _handleParamWithoutArgs() {
+function _params_handleSwitchWithoutValues() {
    if (( currentParamArgsCount == 0 ))
    then
       if -neq flag "$currentParamType"
       then
          if -n $first
          then
-            _handleMissingMainArg "$1"
+            _params_handleMissingMainArg "$1"
          elif -n $currentParamIsVal ;then
             -n "$currentParamDefault" && set-var $currentParamVar "$currentParamDefault"
          else
@@ -251,7 +211,7 @@ function _handleParamWithoutArgs() {
    fi
 }
 
-function _handleMissingMainArg() {
+function _params_handleMissingMainArg() {
    unset "$currentParamVar"
    local currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
    if -true "$currentParamRequired"
@@ -270,7 +230,7 @@ function _handleMissingMainArg() {
    fi
 }
 
-function _handleUnusedParams() {
+function _params_handleUnused() {
     for currentParam in ${!unusedParams[@]}
     do
         local paramRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
@@ -290,7 +250,7 @@ function _handleUnusedParams() {
 
 ### PRINT HELP ###
 
-function printHelp() {
+function _params_printHelp() {
     local paramUsageText
 
     local currentParam=MAIN
@@ -304,14 +264,14 @@ function printHelp() {
     local helpDescription="${PARAM_DEFS["$1.DESC"]}"
     local printOnly="$2"
 
-    _printUsage $1
+    _params_printUsage $1
     -n "$helpDescription" && {
         echo "$helpDescription"
     }
     -n "$printOnly" && echo
     -z "$printOnly" || -eq "$printOnly" MAIN && -neq flag "$currentParamType" && {
-        _modifyParamDescription $1
-        -n "$currentParamDescription" || -eq MAIN "$printOnly" && _printParamDesc "${currentParamName^^}" "$currentParamDescription"
+        _params_modifyOptionDescription $1
+        -n "$currentParamDescription" || -eq MAIN "$printOnly" && _params_printOptionDescription "${currentParamName^^}" "$currentParamDescription"
     }
     -n "${PARAM_DEFS["$1.LIST"]}" && {
         -z "$printOnly" && echo "Options:"
@@ -320,13 +280,13 @@ function printHelp() {
         do
             if -neq "$currentParam" MAIN && { -z "$printOnly" || -eq "$printOnly" "$currentParam" ;}
             then
-                _printParamHelp $1
+                _params_printOptionHelp $1
             fi
         done
     }
 }
 
-function _printUsage() {
+function _params_printUsage() {
    printf "Usage: $scriptNameForHelp"
    if -neq flag "$currentParamType"
    then
@@ -350,7 +310,7 @@ function _printUsage() {
    echo
 }
 
-function _printParamHelp() {
+function _params_printOptionHelp() {
    local currentParamSwitch="--$currentParam"
    currentParamType="${PARAM_DEFS["$1.$currentParam.type"]}"
    currentParamRequired="${PARAM_DEFS["$1.$currentParam.required"]}"
@@ -371,12 +331,12 @@ function _printParamHelp() {
    then
       currentParamDescription="REQUIRED. $currentParamDescription"
    fi
-   _modifyParamDescription $1
+   _params_modifyOptionDescription $1
 
-   _printParamDesc "$paramUsageText" "$currentParamDescription"
+   _params_printOptionDescription "$paramUsageText" "$currentParamDescription"
 }
 
-function _printParamDesc() {
+function _params_printOptionDescription() {
     local optionDecl="  $1  " optionDesc="$2" optionDeclOverflow
     if (( ${#optionDecl} > PARAMS_OPTION_DECL_COLUMNS)) ;then
         local tmp="$optionDecl"
@@ -391,7 +351,7 @@ function _printParamDesc() {
     fi
 }
 
-function _modifyParamDescription() {
+function _params_modifyOptionDescription() {
     local currentParamDefault="${PARAM_DEFS["$1.$currentParam.default"]}"
     if -n "$currentParamDefault"
     then
@@ -400,8 +360,73 @@ function _modifyParamDescription() {
     fi
 }
 
-### PRINT PARAMS ###
+### PUBLIC API ###
 
+# Usage example. Execute this function to try out. Then:
+# 1. To see how help is generated, execute: hello --help
+# 2. To see how autocompletion works: Type 'hello' in command line and provide parameters to it helping yourself with <tab> key
+# 3. To see get-args and print-args functions in action execute command from 3.
+function params-demo() {
+
+   function getNames() {
+      echo Bob Alice World
+   }
+   params-for hello --desc 'Prints PHRASE in the way specified with OPTIONS.'
+   param MAIN --name phrase --comp hello salut privet ciao czesc ahoj --default hello
+   param persons --desc 'Who to greet.' --type list --comp 'getNames()' --required
+   param times --desc 'How many times to greet.' --is-val isTimes --val-type 'int --min 0 --max 10' --default 3
+   param loud --desc 'Whether to double exclamation mark.' --type flag
+   params-end
+   function hello() {
+       local phrase persons loud times isTimes
+       get-args "$@" || return 1
+       print-args
+       for (( i = 0; i < times; i++ )) {
+           capitalize phrase
+           echo "$phrase ${persons[@]}!${loud:+!}"
+       }
+   }
+}
+
+# Usage (inside a function): get-args "$@"
+# Validates parameters provided to a function and, if valid, populates variables with values or: prints help if --help option was provided.
+# Returns non-zero code if parameters are invalid or help was requested. In such case function should return immediately.
+function get-args() {
+   local paramsName="${FUNCNAME[1]}"
+   local args=( "$@" )
+   _params_isHelpRequest $paramsName && return 127
+
+   declare -A unusedParams
+   declare -A paramSwitches
+   _params_loadDefinition $paramsName
+
+   local currentParamArgsCount=0
+   local currentParamType
+   local paramSwitch
+   local first=1
+   local currentParam
+   local currentParamVar
+   local discardParam=''
+   local resultCode=0
+   declare -A usedParams=()
+   _params_prepareForGetArgs MAIN
+   for arg in "${args[@]}"
+   do
+      if -like "$arg" '--*'
+      then
+         _params_handleSwitch
+      else
+         _params_handleValue
+      fi
+      first=''
+   done
+   _params_handleSwitchWithoutValues $paramsName
+   _params_handleUnused $paramsName
+   return $resultCode
+}
+
+# Usage (inside a function): print-args
+# Function for debugging purposes to print variables set before by get-args
 function print-args() {
     local value paramsName="${FUNCNAME[1]}" var vars=()
 
@@ -427,7 +452,7 @@ function print-args() {
     done
 }
 
-
+# Starts parameters definition for a function. Invoke "params-for --help" and "param --help" for more information.
 function params-for() {
     local 'function' desc
     get-args "$@" && {
@@ -437,6 +462,7 @@ function params-for() {
     }
 }
 
+# Defines parameter for a function. Invoke "param --help" for more information.
 function param() {
     : "${PARAM_DEF_CURRENT?'Invoke params-for first to add parameter definition'}"
     local parameter name required default type valType desc comp isVal
@@ -457,42 +483,19 @@ function param() {
     fi
 }
 
+# Invoke immediately after all parameters for a function are defined. Invoke "param --help" for more information
 function params-end() {
     -z "${PARAM_DEFS["$PARAM_DEF_CURRENT.MAIN.name"]}" && {
         PARAM_DEFS["$PARAM_DEF_CURRENT.MAIN.type"]=flag
     }
-    _enableAutocompletion $PARAM_DEF_CURRENT
+    _params_enableAutocompletion $PARAM_DEF_CURRENT
     PARAM_DEF_CURRENT=
 }
 
-
-function params-demo() {
-   echo "Execute: declare -f params-demo"
-   echo "Execute: hello --help"
-   echo "Play with autocompletion by pressing <tab> while providing parameters for 'hello'."
-   function getNames() {
-      echo Bob Alice World
-   }
-   params-for hello --desc 'Prints PHRASE in the way specified with OPTIONS.'
-   param MAIN --name phrase --comp hello salut privet ciao czesc ahoj --default hello
-   param persons --desc 'Who to greet.' --type list --comp 'getNames()' --required
-   param times --desc 'How many times to greet.' --is-val isTimes --val-type 'int --min 0 --max 10' --default 3
-   param loud --desc 'Whether to double exclamation mark.' --type flag
-   params-end
-   function hello() {
-       local phrase persons loud times isTimes
-       get-args "$@" || return 1
-       print-args
-       for (( i = 0; i < times; i++ )) {
-           capitalize phrase
-           echo "$phrase ${persons[@]}!${loud:+!}"
-       }
-   }
-}
-
+### INITIALIZATION ###
 
 PARAM_DEFS=(
-    [param.DESC]='Adds a PARAMETER definition for an executable.'
+    [param.DESC]='Adds a PARAMETER definition for a function. Invoke "params-for EXEC" first where EXEC is the function name. When all parameters are defined, invoke "params-end".'
     [param.LIST]='name required default type desc comp is-val val-type'
     [param.MAIN.name]='parameter'
     [param.MAIN.required]='yes'
@@ -517,7 +520,7 @@ PARAM_DEFS=(
     [params-for.desc.desc]='General description displayed in --help mode.'
 )
 
-_enableAutocompletion param
-_enableAutocompletion params-for
+_params_enableAutocompletion param
+_params_enableAutocompletion params-for
 params-for params-end --desc 'Initializes autocompletion for executable of given name.'
 params-end

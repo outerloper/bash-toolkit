@@ -5,7 +5,7 @@ require macros.sh
 
 EDITOR=${EDITOR:-vim}
 
-PS1_TPL="\[$yellow\]\u@\h:\w$plain\c\$\[$plain\] " # TODO utility for prompt
+PS1_TPL="\[$yellow\]\u@\h:\w$plain\c\$\[$plain\] " # TODO add variable placeholders for prompt
 PS2='  '
 PS4="\[$lightGrayBackground\]  \[$plain\] "
 
@@ -26,7 +26,7 @@ alias vi=vim
 
 shopt -s expand_aliases
 
-function ssh() { # TODO move out
+function ssh() {
   [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
   eval "$(which ssh)" $@
 }

@@ -60,7 +60,6 @@ function _bush_promptCommand() {
 }
 
 
-# TODO for scripts run by./ - non-interactive entry for sourcing inside of such script -> function for this: bush-init - checking bash version, sourcing required files
 # TODO autocomplete for try and require, if try autocompleted, require extension
 # TODO facilitate autocompletion
 

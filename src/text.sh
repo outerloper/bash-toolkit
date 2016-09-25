@@ -82,6 +82,3 @@ function render-template() {
       done <"$templateFile"
    )
 }
-
-# TODO use fmt in formatting parameters output
-# TODO utility based on fmt to format text for given screen width and indentation, with option
