@@ -7,7 +7,7 @@ source ../src/testing.sh
 function setUp() {
    rm -rf /tmp/test-chdir
    mkdir /tmp/test-chdir
-   DIRHISTFILE=/tmp/test-chdir/.dir_history
+   DIRS_HISTORY_FILE=/tmp/test-chdir/.dir_history
    chdir /tmp/
    dirs -c
    chdir -- >"$STDOUT"

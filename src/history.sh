@@ -6,7 +6,7 @@ function filter-history() {
    history -a
    history -c
    history -r
-   history | g -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -30
+   history | egrep --color=always -i "$1" | sort -r -k 2 | uniq -f 1 | sort | tail -30
    message 'Type instruction number and press Ctrl-Space.'
 }
 

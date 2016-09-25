@@ -98,16 +98,13 @@ function -varname() { [[ "$1" =~ ^[_a-zA-Z][_a-zA-Z0-9]*$ ]]; }
 # echo to stdout
 function err() {
     if -t 2 ;then
-        echo -en "$styleError"
+        echo -en "$styleFailure"
         echo -e $@ >&2
         echo -en "$styleOff"
     else
         echo -e $@ >&2
     fi
 }
-
-stack_destroy SIGINT_TRAPS
-stack_new SIGINT_TRAPS
 
 # pushd without printing on stdout
 function push-dir() {
@@ -143,26 +140,6 @@ function replace-dir() {
     -f "$to" && err "$FUNCNAME: $to is a file" && return 1
     -d "$to" && { rm -rf "$to" || return 1; }
     mv "$from" "$to"; return $?;
-}
-
-function finally() {
-    stack_push SIGINT_TRAPS "$*"
-    trap "finalize ${FUNCNAME[1]}; -n \"\$FUNCNAME\" && return 130" SIGINT
-}
-
-function finalize() {
-    local onSigInt stackSize
-    -n "$1" && -neq "$1" "${FUNCNAME[1]}" && return
-    stack_pop SIGINT_TRAPS onSigInt 2>/dev/null && {
-        eval "$onSigInt"
-        stack_size SIGINT_TRAPS stackSize
-        if -gz "$stackSize" ;then
-            stack_pop SIGINT_TRAPS onSigInt
-            finally "$onSigInt"
-        else
-            trap -- SIGINT
-        fi
-    }
 }
 
 # increment value named $1 by 1, returns changed value, prefix equivalent to (( ++$1 ))
@@ -328,3 +305,27 @@ function print-array() {
         echo "$i=${array[$i]}"
     done
 }
+
+
+function finally() {
+    stack_push SIGINT_TRAPS "$*"
+    trap "finalize ${FUNCNAME[1]}; -n \"\$FUNCNAME\" && return 130" SIGINT
+}
+
+function finalize() {
+    local onSigInt stackSize
+    -n "$1" && -neq "$1" "${FUNCNAME[1]}" && return
+    stack_pop SIGINT_TRAPS onSigInt 2>/dev/null && {
+        eval "$onSigInt"
+        stack_size SIGINT_TRAPS stackSize
+        if -gz "$stackSize" ;then
+            stack_pop SIGINT_TRAPS onSigInt
+            finally "$onSigInt"
+        else
+            trap -- SIGINT
+        fi
+    }
+}
+
+stack_destroy SIGINT_TRAPS
+stack_new SIGINT_TRAPS

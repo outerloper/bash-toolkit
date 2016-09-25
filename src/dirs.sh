@@ -2,11 +2,13 @@
 
 require macros.sh
 
-: ${DIRHISTFILE:=$HOME/.dir_history} # TODO change this dir
-: ${DIRHISTSIZE:=50}
 
-function _dirs_ensureHistoryExists() {
-   if -nf "$DIRHISTFILE"
+DIRS_HISTORY_FILE="$BUSH_CONFIG/dirs.history" # TODO change this dir
+DIRS_HISTORY_SIZE=50
+
+
+function _dirs_ensureHistoryExists() { # TODO ensure-file
+   if -nf "$DIRS_HISTORY_FILE"
    then
       _dirs_initEmptyHistory
    fi
@@ -14,24 +16,24 @@ function _dirs_ensureHistoryExists() {
 
 function _dirs_historyPrint() {
    _dirs_ensureHistoryExists
-   nl -w 5 "$DIRHISTFILE"
+   nl -w 5 "$DIRS_HISTORY_FILE"
 }
 
 function _dirs_initEmptyHistory() {
-   echo -n > "$DIRHISTFILE"
+   echo -n > "$DIRS_HISTORY_FILE"
 }
 
 function _dirs_historyFetch() {
    _dirs_ensureHistoryExists
    local nr=${1:-'$'}
-   [[ "$nr" != "0" ]] && sed -n "$nr p" < "$DIRHISTFILE"
+   [[ "$nr" != "0" ]] && sed -n "$nr p" < "$DIRS_HISTORY_FILE"
 }
 
 function _dirs_historyAddPwd() {
    _dirs_ensureHistoryExists
    local dir="$(dirs +0)"
-   grep -v "^$dir\$" <"$DIRHISTFILE" | tail "-$((DIRHISTSIZE - 1))" | sponge "$DIRHISTFILE"
-   echo "$dir" >>"$DIRHISTFILE"
+   grep -v "^$dir\$" <"$DIRS_HISTORY_FILE" | tail "-$((DIRS_HISTORY_SIZE - 1))" | sponge "$DIRS_HISTORY_FILE"
+   echo "$dir" >>"$DIRS_HISTORY_FILE"
 }
 
 
@@ -79,10 +81,7 @@ Special values for dir:
    _dirs_historyAddPwd
    return 0
 }
-alias cd=chdir
 
-
-complete -o nospace -o dirnames -F _histdir-tab-completion cd
 function _histdir-tab-completion() {
    local cword=${#COMP_WORDS[@]}
    local arg=${COMP_WORDS[1]}
@@ -117,5 +116,10 @@ function _histdir-tab-completion() {
    fi
 }
 
+
+
 def-macro filter-dir-history @backward-word @unix-line-discard 'cd -' @end-of-line '\t'
 bind-macro filter-dir-history Alt-PgUp Alt-PgDown Ctrl-PgUp Ctrl-PgDown
+
+alias cd=chdir
+complete -o nospace -o dirnames -F _histdir-tab-completion cd

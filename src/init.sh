@@ -1,14 +1,20 @@
 #!/bin/bash
 
-shopt -s nullglob
+declare BUSH_HOME="$(dirname "$BASH_SOURCE")"
+declare BUSH_CONFIG="$(readlink -f "$BUSH_HOME/../config/")"
+declare BUSH_PATH=( $BUSH_HOME )
 
-declare -A BUSH_ON_EXIT=()
-BUSH_ON_EXIT_INDEX=0
+declare BUSH_DEPENDENCIES=' '
+declare BUSH_INCLUDES=" $BASH_SOURCE "
+declare DECLARE_ASSOC=":"
 
-trap "_doExit" EXIT
-export TMPDIR=$(mktemp -d -p "$TMP")
+declare -A BUSH_ON_EXIT
+declare BUSH_ON_EXIT_INDEX=0
+declare -A BUSH_ON_PROMPT
+declare BUSH_ON_PROMPT_INDEX=0
 
-function _doExit() {
+
+function _bush_exit() {
     echo
     for exitTrap in "${BUSH_ON_EXIT[@]}" ;do
         eval "$exitTrap"
@@ -25,12 +31,6 @@ When ID is not specified, COMMAND is just added. Otherwise instruction added pre
     [ -n "$3" ] && echo "$FUNCNAME: [WARNING] Unexpected parameter: $3 (ignored)"
     BUSH_ON_EXIT["$index"]="$command"
 }
-
-on-exit "rm -rf '$TMPDIR'"
-
-
-declare -A BUSH_ON_PROMPT=()
-BUSH_ON_PROMPT_INDEX=0
 
 function on-prompt() {
     [ "$1" == '--help' ] && echo -en "Usage: $FUNCNAME COMMAND [ID]
@@ -53,7 +53,7 @@ function _bush_promptCommand() {
     PS1="${PS1_TPL//\\c/\\[$lastExitCodeColor\\]}"
 }
 
-# standard error codes: ok, negative check, error, user cancelled...
+# TODO standard error codes: ok, negative check, error, user cancelled...
 # TODO for scripts run by./ - non-interactive entry for sourcing inside of such script -> function for this: bush-init - checking bash version, sourcing required files
 # TODO naming conventions public-function _namespace_privateFunction $_result variable, context variables
 # TODO prompt symbol: >/! depending on result of last command
@@ -61,11 +61,6 @@ function _bush_promptCommand() {
 # TODO autocomplete for try and require, if try autocompleted, require extension
 # TODO facilitate autocompletion
 # TODO hist browse
-
-# if you want to reuse associative array in other scripts you have to declare it with the line exactly like: $BUSH_ASSOC arrayName
-# or, for portability of your script: ${BUSH_ASSOC:-"declare -A"} arrayName
-BUSH_HOME="$(dirname "$BASH_SOURCE")"
-BUSH_PATH=()
 
 function print-stack-trace() {
     local exitCode=$? routine params="$*"
@@ -90,15 +85,6 @@ function bush-unset-trace-errors() {
     trap '' ERR
 }
 
-source "$BUSH_HOME/config/config.sh"
-
-BUSH_ASSOC=":"
-BUSH_DEPENDENCIES=' '
-BUSH_INCLUDES=" $BASH_SOURCE "
-BUSH_PATH+=( "$BUSH_HOME" )
-
-[ -z "$(echo "${BUSH_HOME}"/*.sh)" ] && echo "Warning: no scripts found in ${BUSH_HOME}"
-eval "$(sed -n 's/^\s*\${*BUSH_ASSOC\(:-"declare -A"\)*}*\s*\(\w*\)/declare -A \2/p' ${BUSH_HOME}/*.sh)"
 function require() {
     local path script found
     if [ "${1}" != "${1#/}" ] ;then # if path is absolute
@@ -124,18 +110,34 @@ function require() {
     BUSH_INCLUDES+="$script "
 }
 
+
+
+shopt -s nullglob
+declare _configScript="$BUSH_CONFIG/config.sh"
+declare _profileScript="$BUSH_CONFIG/profile.sh"
+! [ -d "$BUSH_CONFIG" ] && mkdir "$BUSH_CONFIG"
+! [ -f "$_configScript" ] && cp "$BUSH_HOME/resources/config.sh" "$_configScript"
+! [ -f "$_profileScript" ] && cp "$BUSH_HOME/resources/profile.sh"  "$_profileScript"
+
+source "$_configScript"
+
+trap "_bush_exit" EXIT
+TMPDIR=$(mktemp -d -p "$TMP")
+
+on-exit "rm -rf '$TMPDIR'"
+
+# if you want to reuse associative array in other scripts you have to declare it with the line exactly like: $DECLARE_ASSOC arrayName
+# or, for portability of your script: ${DECLARE_ASSOC:-"declare -A"} arrayName
+[ -z "$(echo "${BUSH_HOME}"/*.sh)" ] && echo "Warning: no scripts found in $BUSH_HOME"
+eval "$(sed -n 's/^\s*\${*DECLARE_ASSOC\(:-"declare -A"\)*}*\s*\(\w*\)/declare -A \2/p' $BUSH_HOME/*.sh)"
+
 for path in ${BUSH_PATH[@]} ;do
     for script in "$path"/*.sh ;do
-        require "$script" # TODO option allowing include more than once
+        require "$script"
     done
 done
 
-function sandbox() {
-    script="$BUSH_HOME/sandbox/${1:-'sandbox'}.sh"
-    if -f "$script" ;then
-        source "$script"
-    else
-        echo -e "#!/usr/bin/env bash\n\n" > "$script"
-        echo "$script created."
-    fi
-}
+source "$_profileScript"
+
+unset _configScript
+unset _profileScript

@@ -14,7 +14,7 @@ To have it active any time you log in, include the following line into your `.ba
 
     echo -e '\nsource "~/.bush/src/init.sh"' >> ~/.bash_profile
 
-To enable bundled Vim tweaks, include `source ~/.bush/src/config/vimrc.sh` command into your `.vimrc`:
+To enable bundled Vim tweaks, include `source ~/.bush/src/resources/vimrc.sh` command into your `.vimrc`:
 
     touch ~/.vimrc
     echo -e '\nsource ~/.bush/src/config/vimrc.sh' >> ~/.vimrc

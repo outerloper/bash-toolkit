@@ -2,13 +2,15 @@
 
 require utils.sh
 
-${BUSH_ASSOC} VALUE_TYPES
-${BUSH_ASSOC} VALUE_ASK
 
-TYPE_CURRENT=
-TYPE_TABLE=
-RESULT=
-VALUE_ERROR=
+$DECLARE_ASSOC VALUE_TYPES
+$DECLARE_ASSOC VALUE_ASK
+
+declare TYPE_CURRENT=
+declare TYPE_TABLE=
+declare RESULT=
+declare VALUE_ERROR=
+
 
 # Get property $1 of current type. Type is determined by vars TYPE_TABLE and TYPE_CURRENT
 function type-get() { # rename _getCurrent
@@ -445,6 +447,8 @@ function type-print() {
     print-array VALUE_TYPES | grep "^$1"
 }
 
+
+
 VALUE_TYPES=(
    [val.validate]='validatePattern'
 
@@ -467,6 +471,3 @@ VALUE_TYPES=(
 type-def bool enum --values "y n" --help "y/n" --invalidEnumMessage "Please type 'y' or 'n'"
 type-def dir path --pathType dir
 type-def file path --pathType file
-
-# TODO argspec for type-def, rename
-

@@ -25,12 +25,12 @@ alias vi=vim
 
 shopt -s expand_aliases
 
-ssh() {
+function ssh() { # TODO move out
   [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
   eval "$(which ssh)" $@
 }
 
-scp() {
+function scp() {
   [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9 &&  eval "$(ssh-agent -s)" && ssh-add
   eval "$(which scp)" $@
 }
