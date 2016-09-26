@@ -7,7 +7,7 @@ require utils.sh
 
 # Instead of them, whenever possible, use 'Generic style escape sequences' defined in the section below.
 
-plain="\e[0m"
+plain="\e[0m" # TODO check ANSI C-like esc seqs $'\e[0m' -> prompt coloring and echo w/o -e, also color "${seq/'\e'/$'\e'}"
 weightBold="\e[1m"
 weightDim="\e[2m"
 weightOff="\e[22m"

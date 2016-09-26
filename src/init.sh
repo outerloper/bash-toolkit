@@ -19,6 +19,8 @@ BUSH_ON_EXIT_INDEX=0
 declare -A BUSH_ON_PROMPT
 BUSH_ON_PROMPT_INDEX=0
 
+BUSH_PROMPT_STATUS=
+
 
 function _bush_exit() {
     echo
@@ -29,8 +31,8 @@ function _bush_exit() {
 
 function on-exit() {
     [ "$1" == '--help' ] && echo -en "Usage: $FUNCNAME COMMAND [ID]
-Adds code to be executed when closing shell.
-When ID is not specified, COMMAND is just added. Otherwise instruction added previously with given ID will be overwritten.
+Adds code to be executed just before closing shell.
+When ID is specified instruction added previously with given ID will be replaced. If no ID, COMMAND is just added and cannot be removed.
 " && return
     local index="$BUSH_ON_EXIT_INDEX" command="${1?}"
     [ -n "$2" ] && index="$2" || (( BUSH_ON_EXIT_INDEX++ ))
@@ -40,23 +42,17 @@ When ID is not specified, COMMAND is just added. Otherwise instruction added pre
 
 function on-prompt() {
     [ "$1" == '--help' ] && echo -en "Usage: $FUNCNAME COMMAND [ID]
-Adds code to be executed when displaying the prompt.
-When ID is not specified, COMMAND is just added. Otherwise instruction added previously with given ID will be overwritten.
+Adds code to be executed just before displaying the prompt.
+When ID is specified instruction added previously with given ID will be replaced. If no ID, COMMAND is just added and cannot be removed.
 " && return
     local index="$BUSH_ON_PROMPT_INDEX" command="${1?}"
     [ -n "$2" ] && index="$2" || (( BUSH_ON_PROMPT_INDEX++ ))
     [ -n "$3" ] && echo "$FUNCNAME: [WARNING] Unexpected parameter: $3 (ignored)"
     BUSH_ON_PROMPT["$index"]="$command"
-    PROMPT_COMMAND='_bush_promptCommand;'
+    PROMPT_COMMAND='BUSH_PROMPT_STATUS=$?;'
     for command in "${BUSH_ON_PROMPT[@]}" ;do
         PROMPT_COMMAND+="$command;"
     done
-}
-
-function _bush_promptCommand() {
-    local lastExitCode=$? lastExitCodeColor=$green
-    -nez $lastExitCode && lastExitCodeColor=$red
-    PS1="${PS1_TPL//\\c/\\[$lastExitCodeColor\\]}"
 }
 
 

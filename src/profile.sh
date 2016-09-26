@@ -5,7 +5,12 @@ require macros.sh
 
 EDITOR=${EDITOR:-vim}
 
-PS1_TPL="\[$yellow\]\u@\h:\w$plain\c\$\[$plain\] " # TODO add variable placeholders for prompt
+PROMPT_COLOR=
+_promptOk="${green/'\e'/$'\e'}"
+_promptError="${red/'\e'/$'\e'}"
+on-prompt 'PROMPT_COLOR="$_promptError"; -ez "$BUSH_PROMPT_STATUS" && PROMPT_COLOR="$_promptOk"'
+
+PS1="\[$yellow\]\u@\h:\w$plain\[\${PROMPT_COLOR}\]\$\[$plain\] "
 PS2='  '
 PS4="\[$lightGrayBackground\]  \[$plain\] "
 
@@ -27,11 +32,11 @@ alias vi=vim
 shopt -s expand_aliases
 
 function ssh() {
-  [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
+  -z "$SSH_AUTH_SOCK" && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9  && eval "$(ssh-agent -s)" && ssh-add
   eval "$(which ssh)" $@
 }
 
 function scp() {
-  [ -z ${SSH_AUTH_SOCK} ] && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9 &&  eval "$(ssh-agent -s)" && ssh-add
+  -z "$SSH_AUTH_SOCK" && ps | grep ssh-agent | awk '{print $1}' | xargs kill -9 &&  eval "$(ssh-agent -s)" && ssh-add
   eval "$(which scp)" $@
 }

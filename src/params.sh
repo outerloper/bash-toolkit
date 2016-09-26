@@ -107,7 +107,7 @@ function _params_displayHelpInAutocompletion() {
     -n "$help" && echo -en "\n$help\n" >&2
 }
 
-### FOR get-args ###
+### CAPTURING PARAMETER VALUES ###
 
 function _params_isHelpRequest() {
    for arg in ${args[@]}
@@ -336,7 +336,7 @@ function _params_printOptionHelp() {
    _params_printOptionDescription "$paramUsageText" "$currentParamDescription"
 }
 
-function _params_printOptionDescription() {
+function _params_printOptionDescription() { # TODO format also general description
     local optionDecl="  $1  " optionDesc="$2" optionDeclOverflow
     if (( ${#optionDecl} > PARAMS_OPTION_DECL_COLUMNS)) ;then
         local tmp="$optionDecl"
@@ -495,7 +495,7 @@ function params-end() {
 ### INITIALIZATION ###
 
 PARAM_DEFS=(
-    [param.DESC]='Adds a PARAMETER definition for a function. Invoke "params-for EXEC" first where EXEC is the function name. When all parameters are defined, invoke "params-end".'
+    [param.DESC]='Adds a PARAMETER definition for a function. Invoke "params-for FUN" first where FUN is the function name. When all parameters are defined, invoke "params-end".'
     [param.LIST]='name required default type desc comp is-val val-type'
     [param.MAIN.name]='parameter'
     [param.MAIN.required]='yes'
@@ -517,7 +517,7 @@ PARAM_DEFS=(
     [params-for.LIST]='desc'
     [params-for.MAIN.name]='function'
     [params-for.MAIN.required]='yes'
-    [params-for.desc.desc]='General description displayed in --help mode.'
+    [params-for.desc.desc]='General description for a function displayed in --help mode.'
 )
 
 _params_enableAutocompletion param

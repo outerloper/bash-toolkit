@@ -229,7 +229,7 @@ bind-macro do-nothing    Ctrl-Shift-A Ctrl-Shift-B Ctrl-Shift-C Ctrl-Shift-D Ctr
 bind-macro do-nothing    Ctrl-Shift-N Ctrl-Shift-O Ctrl-Shift-P Ctrl-Shift-Q Ctrl-Shift-R Ctrl-Shift-S Ctrl-Shift-T Ctrl-Shift-U Ctrl-Shift-V Ctrl-Shift-W Ctrl-Shift-X Ctrl-Shift-Y Ctrl-Shift-Z
 bind-macro do-nothing    Ctrl-Shift-1 Ctrl-Shift-2 Ctrl-Shift-3 Ctrl-Shift-4 Ctrl-Shift-5 Ctrl-Shift-6 Ctrl-Shift-7 Ctrl-Shift-8 Ctrl-Shift-9 Ctrl-Shift-0
 bind-macro do-nothing          Ctrl-1       Ctrl-2       Ctrl-3       Ctrl-4       Ctrl-5       Ctrl-6       Ctrl-7       Ctrl-8       Ctrl-9       Ctrl-0
-bind-macro do-nothing          Ctrl-Shift-Space
+bind-macro do-nothing          Ctrl-Shift-Space  Ctrl-Tab  Shift-Tab  Alt-Tab
 
 bind-macro backward-char            Left
 bind-macro forward-char             Right
