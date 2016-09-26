@@ -6,12 +6,13 @@
     echo "Bush requires Bash v4.1 or higher to run. ${BASH_VERSION} found." && return 1
 
 
-BUSH_HOME="$(dirname "$BASH_SOURCE")"
-BUSH_CONFIG="$(readlink -f "$BUSH_HOME/../config/")"
+BUSH_INIT="$(readlink -f "$BASH_SOURCE")"
+BUSH_HOME="${BUSH_INIT%/*}"
+BUSH_CONFIG="${BUSH_HOME%/*}/config"
 BUSH_PATH=( $BUSH_HOME )
 
 BUSH_DEPENDENCIES=' '
-BUSH_INCLUDES=" $BASH_SOURCE "
+BUSH_INCLUDES=" $BUSH_INIT "
 GLOBAL_ASSOC=":"
 
 declare -A BUSH_ON_EXIT
@@ -84,7 +85,7 @@ function bush-unset-trace-errors() {
 
 function require() {
     local path script found
-    if [ "${1}" != "${1#/}" ] ;then # if path is absolute
+    if [[ "${1}" =~ ^/.* ]] ;then
         found=1
         script="$1"
     else
