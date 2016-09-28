@@ -270,11 +270,24 @@ _proceed_handleKey() {
 }
 
 # assign $2 to a variable with name $1. $1 can represent array cell e.g. "a[1]"
-function set-var() { printf -v "$1" -- "$2"; }
+function set-var() {
+    : "${1?"Missing variable name"}"
+    printf -v "$1" -- "$2"
+}
 
-# if variable with name $1 contains ${..} or $(..) placeholders, they are expanded to variable values and script outputs respectively
-function eval-var() { -has "${!1}" '\$\{.+\}' || -has "${!1}" '\$\(.+\)' && eval "$1=\"${!1}\""; }
+# Parameters: VAR [EXPR]
+# If EXPR is not provided it is set to value of VAR variable. EXPR is evaluated and the result is stored in VAR
+function eval-var() {
+    : "${1?"Missing variable name"}"
+    eval "$1=\"${2-${!1}}\""
+}
 
+# Parameters: VAR [EXPR]
+# If EXPR is not provided it is set to value of VAR variable. Escape sequences in EXPR are evaluated and the result is stored in VAR
+function unescape-var() {
+    : "${1?"Missing variable name"}"
+    eval "$1=$'${2-${!1}}'"
+}
 
 # sponge emulator. Provide file name as a parameter.
 type sponge >/dev/null 2>/dev/null || function sponge() {

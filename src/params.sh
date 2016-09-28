@@ -266,7 +266,11 @@ function _params_printHelp() {
 
     _params_printUsage $1
     -n "$helpDescription" && {
-        echo "$helpDescription"
+        if (( ${#helpDescription} >= COLUMNS )) ;then
+            fmt -s -w "$COLUMNS" <<<"$helpDescription"
+        else
+            echo "$helpDescription"
+        fi
     }
     -n "$printOnly" && echo
     -z "$printOnly" || -eq "$printOnly" MAIN && -neq flag "$currentParamType" && {
@@ -336,7 +340,7 @@ function _params_printOptionHelp() {
    _params_printOptionDescription "$paramUsageText" "$currentParamDescription"
 }
 
-function _params_printOptionDescription() { # TODO format also general description
+function _params_printOptionDescription() {
     local optionDecl="  $1  " optionDesc="$2" optionDeclOverflow
     if (( ${#optionDecl} > PARAMS_OPTION_DECL_COLUMNS)) ;then
         local tmp="$optionDecl"

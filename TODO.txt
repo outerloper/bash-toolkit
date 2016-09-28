@@ -1,7 +1,5 @@
 TODO fix tests
 
-TODO visual profiles
-
 NOTE don't hide executable code between functions
 
 NOTE consider using main() functions

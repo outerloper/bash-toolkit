@@ -5,12 +5,9 @@ require macros.sh
 
 EDITOR=${EDITOR:-vim}
 
-PROMPT_COLOR=
-_promptOk="${green/'\e'/$'\e'}"
-_promptError="${red/'\e'/$'\e'}"
-on-prompt 'PROMPT_COLOR="$_promptError"; -ez "$BUSH_PROMPT_STATUS" && PROMPT_COLOR="$_promptOk"'
+on-prompt 'unescape-var PROMPT_COLOR "$red"; -ez "$BUSH_PROMPT_STATUS" && unescape-var PROMPT_COLOR "$green"'
 
-PS1="\[$yellow\]\u@\h:\w$plain\[\${PROMPT_COLOR}\]\$\[$plain\] "
+PS1="\[$yellow\]\u@\h:\w\[\${PROMPT_COLOR}\]\$\[$plain\] "
 PS2='  '
 PS4="\[$lightGrayBackground\]  \[$plain\] "
 
