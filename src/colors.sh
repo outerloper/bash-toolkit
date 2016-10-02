@@ -7,7 +7,7 @@ require utils.sh
 
 # Instead of them, whenever possible, use 'Generic style escape sequences' defined in the section below.
 
-plain="\e[0m" # TODO check ANSI C-like esc seqs $'\e[0m' -> prompt coloring and echo w/o -e, also color "${seq/'\e'/$'\e'}"
+plain="\e[0m"
 weightBold="\e[1m"
 weightDim="\e[2m"
 weightOff="\e[22m"
@@ -127,7 +127,7 @@ COLOR_CODE    One of:
 Options:
   -p [TEXT]   Instead of escape sequence changing color, prints colored TEXT (which by default is the sequence itself).
   -n [TEXT]   Like -p but does not append new line character (like -n in echo).
-  -v VAR      Assigns escape sequence to VAR variable."
+  -v VAR      Instead changing color, assigns escape sequence to VAR variable."
         return 0
     }
     local code="${1?'Missing color code'}" color ctrl=38 var print text n
@@ -191,7 +191,8 @@ Options:
     fi
 
     -n "$var" && {
-        set-var "$var" "$seq"
+        set-var "$var" "\\$seq"
+        echo -en "$plain"
     }
 
     return 0

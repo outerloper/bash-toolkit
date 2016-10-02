@@ -216,8 +216,9 @@ def-macro parent-dir            @clear-line 'cd ..' @accept-line
 #def-macro home-dir-cmd          -x 'cd'+
 def-macro home-dir              @clear-line 'cd' @accept-line
 def-macro child-dir             'cd \t'
-def-macro echo                  'echo -e '
+def-macro echo                  'echo -e ""' @backward-char
 def-macro run-previous-command  @previous-history @accept-line
+def-macro run-2nd-last-command  @previous-history @previous-history @accept-line
 
 bind-macro do-nothing               F1            F2            F3            F4            F5            F6            F7            F8            F9            F10            F11            F12
 bind-macro do-nothing           Alt-F1        Alt-F2        Alt-F3        Alt-F4        Alt-F5        Alt-F6        Alt-F7        Alt-F8        Alt-F9        Alt-F10        Alt-F11        Alt-F12
@@ -248,7 +249,7 @@ bind-macro kill-line                Alt-Del
 bind-macro clear-line               Alt-Ctrl-Down    Esc
 
 bind-macro undo                     Alt-Z      Ctrl-Shift-Z
-bind-macro paste-from-clipboard     Alt-V
+bind-macro paste-from-clipboard     Alt-V 2>/dev/null
 bind-macro magic-space              Alt-Space
 bind-macro menu-complete            Ctrl-Down  Ctrl-Shift-Down
 bind-macro menu-complete-backward   Ctrl-Up    Ctrl-Shift-Up
@@ -277,6 +278,7 @@ bind-macro home-dir                 Alt-Home   Ctrl-Home
 
 bind-macro echo                     Alt-E
 bind-macro run-previous-command     F4
+bind-macro run-2nd-last-command     F3
 
 bind "set completion-ignore-case on"
 bind "set completion-map-case on"

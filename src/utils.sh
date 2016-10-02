@@ -28,6 +28,10 @@ function -ns() { ! -s "$1"; }
 function -d() { [ -d "$1" ]; }
 # is not directory
 function -nd() { ! -d "$1"; }
+# is symbolic link
+function -h() { [ -h "$1" ]; }
+# is not symbolic link
+function -nh() { ! -h "$1"; }
 # file descriptor fd is open and refers to a terminal
 function -t() { [ -t "$1" ]; }
 # file descriptor fd is not open or does not refer to a terminal
@@ -68,8 +72,8 @@ function -like() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" = $2 ]]; }
 function -rhas() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ $2 ]]; }
 # '-amr' like 'all matches regexp' all $1 matches $2: [[ $1 =~ ^($2)$ ]] ; $2 can be interpreted as regexp but must be quoted
 function -rlike() { : "${2?$FUNCNAME: Missing pattern}"; [[ "$1" =~ ^$2$ ]]; }
-# returns last exit code
-function -ok() { return $?; }
+# tests if last command exited with zero status. If parameter specified, it is used instead of last exit code.
+function -ok() { return "${1:-$?}"; }
 # tests if last command exited with non-zero status
 function -nok() { ! -ok; }
 # is unsigned integer
@@ -94,6 +98,8 @@ function -optval() { -n "$1" && ! -like "$1" '-*'; }
 function -help() { [[ "$1" == '--help' ]] || [[ "$1" == '-h' ]]; }
 # tests if $1 is valid variable name
 function -varname() { [[ "$1" =~ ^[_a-zA-Z][_a-zA-Z0-9]*$ ]]; }
+# tests if $1 is a zip archive
+function -zip() { -eq "$(file -b --mime-type "${1?"Missing file name"}")" 'application/zip'; }
 
 # echo to stdout
 function err() {
@@ -103,6 +109,11 @@ function err() {
         echo -e "$1" >&2
     fi
     [ "$BUSH_VERBOSE" ] && print-stack-trace
+    return 0
+}
+
+function set-window-title() {
+    echo -en "\033]0;$@\007"
 }
 
 # pushd without printing on stdout
@@ -115,43 +126,93 @@ function pop-dir() {
     popd >/dev/null
 }
 
-# faster than mkdir -p when dir exists
-function ensure-dir() {
-    : "${1?'Missing directory name'}"
-    -d "$1" || mkdir -p "$1"
-}
-
-# deletes files if necessary
-function ensure-empty-dir() {
-    : "${1?'Missing directory name'}"
-    if -d "$1" ;then
-        rm -rf "$1"/*
-    else
-        -e "$1" && rm "$1"
-        mkdir -p "$1"
-    fi
-}
-
-# ensures $2 will be now under name of $1. $1 is removed if required. Does nothing if $1 is a file or $2 does not exist.
-function replace-dir() {
-    local from="${1:?Missing source dir}"
-    local to="${2:?Missing target dir}"
-    -nd "$from" && { err "$FUNCNAME: $from is not a directory"; return 1; }
-    -f "$to" && { err "$FUNCNAME: $to is a file"; return 1; }
-    -d "$to" && { rm -rf "$to" || return 1; }
-    mv "$from" "$to"
-}
 
 # creates a file $1 if it does not exist. If $1 does not exist and $2 provided then $2 must be a file and its content is copied to $1.
 function ensure-file() {
-    local file="${1?'Missing file name'}"
-    local pattern="$2"
-    -f "$file" && { return 0; }
-    -d "$file" && { err "$file is a directory"; return 1; }
-    -z "$pattern" && { touch "$file"; return 0; }
-    -nf "$pattern" && { err "$pattern - no such file"; return 1; }
-    cat "$pattern" > "$file"
+    local dest="${1?'Missing file name'}"
+    -f "$dest" && { return 0; }
+    -d "$dest" && { err "$dest is a directory"; return 1; }
+    local destAbsolute="$(readlink -f "$dest")"
+    local destParent="${destParent%/*}"
+    mkdir -p "$destParent"
+    if -n "$2" ;then
+        local template="$2"
+        -nf "$template" && { err "$template - no such file"; return 1; }
+        cp --preserve "$template" "$dest"
+    else
+        touch "$dest"
+    fi
 }
+
+# creates a directory $1 if it does not exist. If $1 does not exist and $2 provided then $2 must be a directory and its content is copied to $1.
+# faster than mkdir -p when dir exists.
+function ensure-dir() {
+    local dest="${1?'Missing directory name'}"
+    -d "$dest" && { return 0; }
+    -f "$dest" && { err "$dest is a file"; return 1; }
+    mkdir -p "$dest"
+    if -n "$template" ;then
+         local template="$2"
+         -nd "$template" && { err "$template - no such directory"; return 1; }
+         cp --preserve -r -T "$template" "$dest"
+    fi
+}
+
+# deletes dirs if necessary. Fails when $1 is a file
+function ensure-empty-dir() {
+    local dest="${1?'Missing directory name'}"
+    if -d "$dest" ;then
+        remove-dir "$dest"/*
+    else
+        -e "$dest" && {
+            err "$dest already exists and is not a directory"
+            return 1
+        }
+        mkdir -p "$dest"
+    fi
+}
+
+# ensures $1 will be now under name of $2. $2 is removed if required. Does nothing if $1 is a file or $2 does not exist.
+# prompting before removing/overwriting if BUSH_SAFE_REMOVALS=true
+function replace-dir() {
+    local source="${1:?Missing source dir}"
+    local dest="${2:?Missing target dir}"
+    -nd "$source" && { err "$FUNCNAME: $source is not a directory"; return 1; }
+    -f "$dest" && { err "$FUNCNAME: $dest is a file"; return 1; }
+    -d "$dest" && { remove "$dest"/* || return 1; }
+    -true "$BUSH_SAFE_REMOVALS" && {
+        echo "Replacing $dest with $source"
+        local options=-iv
+    }
+    mv $options -T "$source" "$dest"
+    -ne "$source"
+}
+
+# rm -rf unless BUSH_SAFE_REMOVALS=true which means prompting before removal - non-zero exit status if user decided not to remove.
+function remove() {
+    local options=-r
+    if -true "$BUSH_SAFE_REMOVALS" ;then
+        echo "Removing $@"
+        options+=Iv
+    else
+        options+=f
+    fi
+    rm $options $@
+    -ne $1
+}
+
+# creates temporary directory which will be automatically cleaned up when closing shell and prints its path
+function temp-dir() {
+    mktemp --tmpdir -d
+}
+
+# creates temporary file which will be automatically cleaned up when closing shell and prints its path
+function temp-file() {
+    mktemp --tmpdir
+}
+
+# TODO remove configured with option whether to use rm -rI with printing what is being deleted
+# TODO configurable interactive mv
 
 # increment value named $1 by 1, returns changed value, prefix equivalent to (( ++$1 ))
 function inc() {
@@ -165,11 +226,11 @@ function dec() {
     (( $1 != 0 ))
 }
 
-# ensures there will be "/" at the end of variable named $1
-function trail-slash() {
+# removes slash from the end of variable named $1 (variable is changed)
+function strip-trailing-slash() {
    : "${1:?Missing var name}"
    local val="${!1}"
-   -n "$val" && set-var "$1" "${val%/}/"
+   -n "$val" && set-var "$1" "${val%/}"
 }
 
 # ensures first letter of variable named $1 is upper-case
@@ -283,19 +344,24 @@ function eval-var() {
 }
 
 # Parameters: VAR [EXPR]
-# If EXPR is not provided it is set to value of VAR variable. Escape sequences in EXPR are evaluated and the result is stored in VAR
+# Escape sequences in EXPR are evaluated and the result is stored in VAR. If EXPR is not provided, VAR value is used instead.
 function unescape-var() {
     : "${1?"Missing variable name"}"
     eval "$1=$'${2-${!1}}'"
 }
 
-# sponge emulator. Provide file name as a parameter.
-type sponge >/dev/null 2>/dev/null || function sponge() {
-   file=${1}
-   local tmp=${file}.tmp
-   cat >"${tmp}"
-   chmod --reference "${file}" "${tmp}"
-   mv "${tmp}" "${file}"
+# sponge emulator. Provide file name as a parameter. Handles BUSH_SAFE_REMOVALS.
+function sponge() {
+    local file="$1"
+    local tmp="$file.tmp"
+    cat >"$tmp"
+    if -true "$BUSH_SAFE_REMOVALS" ;then
+        echo "Sponge - replacing $tmp with $file:"
+        diff "$tmp" "$file"
+        proceed || return 1
+    fi
+    chmod --reference "$file" "$tmp"
+    mv "$tmp" "$file"
 }
 
 # removes \r chars from line endings in provided files
@@ -331,6 +397,7 @@ function print-array() {
 }
 
 
+# TODO doc, mention about not to nest in one function
 function finally() {
     stack_push SIGINT_TRAPS "$*"
     trap "finalize ${FUNCNAME[1]}; -n \"\$FUNCNAME\" && return 130" SIGINT
@@ -343,12 +410,20 @@ function finalize() {
         eval "$onSigInt"
         stack_size SIGINT_TRAPS stackSize
         if -gz "$stackSize" ;then
-            stack_pop SIGINT_TRAPS onSigInt
+            stack_pop SIGINT_TRAPS onSigInt 2>/dev/null
             finally "$onSigInt"
         else
             trap -- SIGINT
         fi
     }
+}
+
+function show() {
+    -n "$BUSH_SHOW"
+    for item in $BUSH_SHOW ;do
+        echo start "$item"
+        start "$item"
+    done
 }
 
 stack_destroy SIGINT_TRAPS

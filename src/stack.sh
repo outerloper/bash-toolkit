@@ -19,9 +19,8 @@ function stack_new
         return 1
     fi
 
-    eval "declare -ag _stack_$1"
-    eval "declare -ig _stack_$1_i"
-    eval "let _stack_$1_i=0"
+    eval "_stack_$1=()"
+    eval "_stack_$1_i=0"
     return 0
 }
 

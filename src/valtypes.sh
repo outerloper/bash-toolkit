@@ -259,16 +259,16 @@ function validatePath() {
 
    type-get root
    type-get pathType
-   trail-slash root
+   strip-trailing-slash root
 
-   -rhas "$value" '/*' || value="$root""$value"
+   -rhas "$value" '/*' || value="$root/$value"
    realPath=$(realpath -m "$value")
 
    if -n "$value"
    then
       case "$pathType" in
       dir|empty-dir)
-         trail-slash realPath
+         strip-trailing-slash realPath
          if -nd "$value"
          then
             validationMessage dirDoesNotExistMessage "Directory '%s' does not exist" "$value"
@@ -318,14 +318,14 @@ function processPath() {
 
     type-get root
     type-get pathType
-    trail-slash root
+    strip-trailing-slash root
 
-    -rhas "$value" '/*' || value="$root""$value"
+    -rhas "$value" '/*' || value="$root/$value"
 
     RESULT="$(readlink -f "$value")"
     case "$pathType" in
     dir|empty-dir)
-        trail-slash RESULT
+        strip-trailing-slash RESULT
     ;;
     esac
 }

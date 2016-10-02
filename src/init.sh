@@ -9,6 +9,8 @@
 BUSH_INIT="$(readlink -f "$BASH_SOURCE")"
 BUSH_HOME="${BUSH_INIT%/*}"
 BUSH_CONFIG="${BUSH_HOME%/*}/config"
+BUSH_PRELOAD="$BUSH_CONFIG/preload.sh"
+BUSH_PROFILE="$BUSH_CONFIG/profile.sh"
 BUSH_PATH=( $BUSH_HOME )
 
 BUSH_DEPENDENCIES=' '
@@ -111,16 +113,15 @@ function require() {
 
 
 shopt -s nullglob
-declare _configScript="$BUSH_CONFIG/config.sh"
-declare _profileScript="$BUSH_CONFIG/profile.sh"
-! [ -d "$BUSH_CONFIG" ] && mkdir "$BUSH_CONFIG"
-! [ -f "$_configScript" ] && cp "$BUSH_HOME/resources/config.sh" "$_configScript"
-! [ -f "$_profileScript" ] && cp "$BUSH_HOME/resources/profile.sh"  "$_profileScript"
+mkdir -p "$BUSH_CONFIG"
+cp -n "$BUSH_HOME/resources/preload.sh" "$BUSH_PRELOAD"
+cp -n "$BUSH_HOME/resources/profile.sh" "$BUSH_PROFILE"
 
-source "$_configScript"
+source "$BUSH_PRELOAD"
 
 trap "_bush_exit" EXIT
-TMPDIR=$(mktemp -d -p "$TMP")
+[ "$TMPDIR" ] && rm -rf "$TMPDIR"
+export TMPDIR=$(mktemp -d -p "$TMP")
 
 on-exit "rm -rf '$TMPDIR'"
 
@@ -135,7 +136,4 @@ for path in ${BUSH_PATH[@]} ;do
     done
 done
 
-source "$_profileScript"
-
-unset _configScript
-unset _profileScript
+source "$BUSH_PROFILE"
