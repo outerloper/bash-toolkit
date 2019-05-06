@@ -68,7 +68,7 @@ scp() {
 ! -e ~/.vimrc && {
     echo 'Initializing vimrc' &&
         touch ~/.vimrc &&
-        echo -e '\nsource ~/.bush/src/resources/vimrc.sh' >> ~/.vimrc &&
+        echo -e '\nsource ~/.bt/src/resources/vimrc.sh' >> ~/.vimrc &&
         success
 }
 
