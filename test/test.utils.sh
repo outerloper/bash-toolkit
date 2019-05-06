@@ -4,53 +4,53 @@ source ../src/utils.sh
 source ../src/testing.sh
 
 function testIsTrueFunctionReturnsTrue() {
-   -true yes
+   is yes
    assertResult 0
-   -true YES
+   is YES
    assertResult 0
-   -true Yes
+   is Yes
    assertResult 0
-   -true 1
+   is 1
    assertResult 0
-   -true y
+   is y
    assertResult 0
-   -true Y
+   is Y
    assertResult 0
-   -true true
+   is true
    assertResult 0
-   -true TRUE
+   is TRUE
    assertResult 0
-   -true True
+   is True
    assertResult 0
 }
 
 function testIsTrueFunctionReturnsFalse() {
-   -true no
+   is no
    assertResult 1
-   -true NO
+   is NO
    assertResult 1
-   -true No
+   is No
    assertResult 1
-   -true 0
+   is 0
    assertResult 1
-   -true
+   is
    assertResult 1
-   -true n
+   is n
    assertResult 1
-   -true N
+   is N
    assertResult 1
-   -true false
+   is false
    assertResult 1
-   -true FALSE
+   is FALSE
    assertResult 1
-   -true False
+   is False
    assertResult 1
 }
 
 function testIsTrueReturnsFalseButProducesWarningOnInvalidValue() {
-   -true invalidValue 2>/dev/null
+   is invalidValue 2>/dev/null
    assertResult 1
-   assertEquals "Warning: Invalid boolean value. False assumed." "$(-true invalidValue 2>&1)"
+   assertEquals "Warning: Invalid boolean value. False assumed." "$(is invalidValue 2>&1)"
 }
 
 function testIs() {
@@ -69,13 +69,13 @@ function testNo() {
 
 function testIsUtfReturnsOk() {
    local LANG="pl_PL.UTF-8"
-   -utf
+   is-encoding UTF-8
    assertOk
 }
 
 function testIsUtfReturnsNotOk() {
    local LANG="en_US.ISO-8859-1"
-   -utf
+   is-encoding UTF-8
    assertNotOk
 }
 
@@ -83,19 +83,19 @@ function testIsDirEmpty() {
    dir="/tmp/testIsDirEmpty"
    rm -rf "$dir"
    mkdir "$dir"
-   -ed "$dir"
+   -E "$dir"
    assertOk 'New dir is empty'
 
    touch "$dir/f"
-   -ed "$dir"
+   -E "$dir"
    assertNotOk 'Dir with file is not empty'
 
    rm "$dir/f"
-   -ed "$dir"
+   -E "$dir"
    assertOk 'Dir with only file deleted is empty'
 
    mkdir "$dir/d"
-   -ed "$dir"
+   -E "$dir"
    assertNotOk 'Dir with subdir is not empty'
 
    rm -rf "$dir"

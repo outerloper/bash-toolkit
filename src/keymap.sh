@@ -1,13 +1,12 @@
 #!/bin/bash
 
-require utils.sh
+bt-require utils.sh
 
-
-$GLOBAL_ASSOC KEY_BINDINGS
-$GLOBAL_ASSOC KEY_EXECUTABLES
-$GLOBAL_ASSOC KEY_PLACEHOLDERS
-$GLOBAL_ASSOC KEY_DEFS
-$GLOBAL_ASSOC KEY_MACROS
+$BT_GLOBAL_ASSOC KEYMAP_BINDINGS
+$BT_GLOBAL_ASSOC KEYMAP_EXECUTABLES
+$BT_GLOBAL_ASSOC KEYMAP_PLACEHOLDERS
+$BT_GLOBAL_ASSOC KEYMAP_DEFS
+$BT_GLOBAL_ASSOC KEYMAP_MACROS
 
 declare _key=
 declare _bindOption=
@@ -15,7 +14,7 @@ declare _macroDef=
 declare _NOKEY='\e[XX~'
 
 
-function def-macro() {
+keymap-macro-def() {
     -eq "$1" --help && echo -e "Usage: $FUNCNAME NAME DEFINITION...\nExample:$FUNCNAME display-help @end-of-line ' --help' @accept-line" && return
     local name="${1:?'Missing macro'}"
     local executable
@@ -23,75 +22,85 @@ function def-macro() {
     : "${2?'Missing macro definition'}"
     local def
     for part in "${@:2}" ;do
-        if -rlike "$part" '@(.*)' ;then
+        if matches-regex "$part" '@(.*)' ;then
             local macroName="${BASH_REMATCH[1]}"
             _getMacro "$macroName" || return 1
-            _key="${KEY_PLACEHOLDERS["$macroName"]}"
+            _key="${KEYMAP_PLACEHOLDERS["$macroName"]}"
             -z "$_key" && {
-                _key='\e['$(( 99 - ${#KEY_PLACEHOLDERS[@]} ))'~'
-                KEY_PLACEHOLDERS["$macroName"]="$_key"
+                _key='\e['$(( 99 - ${#KEYMAP_PLACEHOLDERS[@]} ))'~'
+                KEYMAP_PLACEHOLDERS["$macroName"]="$_key"
                 _doBind
             }
-            def+="${KEY_PLACEHOLDERS[$macroName]}"
+            def+="${KEYMAP_PLACEHOLDERS[$macroName]}"
         else
             def+="$part"
             -n "$executable" && def+=' '
         fi
     done
     if -n "$executable" ;then
-        KEY_EXECUTABLES["$name"]="\"${def% }\""
+        KEYMAP_EXECUTABLES["$name"]="\"${def% }\""
     else
-        KEY_MACROS["$name"]="\"$def\""
+        KEYMAP_MACROS["$name"]="\"$def\""
     fi
 }
 
-function bind-macro() {
+keymap-bind() {
     -eq "$1" --help && echo -e "Usage: $FUNCNAME NAME KEYSTROKE...\nExample:$FUNCNAME display-help F1 Alt-H" && return
     local macroName="${1:?'Missing macro'}"
     : "${2:?'Missing hotkeys'}"
     _getMacro "$macroName" || return 1
-    for keyName in ${@:2} ;do
+    for keyName in ${@:2}
+    do
         _getKey "$keyName" || continue
-        _doBind && KEY_BINDINGS["$keyName"]="$macroName"
+        _doBind && KEYMAP_BINDINGS["$keyName"]="$macroName"
     done
 }
 
-function bindings() {
-    for keyName in "${!KEY_BINDINGS[@]}" ;do
-        printf "%30s  $white%s$plain\n" "${KEY_BINDINGS["$keyName"]}" "$keyName"
-    done | sort -k 2
+keymap-print() {
+    is-help "$1" && {
+        echo "Prints bindings of macros to keystrokes.
+Usage:
+    keymap-print [-a]
+
+    -a      print all available keystrokes, including those unbound to any macro"
+        return
+    }
+    for keyName in "${!KEYMAP_BINDINGS[@]}"
+    do
+        printf "$white%-16s$plain %s\n" "$keyName" "${KEYMAP_BINDINGS["$keyName"]}"
+    done | sort -b | if -eq "$1" -a; then cat; else grep -v do-nothing; fi
 }
 
 
 
-function _getKey() {
+_getKey() {
     _key=
     local keyName="${1:?'Missing keyName'}"
-    -n "${KEY_DEFS["$keyName"]}" && {
-        _key="${KEY_DEFS["$keyName"]}"
+    -n "${KEYMAP_DEFS["$keyName"]}" && {
+        _key="${KEYMAP_DEFS["$keyName"]}"
         return
     }
-    -rlike "$keyName" 'Alt-(.)' && {
+    matches-regex "$keyName" 'Alt-(.)' && {
         _key='\e'"${BASH_REMATCH[1],,}"
         return
     }
-    -rlike "$keyName" 'Alt-Shift-([a-zA-Z])' && {
+    matches-regex "$keyName" 'Alt-Shift-([a-zA-Z])' && {
         _key='\e'"${BASH_REMATCH[1]^^}"
         return
     }
-    -z KEY_DEFS["$keyName"] && err "Unknown key: $keyName"
+    -z KEYMAP_DEFS["$keyName"] && err "Unknown key: $keyName"
     return 1
 }
 
-function _getMacro() {
+_getMacro() {
     _macroDef= _bindOption=
     local macroName="${1:?'Missing macroName'}"
-    -n "${KEY_MACROS["$macroName"]}" && {
-        _macroDef="${KEY_MACROS["$macroName"]}"
+    -n "${KEYMAP_MACROS["$macroName"]}" && {
+        _macroDef="${KEYMAP_MACROS["$macroName"]}"
         return
     }
-    -n "${KEY_EXECUTABLES["$macroName"]}" && {
-        _macroDef="${KEY_EXECUTABLES["$macroName"]}"
+    -n "${KEYMAP_EXECUTABLES["$macroName"]}" && {
+        _macroDef="${KEYMAP_EXECUTABLES["$macroName"]}"
         _bindOption='-x'
         return
     }
@@ -99,7 +108,7 @@ function _getMacro() {
     return 1
 }
 
-function _doBind() {
+_doBind() {
     : "${_bindOption?}" "${_key:?}" "${_macroDef:?}"
     bind $_bindOption "\"$_key\": $_macroDef"
 }
@@ -108,11 +117,12 @@ function _doBind() {
 ### Init ###
 
 for fun in $( bind -l ) ;do
-    KEY_MACROS["$fun"]="$fun"
+    KEYMAP_MACROS["$fun"]="$fun"
 done
 
-if -has "$(uname)" CYGWIN ;then
-    KEY_DEFS=(
+if contains "$(uname)" CYGWIN
+then
+    KEYMAP_DEFS=(
         ['Left']='\e[D'     ['Alt-Left']='\e[1;3D'    ['Ctrl-Left']='\e[1;5D'    ['Alt-Ctrl-Up']='\e[1;7A'     ['Ctrl-Shift-Up']='\e[1;6A'     ['Shift-Up']=$_NOKEY
         ['Right']='\e[C'    ['Alt-Right']='\e[1;3C'   ['Ctrl-Right']='\e[1;5C'   ['Alt-Ctrl-Down']='\e[1;7B'   ['Ctrl-Shift-Down']='\e[1;6B'   ['Shift-Down']=$_NOKEY
         ['Up']='\e[A'       ['Alt-Up']='\e[1;3A'      ['Ctrl-Up']='\e[1;5A'      ['Alt-Ctrl-Left']='\e[1;7D'   ['Ctrl-Shift-Left']='\e[1;6D'   ['Shift-Left']='\e[1;2D'
@@ -151,7 +161,7 @@ if -has "$(uname)" CYGWIN ;then
         ['Ctrl-/']='\037'   ['Ctrl-0']='\e[1;5p'      ['Ctrl-Shift-0']='\e[1;6p' ['Ctrl-Shift-J']='\302\212'   ['Ctrl-Shift-T']='\302\224'
     )
 else
-    KEY_DEFS=(
+    KEYMAP_DEFS=(
         ['Left']='\e[D'     ['Alt-Left']='\e\e[D'     ['Ctrl-Left']=$_NOKEY      ['Alt-Ctrl-Up']='\e\eOA'      ['Ctrl-Shift-Up']=$_NOKEY       ['Shift-Up']='\eOA'
         ['Right']='\e[C'    ['Alt-Right']='\e\e[C'    ['Ctrl-Right']=$_NOKEY     ['Alt-Ctrl-Down']='\e\eOB'    ['Ctrl-Shift-Down']=$_NOKEY     ['Shift-Down']='\eOA'
         ['Up']='\e[A'       ['Alt-Up']='\e\e[A'       ['Ctrl-Up']=$_NOKEY        ['Alt-Ctrl-Left']='\e\eOD'    ['Ctrl-Shift-Left']=$_NOKEY     ['Shift-Left']='\eOA'
@@ -192,95 +202,97 @@ else
 fi
 
 
-def-macro do-nothing            ''
-def-macro test                  '<ok>'
-def-macro help                  @end-of-line ' --help' @accept-line
-def-macro clear-line            @kill-line @unix-line-discard
-def-macro prev-cmd-1st-word     '!:0' @magic-space
-def-macro prev-cmd-2nd-word     '!:1' @magic-space
-def-macro prev-cmd-3rd-word     '!:2' @magic-space
-def-macro prev-cmd-4th-word     '!:3' @magic-space
-def-macro prev-cmd-5th-word     '!:4' @magic-space
-def-macro prev-cmd-6th-word     '!:5' @magic-space
-def-macro prev-cmd-7th-word     '!:6' @magic-space
-def-macro prev-cmd-8th-word     '!:7' @magic-space
-def-macro prev-cmd-9th-word     '!:8' @magic-space
-def-macro prev-cmd-last-word    '!$'  @magic-space
-def-macro prev-cmd-all-args     '!:*' @magic-space
-def-macro next-word             @forward-word @forward-word @backward-word
-def-macro previous-word         @backward-word @backward-word @forward-word
-#def-macro previous-dir-cmd      -x 'cd -'
-def-macro previous-dir          @clear-line 'cd -' @accept-line
-#def-macro parent-dir-cmd        -x 'cd ..'
-def-macro parent-dir            @clear-line 'cd ..' @accept-line
-#def-macro home-dir-cmd          -x 'cd'+
-def-macro home-dir              @clear-line 'cd' @accept-line
-def-macro child-dir             'cd \t'
-def-macro echo                  'echo -e ""' @backward-char
-def-macro run-previous-command  @previous-history @accept-line
-def-macro run-2nd-last-command  @previous-history @previous-history @accept-line
+keymap-macro-def do-nothing            ''
+keymap-macro-def clear-line            @kill-line @unix-line-discard
+keymap-macro-def list                  @clear-line 'ls' @accept-line
+keymap-macro-def help                  @end-of-line ' --help' @accept-line
+keymap-macro-def man                   @beginning-of-line ' man ' @accept-line
+keymap-macro-def prev-cmd-1st-word     '!:0' @magic-space
+keymap-macro-def prev-cmd-2nd-word     '!:1' @magic-space
+keymap-macro-def prev-cmd-3rd-word     '!:2' @magic-space
+keymap-macro-def prev-cmd-4th-word     '!:3' @magic-space
+keymap-macro-def prev-cmd-5th-word     '!:4' @magic-space
+keymap-macro-def prev-cmd-6th-word     '!:5' @magic-space
+keymap-macro-def prev-cmd-7th-word     '!:6' @magic-space
+keymap-macro-def prev-cmd-8th-word     '!:7' @magic-space
+keymap-macro-def prev-cmd-9th-word     '!:8' @magic-space
+keymap-macro-def prev-cmd-last-word    '!$'  @magic-space
+keymap-macro-def prev-cmd-all-args     '!:*' @magic-space
+keymap-macro-def next-word             @forward-word @forward-word @backward-word
+keymap-macro-def previous-word         @backward-word @backward-word @forward-word
+keymap-macro-def previous-dir          @clear-line 'cd -' @accept-line
+keymap-macro-def parent-dir            @clear-line 'cd ..' @accept-line
+keymap-macro-def home-dir              @clear-line 'cd' @accept-line
+keymap-macro-def child-dir             @clear-line 'cd \t'
+keymap-macro-def hist-dir              @clear-line 'cd -\t'
+keymap-macro-def echo                  @beginning-of-line 'echo -e "' @end-of-line '"' @backward-char
+keymap-macro-def run-previous-command  @previous-history @accept-line
+keymap-macro-def run-2nd-last-command  @previous-history @previous-history @accept-line
 
-bind-macro do-nothing               F1            F2            F3            F4            F5            F6            F7            F8            F9            F10            F11            F12
-bind-macro do-nothing           Alt-F1        Alt-F2        Alt-F3        Alt-F4        Alt-F5        Alt-F6        Alt-F7        Alt-F8        Alt-F9        Alt-F10        Alt-F11        Alt-F12
-bind-macro do-nothing          Ctrl-F1       Ctrl-F2       Ctrl-F3       Ctrl-F4       Ctrl-F5       Ctrl-F6       Ctrl-F7       Ctrl-F8       Ctrl-F9       Ctrl-F10       Ctrl-F11       Ctrl-F12
-bind-macro do-nothing      Alt-Ctrl-F1   Alt-Ctrl-F2   Alt-Ctrl-F3   Alt-Ctrl-F4   Alt-Ctrl-F5   Alt-Ctrl-F6   Alt-Ctrl-F7   Alt-Ctrl-F8   Alt-Ctrl-F9   Alt-Ctrl-F10   Alt-Ctrl-F11   Alt-Ctrl-F12
-bind-macro do-nothing         Shift-F1      Shift-F2      Shift-F3      Shift-F4      Shift-F5      Shift-F6      Shift-F7      Shift-F8      Shift-F9      Shift-F10      Shift-F11      Shift-F12
-bind-macro do-nothing    Ctrl-Shift-F1 Ctrl-Shift-F2 Ctrl-Shift-F3 Ctrl-Shift-F4 Ctrl-Shift-F5 Ctrl-Shift-F6 Ctrl-Shift-F7 Ctrl-Shift-F8 Ctrl-Shift-F9 Ctrl-Shift-F10 Ctrl-Shift-F11 Ctrl-Shift-F12
-bind-macro do-nothing    Ctrl-Shift-A Ctrl-Shift-B Ctrl-Shift-C Ctrl-Shift-D Ctrl-Shift-E Ctrl-Shift-F Ctrl-Shift-G Ctrl-Shift-H Ctrl-Shift-I Ctrl-Shift-J Ctrl-Shift-K Ctrl-Shift-L Ctrl-Shift-M
-bind-macro do-nothing    Ctrl-Shift-N Ctrl-Shift-O Ctrl-Shift-P Ctrl-Shift-Q Ctrl-Shift-R Ctrl-Shift-S Ctrl-Shift-T Ctrl-Shift-U Ctrl-Shift-V Ctrl-Shift-W Ctrl-Shift-X Ctrl-Shift-Y Ctrl-Shift-Z
-bind-macro do-nothing    Ctrl-Shift-1 Ctrl-Shift-2 Ctrl-Shift-3 Ctrl-Shift-4 Ctrl-Shift-5 Ctrl-Shift-6 Ctrl-Shift-7 Ctrl-Shift-8 Ctrl-Shift-9 Ctrl-Shift-0
-bind-macro do-nothing          Ctrl-1       Ctrl-2       Ctrl-3       Ctrl-4       Ctrl-5       Ctrl-6       Ctrl-7       Ctrl-8       Ctrl-9       Ctrl-0
-bind-macro do-nothing          Ctrl-Shift-Space  Ctrl-Tab  Shift-Tab  Alt-Tab
+keymap-bind do-nothing               F1            F2            F3            F4            F5            F6            F7            F8            F9            F10            F11            F12
+keymap-bind do-nothing           Alt-F1        Alt-F2        Alt-F3        Alt-F4        Alt-F5        Alt-F6        Alt-F7        Alt-F8        Alt-F9        Alt-F10        Alt-F11        Alt-F12
+keymap-bind do-nothing          Ctrl-F1       Ctrl-F2       Ctrl-F3       Ctrl-F4       Ctrl-F5       Ctrl-F6       Ctrl-F7       Ctrl-F8       Ctrl-F9       Ctrl-F10       Ctrl-F11       Ctrl-F12
+keymap-bind do-nothing      Alt-Ctrl-F1   Alt-Ctrl-F2   Alt-Ctrl-F3   Alt-Ctrl-F4   Alt-Ctrl-F5   Alt-Ctrl-F6   Alt-Ctrl-F7   Alt-Ctrl-F8   Alt-Ctrl-F9   Alt-Ctrl-F10   Alt-Ctrl-F11   Alt-Ctrl-F12
+keymap-bind do-nothing         Shift-F1      Shift-F2      Shift-F3      Shift-F4      Shift-F5      Shift-F6      Shift-F7      Shift-F8      Shift-F9      Shift-F10      Shift-F11      Shift-F12
+keymap-bind do-nothing    Ctrl-Shift-F1 Ctrl-Shift-F2 Ctrl-Shift-F3 Ctrl-Shift-F4 Ctrl-Shift-F5 Ctrl-Shift-F6 Ctrl-Shift-F7 Ctrl-Shift-F8 Ctrl-Shift-F9 Ctrl-Shift-F10 Ctrl-Shift-F11 Ctrl-Shift-F12
+keymap-bind do-nothing    Ctrl-Shift-A Ctrl-Shift-B Ctrl-Shift-C Ctrl-Shift-D Ctrl-Shift-E Ctrl-Shift-F Ctrl-Shift-G Ctrl-Shift-H Ctrl-Shift-I Ctrl-Shift-J Ctrl-Shift-K Ctrl-Shift-L Ctrl-Shift-M
+keymap-bind do-nothing    Ctrl-Shift-N Ctrl-Shift-O Ctrl-Shift-P Ctrl-Shift-Q Ctrl-Shift-R Ctrl-Shift-S Ctrl-Shift-T Ctrl-Shift-U Ctrl-Shift-V Ctrl-Shift-W Ctrl-Shift-X Ctrl-Shift-Y Ctrl-Shift-Z
+keymap-bind do-nothing    Ctrl-Shift-1 Ctrl-Shift-2 Ctrl-Shift-3 Ctrl-Shift-4 Ctrl-Shift-5 Ctrl-Shift-6 Ctrl-Shift-7 Ctrl-Shift-8 Ctrl-Shift-9 Ctrl-Shift-0
+keymap-bind do-nothing          Ctrl-1       Ctrl-2       Ctrl-3       Ctrl-4       Ctrl-5       Ctrl-6       Ctrl-7       Ctrl-8       Ctrl-9       Ctrl-0
+keymap-bind do-nothing          Ctrl-Shift-Space  Ctrl-Tab  Shift-Tab  Alt-Tab
 
-bind-macro backward-char            Left
-bind-macro forward-char             Right
-bind-macro backward-word            Ctrl-Left
-bind-macro forward-word             Alt-Right
-bind-macro previous-word            Alt-Left
-bind-macro next-word                Ctrl-Right
-bind-macro backward-delete-char     Bsp
-bind-macro delete-char              Del
-bind-macro backward-kill-word       Alt-Ctrl-Left    Ctrl-Shift-Left
-bind-macro kill-word                Alt-Ctrl-Right   Ctrl-Shift-Right
-bind-macro beginning-of-line        Home
-bind-macro end-of-line              End
-bind-macro unix-line-discard        Alt-Bsp
-bind-macro kill-line                Alt-Del
-bind-macro clear-line               Alt-Ctrl-Down    Esc
+keymap-bind backward-char            Left
+keymap-bind forward-char             Right
+keymap-bind backward-word            Ctrl-Left
+keymap-bind forward-word             Alt-Right
+keymap-bind previous-word            Alt-Left
+keymap-bind next-word                Ctrl-Right
+keymap-bind backward-delete-char     Bsp
+keymap-bind delete-char              Del
+keymap-bind backward-kill-word       Alt-Ctrl-Left    Ctrl-Shift-Left
+keymap-bind kill-word                Alt-Ctrl-Right   Ctrl-Shift-Right
+keymap-bind beginning-of-line        Home
+keymap-bind end-of-line              End
+keymap-bind unix-line-discard        Alt-Bsp
+keymap-bind kill-line                Alt-Del
+keymap-bind clear-line               Alt-Ctrl-Down    Esc
 
-bind-macro undo                     Alt-Z      Ctrl-Shift-Z
-bind-macro paste-from-clipboard     Alt-V 2>/dev/null
-bind-macro magic-space              Alt-Space
-bind-macro menu-complete            Ctrl-Down  Ctrl-Shift-Down
-bind-macro menu-complete-backward   Ctrl-Up    Ctrl-Shift-Up
+keymap-bind undo                     Alt-Z      Ctrl-Shift-Z
+keymap-bind paste-from-clipboard     Alt-V 2>/dev/null || true
+keymap-bind magic-space              Alt-Space
+keymap-bind menu-complete            Ctrl-Down  Ctrl-Shift-Down
+keymap-bind menu-complete-backward   Ctrl-Up    Ctrl-Shift-Up
 
-bind-macro history-search-forward   Alt-Down
-bind-macro history-search-backward  Alt-Up
+keymap-bind history-search-forward   Alt-Down
+keymap-bind history-search-backward  Alt-Up
 
-bind-macro insert-comment           'Alt-#'
+keymap-bind insert-comment           'Alt-#'
 
-bind-macro help                     F1
-bind-macro prev-cmd-1st-word        Alt-1
-bind-macro prev-cmd-2nd-word        Alt-2
-bind-macro prev-cmd-3rd-word        Alt-3
-bind-macro prev-cmd-4th-word        Alt-4
-bind-macro prev-cmd-5th-word        Alt-5
-bind-macro prev-cmd-6th-word        Alt-6
-bind-macro prev-cmd-7th-word        Alt-7
-bind-macro prev-cmd-8th-word        Alt-8
-bind-macro prev-cmd-9th-word        Alt-9
-bind-macro prev-cmd-last-word       Alt-0      'Alt-`'
-bind-macro prev-cmd-all-args        Alt--
-bind-macro previous-dir             Alt-End    Ctrl-End
-bind-macro parent-dir               PgUp
-bind-macro child-dir                PgDown
-bind-macro home-dir                 Alt-Home   Ctrl-Home
+keymap-bind man                      Shift-F1
+keymap-bind help                     F1
+keymap-bind prev-cmd-1st-word        Alt-1
+keymap-bind prev-cmd-2nd-word        Alt-2
+keymap-bind prev-cmd-3rd-word        Alt-3
+keymap-bind prev-cmd-4th-word        Alt-4
+keymap-bind prev-cmd-5th-word        Alt-5
+keymap-bind prev-cmd-6th-word        Alt-6
+keymap-bind prev-cmd-7th-word        Alt-7
+keymap-bind prev-cmd-8th-word        Alt-8
+keymap-bind prev-cmd-9th-word        Alt-9
+keymap-bind prev-cmd-last-word       Alt-0      'Alt-`'
+keymap-bind prev-cmd-all-args        Alt--
+keymap-bind previous-dir             Alt-End    Ctrl-End
+keymap-bind parent-dir               PgUp
+keymap-bind child-dir                PgDown
+keymap-bind home-dir                 Alt-Home   Ctrl-Home
 
-bind-macro echo                     Alt-E
-bind-macro run-previous-command     F4
-bind-macro run-2nd-last-command     F3
+keymap-bind echo                     Alt-E
+keymap-bind hist-dir                 F2
+keymap-bind run-2nd-last-command     F3
+keymap-bind run-previous-command     F4
+keymap-bind list                     F5
 
-bind "set completion-ignore-case on"
-bind "set completion-map-case on"
-bind "set show-all-if-ambiguous on"
-bind "set completion-query-items 1000"
+unset _key
+unset _bindOption
+unset _macroDef
+unset _NOKEY

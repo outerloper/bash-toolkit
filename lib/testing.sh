@@ -1,7 +1,9 @@
 #!/bin/bash
 
+# TODO fix tests
+
 # Self-check - executes tests. Takes 2 optional params which narrow range of test files to execute. $1 is module name and $2 - pattern to match to a test file.
-function run-tests() {
+run-tests() {
     local path=${HOME}/.bash-toolkit
     if [[ -n ${1} ]]
     then
@@ -28,7 +30,7 @@ function run-tests() {
     done
 }
 
-function _run-test() {
+_run-test() {
     local VISIBLE_SPACE="\xb7"
     local ERROR_COLOR="\x1b[31m"
     local NO_COLOR="\x1b[0m"
@@ -46,7 +48,7 @@ function _run-test() {
 STDOUT=/tmp/unittest-out
 STDERR=/tmp/unittest-err
 
-function assertResult() {
+assertResult() {
    local result=$?
    if (( $# > 1 ))
    then
@@ -57,7 +59,7 @@ function assertResult() {
 }
 export -f assertResult
 
-function assertOk() {
+assertOk() {
    local result=$?
    if (( $# > 0 ))
    then
@@ -68,7 +70,7 @@ function assertOk() {
 }
 export -f assertOk
 
-function assertNotOk() {
+assertNotOk() {
    local result=$?
    if (( $# > 0 ))
    then
@@ -79,7 +81,7 @@ function assertNotOk() {
 }
 export -f assertNotOk
 
-function assertStdOut() {
+assertStdOut() {
    if (( $# > 1 ))
    then
       assertEquals "Difference on STDOUT: $1." "$2" "$(cat <${STDOUT})"
@@ -89,7 +91,7 @@ function assertStdOut() {
 }
 export -f assertStdOut
 
-function assertStdErr() {
+assertStdErr() {
    if (( $# > 1 ))
    then
       assertEquals "Difference on STDERR: $1." "$2" "$(cat <${STDERR})"
@@ -100,7 +102,7 @@ function assertStdErr() {
 export -f assertStdErr
 
 
-function assertOutput() {
+assertOutput() {
    if (( $# > 2 ))
    then
       assertEquals "Difference in STDOUT: $1." "$2" "$(cat <${STDOUT})"
@@ -112,7 +114,7 @@ function assertOutput() {
 }
 export -f assertOutput
 
-function assertPwd() {
+assertPwd() {
    if (( $# > 1 ))
    then
       assertEquals "Unexpected PWD: ${1}." "${2}" "${PWD}"

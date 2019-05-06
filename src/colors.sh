@@ -1,6 +1,6 @@
 #!/bin/bash
 
-require utils.sh
+bt-require utils.sh
 
 
 ### Explicit style escape sequences ###
@@ -79,25 +79,25 @@ qOff="$italicOff"
 ### Functions ###
 
 # Like printf with newline character appended
-function printfn() { printf "${1}\n" "${@:2}"; }
+printfn() { printf "${1}\n" "${@:2}"; }
 # Printf with output styled as emphasized message
-function message() { printf "$styleMessage${1}$styleOff\n" "${@:2}"; }
+message() { printf "$styleMessage${1}$styleOff\n" "${@:2}"; }
 # Printf with output styled as success message
-function success() { printf "[SUCCESS] $styleSuccess${1}$styleOff\n" "${@:2}"; }
+success() { printf "[SUCCESS] $styleSuccess${1}$styleOff\n" "${@:2}"; }
 # Printf with output styled as warning
-function warning() { printf "[WARNING] $styleWarning${1}$styleOff\n" "${@:2}"; }
+warning() { printf "[WARNING] $styleWarning${1}$styleOff\n" "${@:2}"; }
 # Printf with output styled as error message
-function failure() { printf "[FAILURE] $styleFailure${1}$styleOff\n" "${@:2}"; }
+failure() { printf "[FAILURE] $styleFailure${1}$styleOff\n" "${@:2}"; }
 
-function print-styles() {
-    -help "$1" && {
+print-styles() {
+    is-help "$1" && {
     echo "Usage: $FUNCNAME
 Use this function to check setup of styles."
     return 0
     }
     local styleVar
     for style in message success warning failure ;do
-        capitalize style
+        var-capitalize style
         styleVar="style"$style
         printf "This is ${!styleVar}inline $q\$$styleVar$qOff sample with $em%s$emOff and $q%s$qOff text${styleOff}. Here should go plain text again.\n" 'emphasized' 'quoted'
         echo
@@ -115,28 +115,29 @@ Use this function to check setup of styles."
     done
 }
 
-function color() {
-    -help "$1" && {
+color() {
+    is-help "$1" && {
         echo "Usage: $FUNCNAME COLOR_CODE OPTIONS
-Prints escape sequence for COLOR_CODE changing text color. Works in terminal supporting 256 colors.
+Prints escape sequence for COLOR_CODE changing text color. Can handle up to 256 colors.
 COLOR_CODE    One of:
               - @RGB - where R, G and B are digits 0-5 meaning intensity of Red, Green and Blue respectively. Example: @034
               - GN - where N is a number from color from greyscale: 0-23. Greater means brighter. Example: G5
               - number from 0 to 255 - explicit color code where: 0-16 - basic colors, 237-255 - greyscale
               To get background color, add 'b' suffix. Example: G23b
 Options:
-  -p [TEXT]   Instead of escape sequence changing color, prints colored TEXT (which by default is the sequence itself).
+  -p [TEXT]   Prints TEXT in color. If no text provided, prints the string representation of the color escape sequence.
   -n [TEXT]   Like -p but does not append new line character (like -n in echo).
-  -v VAR      Instead changing color, assigns escape sequence to VAR variable."
+  -v VAR      Instead changing color, assigns escape sequence string to the variable VAR."
         return 0
     }
     local code="${1?'Missing color code'}" color ctrl=38 var print text n
     shift
-    while -gz $# ;do
+    while ! -0 $#
+    do
         case "$1" in
         -v)
             shift
-            -optval "$1" || {
+            -n "$1" && ! is-option "$1" || {
                 err 'Missing variable name'
                 return 1
             }
@@ -147,7 +148,7 @@ Options:
             print=1
             -eq "$1" '-n' && n=n
             shift
-            -optval "$1" && {
+            -n "$1" && ! is-option "$1" && {
                 text="$1"
                 shift
             }
@@ -158,24 +159,28 @@ Options:
         esac
     done
 
-    if -rlike "$code" '(.*)[Bb]' ;then
+    if matches-regex "$code" '(.*)[Bb]'
+    then
         ctrl=48
         code="${BASH_REMATCH[1]}"
     fi
-    if -rlike "$code" '[0-9][0-9]*' ;then
+    if matches-regex "$code" '[0-9][0-9]*'
+    then
         (( code > 255 )) && {
-            err "Invalid color code: $code. Maximum value is 255."
+            err "Invalid color code: $code. Maximum RGB value is 255."
             return 1
         }
         (( color = code ))
-    elif -rlike "$code" '[Gg]([0-9][0-9]*)' ;then
+    elif matches-regex "$code" '[Gg]([0-9][0-9]*)'
+    then
         local grey="${BASH_REMATCH[1]}"
         (( grey > 23 )) && {
-            err "Invalid color code: $code. Maximum index on greyscale is 23."
+            err "Invalid color code: $code. Maximum greyscale value is 23."
             return 1
         }
         (( color = 255 - grey ))
-    elif -rlike "$code" '@([0-5])([0-5])([0-5])' ;then
+    elif matches-regex "$code" '@([0-5])([0-5])([0-5])'
+    then
         local r="${BASH_REMATCH[1]}" g="${BASH_REMATCH[2]}" b="${BASH_REMATCH[3]}"
         (( color = 16 + r * 36 + g * 6 + b ))
     else
@@ -191,15 +196,15 @@ Options:
     fi
 
     -n "$var" && {
-        set-var "$var" "\\$seq"
+        var-set "$var" "\\$seq"
         echo -en "$plain"
     }
 
     return 0
 }
 
-function color-palette() {
-    -help "$1" && {
+color-palette() {
+    is-help "$1" && {
         echo "Usage: $FUNCNAME [-b]
 Prints available color samples.
   -b         Background instead of foreground."
@@ -207,7 +212,7 @@ Prints available color samples.
     }
     local code bg
     -n "$1" && {
-        -neq -b "$1" && {
+        ! -eq -b "$1" && {
             err "Invalid option: $1"
             return 1
         }

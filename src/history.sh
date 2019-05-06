@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-require macros.sh
+bt-require keymap.sh
 
-function filter-history() {
+filter-history() {
    history -a
    history -c
    history -r
@@ -10,14 +10,14 @@ function filter-history() {
    message 'Type instruction number and press Ctrl-Space.'
 }
 
-HISTCONTROL=ignorespace:ignoredups:erasedups # no erasedups - make history numbers change as rarely as possible
+HISTCONTROL=ignorespace:ignoredups # no erasedups - make history numbers change as rarely as possible
 HISTFILESIZE=1000
 HISTSIZE=1000
 HISTTIMEFORMAT=""
-on-prompt 'history -a;history -c;history -r' # having common history for concurrent sessions
+bt-on-prompt 'history -a; history -c; history -r' # having common history when multiple shells open at the same time
 shopt -s histappend
 
-def-macro filter-history @beginning-of-line ' filter-history "' @end-of-line '"' @accept-line
-bind-macro filter-history Alt-Ctrl-Up
-def-macro apply-history @beginning-of-line '!' @forward-word @magic-space
-bind-macro apply-history Ctrl-Space
+keymap-macro-def filter-history @beginning-of-line ' filter-history "' @end-of-line '"' @accept-line
+keymap-bind filter-history Alt-Ctrl-Up
+keymap-macro-def apply-history @beginning-of-line '!' @forward-word @magic-space
+keymap-bind apply-history Ctrl-Space

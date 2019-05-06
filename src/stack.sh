@@ -7,13 +7,13 @@
 
 # Create a new stack.
 #
-# Usage: stack_new name
+# Usage: stack-new name
 #
-# Example: stack_new x
-function stack_new
+# Example: stack-new x
+stack-new()
 {
     : ${1?'Missing stack name'}
-    if stack_exists $1
+    if stack-exists $1
     then
         echo "Stack already exists -- $1" >&2
         return 1
@@ -26,8 +26,8 @@ function stack_new
 
 # Destroy a stack
 #
-# Usage: stack_destroy name
-function stack_destroy
+# Usage: stack-remove name
+stack-remove()
 {
     : ${1?'Missing stack name'}
     eval "unset _stack_$1 _stack_$1_i"
@@ -36,13 +36,13 @@ function stack_destroy
 
 # Push one or more items onto a stack.
 #
-# Usage: stack_push stack item ...
-function stack_push
+# Usage: stack-push stack item ...
+stack-push()
 {
     : ${1?'Missing stack name'}
     : ${2?'Missing item(s) to push'}
 
-    if no_such_stack $1
+    if _stack_missingStack $1
     then
         echo "No such stack -- $1" >&2
         return 1
@@ -65,12 +65,12 @@ function stack_push
 
 # Print a stack to stdout.
 #
-# Usage: stack_print name
-function stack_print
+# Usage: stack-print name
+stack-print()
 {
     : ${1?'Missing stack name'}
 
-    if no_such_stack $1
+    if _stack_missingStack $1
     then
         echo "No such stack -- $1" >&2
         return 1
@@ -89,16 +89,16 @@ function stack_print
 
 # Get the size of a stack
 #
-# Usage: stack_size name var
+# Usage: stack-size name var
 #
 # Example:
-#    stack_size mystack n
+#    stack-size mystack n
 #    echo "Size is $n"
-function stack_size
+stack-size()
 {
     : ${1?'Missing stack name'}
     : ${2?'Missing name of variable for stack size result'}
-    if no_such_stack $1
+    if _stack_missingStack $1
     then
         echo "No such stack -- $1" >&2
         return 1
@@ -108,18 +108,18 @@ function stack_size
 
 # Pop the top element from the stack.
 #
-# Usage: stack_pop name var
+# Usage: stack-pop name var
 #
 # Example:
-#    stack_pop mystack top
+#    stack-pop mystack top
 #    echo "Got $top"
-function stack_pop
+stack-pop()
 {
     : ${1?'Missing stack name'}
     : ${2?'Missing name of variable for popped result'}
 
     eval 'let _i=$'"_stack_$1_i"
-    if no_such_stack $1
+    if _stack_missingStack $1
     then
         echo "No such stack -- $1" >&2
         return 1
@@ -139,17 +139,17 @@ function stack_pop
     return 0
 }
 
-function no_such_stack
+_stack_missingStack()
 {
     : ${1?'Missing stack name'}
-    stack_exists $1
+    stack-exists $1
     ret=$?
     declare -i x
     let x="1-$ret"
     return $x
 }
 
-function stack_exists
+stack-exists()
 {
     : ${1?'Missing stack name'}
 

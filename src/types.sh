@@ -1,32 +1,32 @@
 #!/bin/bash
 
-require utils.sh
+bt-require utils.sh
 
 
-$GLOBAL_ASSOC VALUE_TYPES
-$GLOBAL_ASSOC VALUE_ASK
+$BT_GLOBAL_ASSOC TYPE_ARRAY
+$BT_GLOBAL_ASSOC TYPE_ASK
 
 TYPE_CURRENT=
 TYPE_TABLE=
-RESULT=
-VALUE_ERROR=
+TYPE_ERROR=
 
+RESULT=
 
 # Get property $1 of current type. Type is determined by vars TYPE_TABLE and TYPE_CURRENT
-function type-get() { # rename _getCurrent
+type-get() { # rename _getCurrent
    RESULT=
    local property=${1:?"Missed property."}
    shift
    local returnRef=${1:-$property}
-   shift
+   -n "$@" && shift
 
-   local resultRef="$TYPE_TABLE[$TYPE_CURRENT.$property]}"
+   local resultRef="$TYPE_TABLE[$TYPE_CURRENT.$property]"
    local result="${!resultRef}"
 
    if -n "$result"
    then
       local fun=${result%%()}
-      if -neq "$fun" "$result"
+      if ! -eq "$fun" "$result"
       then
          "$fun"
          result="$RESULT"
@@ -36,10 +36,10 @@ function type-get() { # rename _getCurrent
    fi
 
    eval "$returnRef="
-   set-var $returnRef "$result"
+   var-set "$returnRef" "$result"
 }
 
-function type-def() {
+type-def() {
    -eq "$1" '--help' &&
    echo -ne "Usage: $FUNCNAME TYPE_NAME BASE_TYPE OPTIONS...
 Defines value type which can be used in ask-for command.
@@ -97,12 +97,12 @@ Examples:
    then
       local typeSet=${typeSpec[0]} type=${typeSpec[1]}
    else
-      local typeSet=VALUE_TYPES type=${typeSpec[0]}
+      local typeSet=TYPE_ARRAY type=${typeSpec[0]}
    fi
    shift
 
    local base=$1
-   if -z $base || -like $base '--*'
+   if -z $base || matches $base '--*'
    then
       base=
    else
@@ -120,7 +120,7 @@ Examples:
          key="$type.${option#--}"
          value="${1:?"Missed '$option' option value"}"
          shift
-         set-var "$typeSet["$key"]" "$value"
+         var-set "$typeSet["$key"]" "$value"
          ;;
       *)
          echo "Unexpected: $1" >&2
@@ -131,28 +131,28 @@ Examples:
 
    if -n "$base"
    then
-      for baseKey in ${!VALUE_TYPES[@]}
+      for baseKey in ${!TYPE_ARRAY[@]}
       do
          option="${baseKey#"$base."}"
-         if -neq "$baseKey" "$option"
+         if ! -eq "$baseKey" "$option"
          then
             key="$type.$option"
             local typeKeyRef="$typeSet[$key]"
-            -n "${!typeKeyRef}" || set-var "$typeKeyRef" "${VALUE_TYPES["$baseKey"]}"
+            -n "${!typeKeyRef}" || var-set "$typeKeyRef" "${TYPE_ARRAY["$baseKey"]}"
          fi
       done
    fi
 }
 
 
-function verifyEnum() {
+verifyEnum() {
    RESULT=
    local values
    type-get values
    -n "${values// /}" || RESULT="Enum values are undefined!"
 }
 
-function verifyPath() {
+verifyPath() {
    RESULT=
    local pathType
    type-get pathType
@@ -160,14 +160,14 @@ function verifyPath() {
 }
 
 
-function helpEnum() {
+helpEnum() {
    RESULT=
    local values
    type-get values
    RESULT="one of: $values"
 }
 
-function helpInt() {
+helpInt() {
    RESULT=
    local min max
    type-get min
@@ -189,7 +189,7 @@ function helpInt() {
 }
 
 
-function validationMessage() {
+validationMessage() {
    local messageKey=${1:?Missed validation message key.}
    shift
    local defaultMessage="${1:?Missed default validation message.}"
@@ -202,7 +202,7 @@ function validationMessage() {
 }
 
 
-function validateEnum() {
+validateEnum() {
    local value="${1:?Missing value}"
 
    local values
@@ -215,17 +215,17 @@ function validateEnum() {
    fi
 }
 
-function validatePattern() {
+validatePattern() {
    local value="${1:?Missing value}"
 
    local pattern
 
    type-get pattern
    -n "$pattern" || return
-   -rlike "$value" "$pattern" || validationMessage doesNotMatchPatternMessage "Value must match the pattern '%s'" "$pattern"
+   matches-regex "$value" "$pattern" || validationMessage doesNotMatchPatternMessage "Value must match the pattern '%s'" "$pattern"
 }
 
-function validateInt() {
+validateInt() {
    local value="${1:?Missing value}"
 
    local min max
@@ -252,36 +252,36 @@ function validateInt() {
    fi
 }
 
-function validatePath() {
+validatePath() {
    local value="${1:?Missing value}"
 
    local root pathType realPath
 
    type-get root
    type-get pathType
-   strip-trailing-slash root
+   var-remove-trailing-slash root
 
-   -rhas "$value" '/*' || value="$root/$value"
+   contains-regex "$value" '/*' || value="$root/$value"
    realPath=$(realpath -m "$value")
 
    if -n "$value"
    then
       case "$pathType" in
       dir|empty-dir)
-         strip-trailing-slash realPath
-         if -nd "$value"
+         var-remove-trailing-slash realPath
+         if ! -d "$value"
          then
             validationMessage dirDoesNotExistMessage "Directory '%s' does not exist" "$value"
             return
          fi
-         if -eq empty-dir "$pathType" && -ned "$(readlink -f "$value")"
+         if -eq empty-dir "$pathType" && ! -E "$value"
          then
             validationMessage dirNotEmptyMessage "Directory '%s' is not empty" "$value"
             return
          fi
       ;;
       file)
-         if -nf "$realPath"
+         if ! -f "$realPath"
          then
             validationMessage fileDoesNotExistMessage "File '%s' does not exist" "$realPath"
             return
@@ -289,7 +289,7 @@ function validatePath() {
       ;;
       new)
          local parent=$(dirname "$realPath")
-         if -nd "$parent"
+         if ! -d "$parent"
          then
             validationMessage dirDoesNotExistMessage "Directory '%s' does not exist" "$parent"
             return
@@ -306,11 +306,11 @@ function validatePath() {
       esac
    fi
 
-   -rhas "$realPath" "^$root" || validationMessage pathOutOfRoot "The path should exist in $root but '$value' does not" "$value"
+   contains-regex "$realPath" "^$root" || validationMessage pathOutOfRoot "The path should exist in $root but '$value' does not" "$value"
 }
 
 
-function processPath() {
+processPath() {
     RESULT=
     local value="${1:?Missing value}"
 
@@ -318,22 +318,22 @@ function processPath() {
 
     type-get root
     type-get pathType
-    strip-trailing-slash root
+    var-remove-trailing-slash root
 
-    -rhas "$value" '/*' || value="$root/$value"
+    contains-regex "$value" '/*' || value="$root/$value"
 
     RESULT="$(readlink -f "$value")"
     case "$pathType" in
     dir|empty-dir)
-        strip-trailing-slash RESULT
+        var-remove-trailing-slash RESULT
     ;;
     esac
 }
 
-function ask-for() {
+ask-for() {
    -eq "$1" '--help' &&
    echo -ne "Usage: $FUNCNAME TYPE VAR OPTIONS...
-Asks user to provide a value of TYPE and assigns it to VAR. When input from STDIN, validation errors are stored in VALUE_ERROR var.
+Asks user to provide a value of TYPE and assigns it to VAR. When input from STDIN, validation errors are stored in TYPE_ERROR var.
 Parameters:
   TYPE      Value type, defined by type-def. May not exist.
   VAR_NAME  User value will be assigned to the variable with this name. If not specified, <type> will be used as a variable name.
@@ -347,20 +347,20 @@ Examples:
    local type=${1:?'Missed type name.'}
    shift
    local name=$1
-   if -z "$name" || -like $name '--*'
+   if -z "$name" || matches $name '--*'
    then
       name=$type
    else
       shift
    fi
 
-   VALUE_ERROR=
-   VALUE_ASK=()
-   type-def VALUE_ASK.$name $type "$@"
+   TYPE_ERROR=
+   TYPE_ASK=()
+   type-def TYPE_ASK.$name $type "$@"
 
    local verify desc help reuse maskInput silent suggest default optional validate process batch prompt value
 
-   TYPE_TABLE=VALUE_ASK
+   TYPE_TABLE=TYPE_ASK
    TYPE_CURRENT=$name
    type-get verify
    if -n "$verify"
@@ -385,14 +385,14 @@ Examples:
 
    : ${optional:=no}
 
-   -true "$reuse" && suggest="${!name}"
+   is "$reuse" && suggest="${!name}"
    prompt="${desc:-"Provide $name"}${help:+" ($help)"}${default:+". Default is '$default'"}$PS2"
    while -z "$value"
    do
-      -true $maskInput && silent="-s"
+      is $maskInput && silent="-s"
       read $silent -e -p "$prompt" -i "$suggest" value
-      -true "$reuse" && suggest="$value"
-      -n $silent && -nez $batch && echo
+      is "$reuse" && suggest="$value"
+      -n $silent && ! -0 $batch && echo
       if -n "$value" && -n "$validate"
       then
          local validationMessage="$($validate "$value")"
@@ -400,10 +400,10 @@ Examples:
          then
             prompt="$validationMessage."
             value=''
-            if -ez "$batch"
+            if -0 "$batch"
             then
                 eval "$name="
-                VALUE_ERROR="$prompt"
+                TYPE_ERROR="$prompt"
                 echo "$prompt"
                 return 1
             else
@@ -414,13 +414,13 @@ Examples:
       fi
       if -z "$value"
       then
-         if -false "$optional"
+         if ! is "$optional"
          then
             prompt="Non empty value is required."
-            if -ez "$batch"
+            if -0 "$batch"
             then
                 eval "$name="
-                VALUE_ERROR="$prompt"
+                TYPE_ERROR="$prompt"
                 echo "$prompt"
                 return 1
             else
@@ -440,16 +440,16 @@ Examples:
       $process "$value"
       value="$RESULT"
    fi
-   set-var $name "$value"
+   var-set $name "$value"
 }
 
-function type-print() {
-    print-array VALUE_TYPES | grep "^$1"
+type-print() {
+    array-print TYPE_ARRAY | grep "^$1"
 }
 
 
 
-VALUE_TYPES=(
+TYPE_ARRAY=(
    [val.validate]='validatePattern'
 
    [enum.verify]='verifyEnum'
