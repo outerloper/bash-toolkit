@@ -22,7 +22,7 @@ keymap-macro-def() {
     : "${2?'Missing macro definition'}"
     local def
     for part in "${@:2}" ;do
-        if matches-regex "$part" '@(.*)' ;then
+        if matches-regex "$part" '@(.*)'; then
             local macroName="${BASH_REMATCH[1]}"
             _getMacro "$macroName" || return 1
             _key="${KEYMAP_PLACEHOLDERS["$macroName"]}"
@@ -37,7 +37,7 @@ keymap-macro-def() {
             -n "$executable" && def+=' '
         fi
     done
-    if -n "$executable" ;then
+    if -n "$executable"; then
         KEYMAP_EXECUTABLES["$name"]="\"${def% }\""
     else
         KEYMAP_MACROS["$name"]="\"$def\""
@@ -235,6 +235,7 @@ keymap-macro-def echo                  @beginning-of-line 'echo -e "' @end-of-li
 keymap-macro-def run-previous-command  @previous-history @accept-line
 keymap-macro-def run-2nd-last-command  @previous-history @previous-history @accept-line
 
+# the below assignments are to make sure nothing happens when these keys strokes are unintentionally pressed (otherwise in most cases useless sequences like ";4C" would be printed)
 keymap-bind do-nothing               F1            F2            F3            F4            F5            F6            F7            F8            F9            F10            F11            F12
 keymap-bind do-nothing           Alt-F1        Alt-F2        Alt-F3        Alt-F4        Alt-F5        Alt-F6        Alt-F7        Alt-F8        Alt-F9        Alt-F10        Alt-F11        Alt-F12
 keymap-bind do-nothing          Ctrl-F1       Ctrl-F2       Ctrl-F3       Ctrl-F4       Ctrl-F5       Ctrl-F6       Ctrl-F7       Ctrl-F8       Ctrl-F9       Ctrl-F10       Ctrl-F11       Ctrl-F12

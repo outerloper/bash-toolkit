@@ -191,7 +191,7 @@ Options:
     local seq="\e[$ctrl;5;$color"m
     echo -en "$seq"
 
-    if -n "$print" ;then
+    if -n "$print"; then
         echo -e$n "${text:-\\$seq}$plain"
     fi
 

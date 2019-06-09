@@ -87,7 +87,7 @@ dir-replace() {
 # rm -rf unless BT_SAFE_REMOVALS=true which means prompting before removal - non-zero exit status if user decided not to remove.
 path-remove() {
     local options=-r
-    if is "$BT_SAFE_REMOVALS" ;then
+    if is "$BT_SAFE_REMOVALS"; then
         echo "Removing $@"
         options+=Iv
     else

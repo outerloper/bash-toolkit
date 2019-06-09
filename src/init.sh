@@ -87,7 +87,7 @@ bt-unset-trace-errors() {
 
 bt-require() {
     local path script found
-    if [[ "${1}" =~ ^/.* ]] ;then
+    if [[ "${1}" =~ ^/.* ]]; then
         found=1
         script="$1"
     else

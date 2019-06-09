@@ -8,7 +8,7 @@ sandbox() {
     }
     mkdir -p "$BT_CONFIG/sandbox"
     script="$BT_CONFIG/sandbox/${1:-sandbox}.sh"
-    if -f "$script" ;then
+    if -f "$script"; then
         source "$script" "${@:2}"
     else
         echo -e "#!/usr/bin/env bash\n\n" > "$script"

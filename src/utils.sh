@@ -220,7 +220,7 @@ ask-for-confirmation() { # TODO review
 Usage: $FUNCNAME [<action-description>] [-c <cancellation-description>] [-t [<timeout>]]" && return
     local arg message proceed='proceed' cancel='cancel' confirmed canceled timeout
     is-option "$1" || {
-        if contains-regex "$1" '^[[:lower:]]' ;then
+        if contains-regex "$1" '^[[:lower:]]'; then
             proceed="$1"
             confirmed="$1"
         else
@@ -232,7 +232,7 @@ Usage: $FUNCNAME [<action-description>] [-c <cancellation-description>] [-t [<ti
         arg="$1"
         case "$arg" in
         -t)
-            if -n "$2" && ! is-option "$2" ;then
+            if -n "$2" && ! is-option "$2"; then
                 is-uint "$2" || {
                     err "-t: Number expected. Was: $2" && return 1
                 }
@@ -243,7 +243,7 @@ Usage: $FUNCNAME [<action-description>] [-c <cancellation-description>] [-t [<ti
             fi
             ;;
         -c)
-            if -n "$2" && ! is-option "$2" ;then
+            if -n "$2" && ! is-option "$2"; then
                 cancel="$2"
                 canceled="$2"
                 shift 1
@@ -293,17 +293,60 @@ _proceed_handleKey() {
     return 130
 }
 
-# assign $2 to a variable with name $1. $1 can represent array cell e.g. "a[1]"
-# if however first parameter is -e flag, parameters are shifted and then $2's escape sequences are interpreted
+# assign value ($2) to a variable (with name $1). $1 can represent array cell e.g. "a[1]"
+# when these parameters are preceeded by -e flag, value's escape sequences are interpreted
 var-set() {
     local escape
     -eq "$1" -e && { escape=1; shift; }
     : "${1?"Missing variable name"}"
-    if is "$escape"
-    then
+    if is "$escape"; then
         eval "$1=$'${2-${!1}}'"
+    elif -z "$2"; then
+        eval "$1="
     else
         printf -v "$1" -- "$2"
+    fi
+}
+
+# copies the value of variable with name $2 to the variable with name $1. $1 and $2 can be arrays with indexes like a[0]
+var-copy() {
+    var-set "$1" "${!2}"
+}
+
+__var_count=0
+
+# Remembers the values provided as parameters in internal variables to be consumed by var-in function.
+# Use together with var-in to effectively pass function outcomes.
+var-out() {
+    local i=1
+    if -gt $# 1; then
+        for var in "$@"; do
+            var-set __var_$i "$var"
+            var-inc i
+        done
+    else
+        var-set __var_1 "$1"
+        var-inc i
+    fi
+    local newCount=$i
+    while -ge $__var_count $i; do
+        unset __var_$i
+        var-inc i
+    done
+    __var_count=$newCount
+}
+
+# Assigns respective variables from the last call of var-out function to the variable names provided.
+# Use together with var-out to effectively pass function outcomes.
+var-in() {
+    if -gt $# 1; then
+        local i=0
+        for var in "$@"; do
+            var-inc i
+            var-copy "$var" __var_$i
+        done
+    else
+        var-set "$var" "$__var_1"
     fi
 }
 
@@ -319,7 +362,7 @@ type sponge >/dev/null 2>/dev/null || sponge() {
     local file="$1"
     local tmp="$file.tmp"
     cat >"$tmp"
-    if is "$BT_SAFE_REMOVALS" ;then
+    if is "$BT_SAFE_REMOVALS"; then
         echo "Sponge - replacing $tmp with $file:" >&2
         diff "$tmp" "$file" >&2
         ask-for-confirmation >&2
@@ -343,17 +386,15 @@ array-print() {
     local options indexes=()
     local declaration="$(declare -p "$1" | sed 's/declare -\([^ ]*\) \([^=]*\)\(=.*\)/declare -\1 array\3; local options=\1/')"
     eval "$declaration"
-    if contains "$options" a
-    then
+    if contains "$options" a; then
         indexes=( $(seq 0 $(( ${#array[@]} - 1 ))) )
-    elif contains "$options" A
-    then
+    elif contains "$options" A; then
         indexes=( $(echo ${!array[@]} | tr ' ' "\n" | sort -n) )
     else
         err "$1 is not an array"
         return 1
     fi
-    for i in ${indexes[@]} ;do
+    for i in ${indexes[@]}; do
         echo "$i=${array[$i]}"
     done
 }
@@ -370,7 +411,7 @@ finalize() {
     stack-pop SIGINT_TRAPS onSigInt 2>/dev/null && {
         eval "$onSigInt"
         stack-size SIGINT_TRAPS stackSize
-        if ! -0 "$stackSize" ;then
+        if ! -0 "$stackSize"; then
             stack-pop SIGINT_TRAPS onSigInt 2>/dev/null
             finally "$onSigInt"
         else
