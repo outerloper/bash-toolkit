@@ -128,10 +128,10 @@ done
 if contains "$TERM" xterm
 then
     KEYMAP_DEFS=(
-        ['Left']='\e[D'     ['Alt-Left']='\e[1;3D'    ['Ctrl-Left']='\e[1;5D'    ['Alt-Ctrl-Up']='\e[1;7A'     ['Ctrl-Shift-Up']='\e[1;6A'     ['Shift-Up']='\e[1;2A'     ['Shift-Up']='\e[1;4D'
-        ['Right']='\e[C'    ['Alt-Right']='\e[1;3C'   ['Ctrl-Right']='\e[1;5C'   ['Alt-Ctrl-Down']='\e[1;7B'   ['Ctrl-Shift-Down']='\e[1;6B'   ['Shift-Down']='\e[1;2B'   ['Shift-Down']='\e[1;4D'
-        ['Up']='\e[A'       ['Alt-Up']='\e[1;3A'      ['Ctrl-Up']='\e[1;5A'      ['Alt-Ctrl-Left']='\e[1;7D'   ['Ctrl-Shift-Left']='\e[1;6D'   ['Shift-Left']='\e[1;2D'   ['Shift-Left']='\e[1;4D'
-        ['Down']='\e[B'     ['Alt-Down']='\e[1;3B'    ['Ctrl-Down']='\e[1;5B'    ['Alt-Ctrl-Right']='\e[1;7C'  ['Ctrl-Shift-Right']='\e[1;6C'  ['Shift-Right']='\e[1;2C'  ['Shift-Right']='\e[1;4C'
+        ['Left']='\e[D'     ['Alt-Left']='\e[1;3D'    ['Ctrl-Left']='\e[1;5D'    ['Alt-Ctrl-Up']='\e[1;7A'     ['Ctrl-Shift-Up']='\e[1;6A'     ['Shift-Up']='\e[1;2A'     ['Alt-Shift-Up']='\e[1;4A'
+        ['Right']='\e[C'    ['Alt-Right']='\e[1;3C'   ['Ctrl-Right']='\e[1;5C'   ['Alt-Ctrl-Down']='\e[1;7B'   ['Ctrl-Shift-Down']='\e[1;6B'   ['Shift-Down']='\e[1;2B'   ['Alt-Shift-Down']='\e[1;4B'
+        ['Up']='\e[A'       ['Alt-Up']='\e[1;3A'      ['Ctrl-Up']='\e[1;5A'      ['Alt-Ctrl-Left']='\e[1;7D'   ['Ctrl-Shift-Left']='\e[1;6D'   ['Shift-Left']='\e[1;2D'   ['Alt-Shift-Left']='\e[1;4D'
+        ['Down']='\e[B'     ['Alt-Down']='\e[1;3B'    ['Ctrl-Down']='\e[1;5B'    ['Alt-Ctrl-Right']='\e[1;7C'  ['Ctrl-Shift-Right']='\e[1;6C'  ['Shift-Right']='\e[1;2C'  ['Alt-Shift-Right']='\e[1;4C'
         ['PgUp']='\e[5~'    ['Alt-PgUp']='\e[5;3~'    ['Ctrl-PgUp']='\e[5;5~'    ['Alt-Ctrl-PgUp']=$_NOKEY     ['Ctrl-Shift-PgUp']='\e[5;6~'   ['Shift-PgUp']=$_NOKEY
         ['PgDown']='\e[6~'  ['Alt-PgDown']='\e[6;3~'  ['Ctrl-PgDown']='\e[6;5~'  ['Alt-Ctrl-PgDown']='\e[6;7~' ['Ctrl-Shift-PgDown']='\e[6;6~' ['Shift-PgDown']=$_NOKEY
         ['Home']='\e[7~'    ['Alt-Home']='\e[1;3~'    ['Ctrl-Home']='\e[1;5~'    ['Alt-Ctrl-Home']='\e[1;7~'   ['Ctrl-Shift-Home']='\e[1;6~'   ['Shift-Home']=$_NOKEY
@@ -167,10 +167,10 @@ then
     )
 else
     KEYMAP_DEFS=(
-        ['Left']='\e[D'     ['Alt-Left']='\e\e[D'     ['Ctrl-Left']=$_NOKEY      ['Alt-Ctrl-Up']='\e\eOA'      ['Ctrl-Shift-Up']=$_NOKEY       ['Shift-Up']='\eOA'
-        ['Right']='\e[C'    ['Alt-Right']='\e\e[C'    ['Ctrl-Right']=$_NOKEY     ['Alt-Ctrl-Down']='\e\eOB'    ['Ctrl-Shift-Down']=$_NOKEY     ['Shift-Down']='\eOA'
-        ['Up']='\e[A'       ['Alt-Up']='\e\e[A'       ['Ctrl-Up']=$_NOKEY        ['Alt-Ctrl-Left']='\e\eOD'    ['Ctrl-Shift-Left']=$_NOKEY     ['Shift-Left']='\eOA'
-        ['Down']='\e[B'     ['Alt-Down']='\e\e[B'     ['Ctrl-Down']=$_NOKEY      ['Alt-Ctrl-Right']='\e\eOC'   ['Ctrl-Shift-Right']=$_NOKEY    ['Shift-Right']='\eOA'
+        ['Left']='\e[D'     ['Alt-Left']='\e\e[D'     ['Ctrl-Left']=$_NOKEY      ['Alt-Ctrl-Up']='\e\eOA'      ['Ctrl-Shift-Up']=$_NOKEY       ['Shift-Up']='\eOA'        ['Alt-Shift-Up']=$_NOKEY
+        ['Right']='\e[C'    ['Alt-Right']='\e\e[C'    ['Ctrl-Right']=$_NOKEY     ['Alt-Ctrl-Down']='\e\eOB'    ['Ctrl-Shift-Down']=$_NOKEY     ['Shift-Down']='\eOA'      ['Alt-Shift-Down']=$_NOKEY
+        ['Up']='\e[A'       ['Alt-Up']='\e\e[A'       ['Ctrl-Up']=$_NOKEY        ['Alt-Ctrl-Left']='\e\eOD'    ['Ctrl-Shift-Left']=$_NOKEY     ['Shift-Left']='\eOA'      ['Alt-Shift-Left']=$_NOKEY
+        ['Down']='\e[B'     ['Alt-Down']='\e\e[B'     ['Ctrl-Down']=$_NOKEY      ['Alt-Ctrl-Right']='\e\eOC'   ['Ctrl-Shift-Right']=$_NOKEY    ['Shift-Right']='\eOA'     ['Alt-Shift-Right']=$_NOKEY
         ['PgUp']='\e[5~'    ['Alt-PgUp']='\e\e[5~'    ['Ctrl-PgUp']=$_NOKEY      ['Alt-Ctrl-PgUp']=$_NOKEY     ['Ctrl-Shift-PgUp']=$_NOKEY     ['Shift-PgUp']=$_NOKEY
         ['PgDown']='\e[6~'  ['Alt-PgDown']='\e\e[6~'  ['Ctrl-PgDown']=$_NOKEY    ['Alt-Ctrl-PgDown']=$_NOKEY   ['Ctrl-Shift-PgDown']=$_NOKEY   ['Shift-PgDown']=$_NOKEY
         ['Home']='\e[1~'    ['Alt-Home']='\e\e[1~'    ['Ctrl-Home']=$_NOKEY      ['Alt-Ctrl-Home']=$_NOKEY     ['Ctrl-Shift-Home']=$_NOKEY     ['Shift-Home']=$_NOKEY
@@ -255,13 +255,13 @@ keymap-bind previous-word            Alt-Left
 keymap-bind next-word                Ctrl-Right
 keymap-bind backward-delete-char     Bsp
 keymap-bind delete-char              Del
-keymap-bind backward-kill-word       Alt-Ctrl-Left    Ctrl-Shift-Left
-keymap-bind kill-word                Alt-Ctrl-Right   Ctrl-Shift-Right
+keymap-bind backward-kill-word       Alt-Ctrl-Left    Ctrl-Shift-Left    Shift-Left    Alt-Shift-Left
+keymap-bind kill-word                Alt-Ctrl-Right   Ctrl-Shift-Right   Shift-Right   Alt-Shift-Right
 keymap-bind beginning-of-line        Home
 keymap-bind end-of-line              End
 keymap-bind unix-line-discard        Alt-Bsp
 keymap-bind kill-line                Alt-Del
-keymap-bind clear-line               Alt-Ctrl-Down    Alt-PgDown         Esc
+keymap-bind clear-line               Alt-Ctrl-Down    Alt-PgDown   Esc   Shift-Down    Alt-Shift-Down
 
 keymap-bind undo                     Alt-Z      Ctrl-Shift-Z
 keymap-bind paste-from-clipboard     Alt-V 2>/dev/null || true

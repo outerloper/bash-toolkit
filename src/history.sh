@@ -18,6 +18,6 @@ bt-on-prompt 'history -a; history -c; history -r' # having common history when m
 shopt -s histappend
 
 keymap-macro-def filter-history @beginning-of-line ' history-filter "' @end-of-line '"' @accept-line
-keymap-bind filter-history Alt-Ctrl-Up Alt-PgUp
+keymap-bind filter-history Alt-Ctrl-Up Alt-PgUp Shift-Up Alt-Shift-Up
 keymap-macro-def apply-history @beginning-of-line '!' @forward-word @magic-space
 keymap-bind apply-history Ctrl-Space
