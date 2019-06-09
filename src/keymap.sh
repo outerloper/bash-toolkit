@@ -120,14 +120,19 @@ for fun in $( bind -l ) ;do
     KEYMAP_MACROS["$fun"]="$fun"
 done
 
-if contains "$(uname)" CYGWIN
+# NOTE ways to test key maps in specific terminal:
+# sed -n l
+# read -s -n1
+# bind '"\e[1;5Q":"test"'
+# NOTE to get capabilities of existing terminal: infocmp
+if contains "$TERM" xterm
 then
     KEYMAP_DEFS=(
-        ['Left']='\e[D'     ['Alt-Left']='\e[1;3D'    ['Ctrl-Left']='\e[1;5D'    ['Alt-Ctrl-Up']='\e[1;7A'     ['Ctrl-Shift-Up']='\e[1;6A'     ['Shift-Up']=$_NOKEY
-        ['Right']='\e[C'    ['Alt-Right']='\e[1;3C'   ['Ctrl-Right']='\e[1;5C'   ['Alt-Ctrl-Down']='\e[1;7B'   ['Ctrl-Shift-Down']='\e[1;6B'   ['Shift-Down']=$_NOKEY
-        ['Up']='\e[A'       ['Alt-Up']='\e[1;3A'      ['Ctrl-Up']='\e[1;5A'      ['Alt-Ctrl-Left']='\e[1;7D'   ['Ctrl-Shift-Left']='\e[1;6D'   ['Shift-Left']='\e[1;2D'
-        ['Down']='\e[B'     ['Alt-Down']='\e[1;3B'    ['Ctrl-Down']='\e[1;5B'    ['Alt-Ctrl-Right']='\e[1;7C'  ['Ctrl-Shift-Right']='\e[1;6C'  ['Shift-Right']='\e[1;2C'
-        ['PgUp']='\e[5~'    ['Alt-PgUp']=$_NOKEY      ['Ctrl-PgUp']='\e[5;5~'    ['Alt-Ctrl-PgUp']=$_NOKEY     ['Ctrl-Shift-PgUp']='\e[5;6~'   ['Shift-PgUp']=$_NOKEY
+        ['Left']='\e[D'     ['Alt-Left']='\e[1;3D'    ['Ctrl-Left']='\e[1;5D'    ['Alt-Ctrl-Up']='\e[1;7A'     ['Ctrl-Shift-Up']='\e[1;6A'     ['Shift-Up']='\e[1;2A'     ['Shift-Up']='\e[1;4D'
+        ['Right']='\e[C'    ['Alt-Right']='\e[1;3C'   ['Ctrl-Right']='\e[1;5C'   ['Alt-Ctrl-Down']='\e[1;7B'   ['Ctrl-Shift-Down']='\e[1;6B'   ['Shift-Down']='\e[1;2B'   ['Shift-Down']='\e[1;4D'
+        ['Up']='\e[A'       ['Alt-Up']='\e[1;3A'      ['Ctrl-Up']='\e[1;5A'      ['Alt-Ctrl-Left']='\e[1;7D'   ['Ctrl-Shift-Left']='\e[1;6D'   ['Shift-Left']='\e[1;2D'   ['Shift-Left']='\e[1;4D'
+        ['Down']='\e[B'     ['Alt-Down']='\e[1;3B'    ['Ctrl-Down']='\e[1;5B'    ['Alt-Ctrl-Right']='\e[1;7C'  ['Ctrl-Shift-Right']='\e[1;6C'  ['Shift-Right']='\e[1;2C'  ['Shift-Right']='\e[1;4C'
+        ['PgUp']='\e[5~'    ['Alt-PgUp']='\e[5;3~'    ['Ctrl-PgUp']='\e[5;5~'    ['Alt-Ctrl-PgUp']=$_NOKEY     ['Ctrl-Shift-PgUp']='\e[5;6~'   ['Shift-PgUp']=$_NOKEY
         ['PgDown']='\e[6~'  ['Alt-PgDown']='\e[6;3~'  ['Ctrl-PgDown']='\e[6;5~'  ['Alt-Ctrl-PgDown']='\e[6;7~' ['Ctrl-Shift-PgDown']='\e[6;6~' ['Shift-PgDown']=$_NOKEY
         ['Home']='\e[7~'    ['Alt-Home']='\e[1;3~'    ['Ctrl-Home']='\e[1;5~'    ['Alt-Ctrl-Home']='\e[1;7~'   ['Ctrl-Shift-Home']='\e[1;6~'   ['Shift-Home']=$_NOKEY
         ['End']='\e[8~'     ['Alt-End']='\e[4;3~'     ['Ctrl-End']='\e[4;5~'     ['Alt-Ctrl-End']='\e[4;7~'    ['Ctrl-Shift-End']='\e[4;6~'    ['Shift-End']=$_NOKEY
@@ -135,14 +140,14 @@ then
         ['Del']='\e[3~'     ['Alt-Del']='\e[3;3~'     ['Ctrl-Del']='\033[3;5~'   ['Alt-Ctrl-Del']=$_NOKEY      ['Ctrl-Shift-Del']='\e[3;6~'    ['Shift-Del']='\e[3;2~'
         ['F1']='\eOP'       ['Alt-F1']='\e[1;3P'      ['Ctrl-F1']='\e[1;5P'      ['Alt-Ctrl-F1']='\e[1;7P'     ['Ctrl-Shift-F1']='\e[1;6P'     ['Shift-F1']='\e[1;2P'
         ['F2']='\eOQ'       ['Alt-F2']='\e[1;3Q'      ['Ctrl-F2']='\e[1;5Q'      ['Alt-Ctrl-F2']='\e[1;7Q'     ['Ctrl-Shift-F2']='\e[1;6Q'     ['Shift-F2']='\e[1;2Q'
-        ['F3']='\eOR'       ['Alt-F3']='\e[1;3R'      ['Ctrl-F3']='\e[25~'       ['Alt-Ctrl-F3']='\e[25;3~'    ['Ctrl-Shift-F3']='\e[25;2~'    ['Shift-F3']='\e[1;2R'
-        ['F4']='\eOS'       ['Alt-F4']='\e[1;3S'      ['Ctrl-F4']='\e[26~'       ['Alt-Ctrl-F4']='\e[26;3~'    ['Ctrl-Shift-F4']='\e[26;2~'    ['Shift-F4']='\e[1;2S'
-        ['F5']='\e[15~'     ['Alt-F5']='\e[15;3~'     ['Ctrl-F5']='\e[28~'       ['Alt-Ctrl-F5']='\e[28;3~'    ['Ctrl-Shift-F5']='\e[28;2~'    ['Shift-F5']='\e[15;2~'
-        ['F6']='\e[17~'     ['Alt-F6']='\e[17;3~'     ['Ctrl-F6']='\e[29~'       ['Alt-Ctrl-F6']='\e[29;3~'    ['Ctrl-Shift-F6']='\e[29;2~'    ['Shift-F6']='\e[17;2~'
-        ['F7']='\e[18~'     ['Alt-F7']='\e[18;3~'     ['Ctrl-F7']='\e[31~'       ['Alt-Ctrl-F7']='\e[31;3~'    ['Ctrl-Shift-F7']='\e[31;2~'    ['Shift-F7']='\e[18;2~'
-        ['F8']='\e[19~'     ['Alt-F8']='\e[19;3~'     ['Ctrl-F8']='\e[32~'       ['Alt-Ctrl-F8']='\e[32;3~'    ['Ctrl-Shift-F8']='\e[32;2~'    ['Shift-F8']='\e[19;2~'
-        ['F9']='\e[20~'     ['Alt-F9']='\e[20;3~'     ['Ctrl-F9']='\e[33~'       ['Alt-Ctrl-F9']='\e[33;3~'    ['Ctrl-Shift-F9']='\e[33;2~'    ['Shift-F9']='\e[20;2~'
-        ['F10']='\e[21~'    ['Alt-F10']='\e[21;3~'    ['Ctrl-F10']='\e[34~'      ['Alt-Ctrl-F10']='\e[34;3~'   ['Ctrl-Shift-F10']='\e[34;2~'   ['Shift-F10']='\e[21;2~'
+        ['F3']='\eOR'       ['Alt-F3']='\e[1;3R'      ['Ctrl-F3']='\e[1;5R'      ['Alt-Ctrl-F3']='\e[25;3~'    ['Ctrl-Shift-F3']='\e[25;2~'    ['Shift-F3']='\e[1;2R'
+        ['F4']='\eOS'       ['Alt-F4']='\e[1;3S'      ['Ctrl-F4']='\e[1;5S'      ['Alt-Ctrl-F4']='\e[26;3~'    ['Ctrl-Shift-F4']='\e[26;2~'    ['Shift-F4']='\e[1;2S'
+        ['F5']='\e[15~'     ['Alt-F5']='\e[15;3~'     ['Ctrl-F5']='\e[15;5~'     ['Alt-Ctrl-F5']='\e[28;3~'    ['Ctrl-Shift-F5']='\e[28;2~'    ['Shift-F5']='\e[15;2~'
+        ['F6']='\e[17~'     ['Alt-F6']='\e[17;3~'     ['Ctrl-F6']='\e[17;5~'     ['Alt-Ctrl-F6']='\e[29;3~'    ['Ctrl-Shift-F6']='\e[29;2~'    ['Shift-F6']='\e[17;2~'
+        ['F7']='\e[18~'     ['Alt-F7']='\e[18;3~'     ['Ctrl-F7']='\e[18;5~'     ['Alt-Ctrl-F7']='\e[31;3~'    ['Ctrl-Shift-F7']='\e[31;2~'    ['Shift-F7']='\e[18;2~'
+        ['F8']='\e[19~'     ['Alt-F8']='\e[19;3~'     ['Ctrl-F8']='\e[19;5~'     ['Alt-Ctrl-F8']='\e[32;3~'    ['Ctrl-Shift-F8']='\e[32;2~'    ['Shift-F8']='\e[19;2~'
+        ['F9']='\e[20~'     ['Alt-F9']='\e[20;3~'     ['Ctrl-F9']='\e[20;5~'     ['Alt-Ctrl-F9']='\e[33;3~'    ['Ctrl-Shift-F9']='\e[33;2~'    ['Shift-F9']='\e[20;2~'
+        ['F10']='\e[21~'    ['Alt-F10']='\e[21;3~'    ['Ctrl-F10']='\e[21;5~'    ['Alt-Ctrl-F10']='\e[34;3~'   ['Ctrl-Shift-F10']='\e[34;2~'   ['Shift-F10']='\e[21;2~'
         ['F11']='\e[23~'    ['Alt-F11']='\e[23;3~'    ['Ctrl-F11']='\e[23;5~'    ['Alt-Ctrl-F11']='\e[23;7~'   ['Ctrl-Shift-F11']='\e[23;6~'   ['Shift-F11']='\e[23;2~'
         ['F12']='\e[24~'    ['Alt-F12']='\e[24;3~'    ['Ctrl-F12']='\e[24;5~'    ['Alt-Ctrl-F12']='\e[24;7~'   ['Ctrl-Shift-F12']='\e[24;6~'   ['Shift-F12']='\e[24;2~'
         ['Space']=' '       ['Alt-Space']='\e '       ['Ctrl-Space']='\0'        ['Alt-Ctrl-Space']='\e\0'     ['Ctrl-Shift-Space']='\302\200' ['Shift-Space']=$_NOKEY
@@ -207,6 +212,7 @@ keymap-macro-def clear-line            @kill-line @unix-line-discard
 keymap-macro-def list                  @clear-line 'ls' @accept-line
 keymap-macro-def help                  @end-of-line ' --help' @accept-line
 keymap-macro-def man                   @beginning-of-line ' man ' @accept-line
+keymap-macro-def sudo                  @previous-history @beginning-of-line 'sudo ' @accept-line
 keymap-macro-def prev-cmd-1st-word     '!:0' @magic-space
 keymap-macro-def prev-cmd-2nd-word     '!:1' @magic-space
 keymap-macro-def prev-cmd-3rd-word     '!:2' @magic-space
@@ -255,7 +261,7 @@ keymap-bind beginning-of-line        Home
 keymap-bind end-of-line              End
 keymap-bind unix-line-discard        Alt-Bsp
 keymap-bind kill-line                Alt-Del
-keymap-bind clear-line               Alt-Ctrl-Down    Esc
+keymap-bind clear-line               Alt-Ctrl-Down    Alt-PgDown         Esc
 
 keymap-bind undo                     Alt-Z      Ctrl-Shift-Z
 keymap-bind paste-from-clipboard     Alt-V 2>/dev/null || true
@@ -288,9 +294,10 @@ keymap-bind home-dir                 Alt-Home   Ctrl-Home
 
 keymap-bind echo                     Alt-E
 keymap-bind hist-dir                 F2
-keymap-bind run-2nd-last-command     F3
-keymap-bind run-previous-command     F4
+keymap-bind run-2nd-last-command     F4
+keymap-bind run-previous-command     F3
 keymap-bind list                     F5
+keymap-bind sudo                     Ctrl-F3
 
 unset _key
 unset _bindOption

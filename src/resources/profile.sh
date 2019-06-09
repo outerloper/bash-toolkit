@@ -39,7 +39,7 @@ alias whence='type -a'
 alias grep='grep --color=auto'
 alias ge='grep -E'
 alias gf='grep -F'
-alias gn='grep -E -n -H'
+alias gn='\grep -E -n -H -r --color=always'
 
 les() {
   local lineNumber=${1//*:/}

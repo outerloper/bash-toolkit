@@ -2,8 +2,7 @@
 
 bt-require keymap.sh
 
-
-DIRS_HISTORY_FILE="$BT_CONFIG/dirs.history"
+DIRS_HISTORY_FILE="${MY_DIRS_HISTORY_FILE-$BT_CONFIG/dirs.history}"
 DIRS_HISTORY_SIZE=50
 
 _dirs_historyPrint() {

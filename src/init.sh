@@ -112,7 +112,10 @@ bt-require() {
 
 
 
-shopt -s nullglob
+# NOTE causes completion not to work on centos
+# workaround: temporarily unset and set nullglob around /usr/share/bash-completion/bash_completion#init_completion()
+# disabling to test what would be the impact
+# shopt -s nullglob
 mkdir -p "$BT_CONFIG"
 cp -n "$BT_HOME/resources/profile.sh" "$BT_PROFILE"
 

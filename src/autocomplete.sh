@@ -8,17 +8,14 @@ bt-require utils.sh
 autocomplete()
 {
     local args="$@"
-    if ! -t 0
-    then
-        while read line
-        do
+    if ! -t 0; then
+        while read line; do
             args+=" ${line// /\\ }"
         done <&0
     fi
 
     COMPREPLY=()
-    while read line
-    do
+    while read line; do
         COMPREPLY+=( "$line" )
     done < <( compgen -W "$args" -- "${COMP_WORDS[COMP_CWORD]}" || true )
 }

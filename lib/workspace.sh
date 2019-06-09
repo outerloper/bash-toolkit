@@ -31,6 +31,7 @@ workspace()
         mkdir -p "$WORKSPACE_ROOT_DIR/$name/.bt" &&
         touch "$WORKSPACE_ROOT_DIR/$name/.bt/init.sh" &&
         chmod u+x "$WORKSPACE_ROOT_DIR/$name/.bt/init.sh" &&
+        touch "$WORKSPACE_ROOT_DIR/$name/notes.sh" &&
         success "Workspace '$name' created" && workspace "$name"
 }
 

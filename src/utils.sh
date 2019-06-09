@@ -215,7 +215,7 @@ print-status() {
     return "$OK"
 }
 
-ask-for-confirmation() {
+ask-for-confirmation() { # TODO review
     -eq "$1" '--help' && echo "Asks user whether to proceed with some action. When <timeout> specified, proceeds automatically within the provided amount of seconds.
 Usage: $FUNCNAME [<action-description>] [-c <cancellation-description>] [-t [<timeout>]]" && return
     local arg message proceed='proceed' cancel='cancel' confirmed canceled timeout
